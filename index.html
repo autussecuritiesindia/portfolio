@@ -246,6 +246,15 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .login-logo{width:52px;height:52px;background:linear-gradient(135deg,#1D4ED8,#0F7A4B);border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;margin:0 auto 14px;box-shadow:0 4px 12px rgba(29,78,216,.3)}
 .login-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
 .login-sub{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:24px}
+.userid-wrap{margin-bottom:10px}
+.userid-input{width:100%;background:var(--surface2);border:2px solid var(--border2);border-radius:var(--r2);padding:12px 14px;color:var(--text);font-family:var(--mono);font-size:16px;font-weight:700;text-align:center;letter-spacing:3px;outline:none;transition:border-color .2s}
+.userid-input:focus{border-color:var(--blue);box-shadow:var(--shadow3)}
+.userid-input::placeholder{letter-spacing:0;font-weight:400;font-size:13px}
+.userid-btn{width:100%;background:var(--blue);color:#fff;border:none;border-radius:var(--r2);padding:12px;font-size:13px;font-weight:700;font-family:var(--mono);cursor:pointer;margin-top:4px;box-shadow:0 2px 8px rgba(29,78,216,.3);transition:opacity .15s}
+.userid-btn:hover{opacity:.9}
+.userid-btn:active{transform:scale(.97)}
+.back-to-id{font-size:11px;color:var(--blue);font-family:var(--mono);cursor:pointer;font-weight:600}
+.back-to-id:hover{text-decoration:underline}
 .login-user-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
 .user-chip{background:var(--surface2);border:2px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;transition:all .15s;text-align:center}
 .user-chip:hover{border-color:var(--blue);background:var(--blue-bg)}
@@ -351,30 +360,50 @@ td:first-child{text-align:left;font-family:var(--sans)}
   <div class="login-card">
     <div class="login-logo">MJ</div>
     <div class="login-title">Portfolio Dashboard</div>
-    <div class="login-sub">Select your profile to continue</div>
-    <div class="login-user-grid" id="userGrid"></div>
-    <div class="pin-label" id="pinLabel">Enter PIN</div>
-    <div class="pin-dots" id="pinDots">
-      <div class="pin-dot" id="pd0"></div>
-      <div class="pin-dot" id="pd1"></div>
-      <div class="pin-dot" id="pd2"></div>
-      <div class="pin-dot" id="pd3"></div>
+    <div class="login-sub">Enter your User ID to continue</div>
+
+    <!-- Step 1: User ID input -->
+    <div id="loginStep1">
+      <div class="userid-wrap">
+        <input class="userid-input" id="userIdInput" type="text"
+          placeholder="User ID"
+          autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+          oninput="this.value=this.value.toUpperCase()"
+          onkeydown="if(event.key==='Enter')proceedToPin()">
+      </div>
+      <div class="login-err" id="loginErr1"></div>
+      <button class="userid-btn" onclick="proceedToPin()">Continue →</button>
     </div>
-    <div class="login-err" id="loginErr"></div>
-    <div class="pin-pad">
-      <div class="pin-key" onclick="pinKey('1')">1</div>
-      <div class="pin-key" onclick="pinKey('2')">2</div>
-      <div class="pin-key" onclick="pinKey('3')">3</div>
-      <div class="pin-key" onclick="pinKey('4')">4</div>
-      <div class="pin-key" onclick="pinKey('5')">5</div>
-      <div class="pin-key" onclick="pinKey('6')">6</div>
-      <div class="pin-key" onclick="pinKey('7')">7</div>
-      <div class="pin-key" onclick="pinKey('8')">8</div>
-      <div class="pin-key" onclick="pinKey('9')">9</div>
-      <div class="pin-key zero" onclick="pinKey('0')">0</div>
-      <div class="pin-key del" onclick="pinDel()">⌫</div>
+
+    <!-- Step 2: PIN entry (hidden until User ID confirmed) -->
+    <div id="loginStep2" style="display:none">
+      <div class="pin-label" id="pinLabel">Enter PIN</div>
+      <div class="pin-dots" id="pinDots">
+        <div class="pin-dot" id="pd0"></div>
+        <div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div>
+        <div class="pin-dot" id="pd3"></div>
+      </div>
+      <div class="login-err" id="loginErr"></div>
+      <div class="pin-pad">
+        <div class="pin-key" onclick="pinKey('1')">1</div>
+        <div class="pin-key" onclick="pinKey('2')">2</div>
+        <div class="pin-key" onclick="pinKey('3')">3</div>
+        <div class="pin-key" onclick="pinKey('4')">4</div>
+        <div class="pin-key" onclick="pinKey('5')">5</div>
+        <div class="pin-key" onclick="pinKey('6')">6</div>
+        <div class="pin-key" onclick="pinKey('7')">7</div>
+        <div class="pin-key" onclick="pinKey('8')">8</div>
+        <div class="pin-key" onclick="pinKey('9')">9</div>
+        <div class="pin-key zero" onclick="pinKey('0')">0</div>
+        <div class="pin-key del" onclick="pinDel()">⌫</div>
+      </div>
+      <label class="remember-row"><input type="checkbox" id="rememberMe" checked> Remember this device for 30 days</label>
+      <div style="margin-top:10px">
+        <span class="back-to-id" onclick="backToUserId()">← Change User ID</span>
+      </div>
     </div>
-    <label class="remember-row"><input type="checkbox" id="rememberMe" checked> Remember this device for 30 days</label>
+
   </div>
 </div>
 
@@ -614,31 +643,38 @@ const CREDS={
   'GBL':    {pin:'0004',role:'rm',    subgroup:'GBL',   display:'GBL'},
 };
 const LS_SESSION='pf-session-v1';
-let currentUser=null;  // {username, role, subgroup, display}
+let currentUser=null;
 let pinBuffer='';
 let pinUser='';
 
-// Build user chips
-function buildUserChips(){
-  const grid=document.getElementById('userGrid');
-  grid.innerHTML=Object.entries(CREDS).map(([u,c])=>`
-    <div class="user-chip" id="chip-${u}" onclick="selectUser('${u}')">
-      <div class="user-chip-name">${c.display}</div>
-      <div class="user-chip-role">${c.role==='admin'?'Admin':'RM'}</div>
-    </div>`).join('');
-}
-
-function selectUser(u){
-  pinUser=u;pinBuffer='';
-  document.querySelectorAll('.user-chip').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('chip-'+u)?.classList.add('selected');
-  document.getElementById('pinLabel').textContent=`Enter PIN for ${CREDS[u].display}`;
+// Step 1 — validate User ID, move to PIN screen
+function proceedToPin(){
+  const uid=document.getElementById('userIdInput').value.trim().toUpperCase();
+  if(!uid){document.getElementById('loginErr1').textContent='Please enter your User ID';return;}
+  if(!CREDS[uid]){document.getElementById('loginErr1').textContent='User ID not recognised — try again';return;}
+  pinUser=uid;
+  pinBuffer='';
+  document.getElementById('loginErr1').textContent='';
+  document.getElementById('loginStep1').style.display='none';
+  document.getElementById('loginStep2').style.display='';
+  document.getElementById('pinLabel').textContent='Welcome, '+CREDS[uid].display+' — Enter PIN';
   document.getElementById('loginErr').textContent='';
   updatePinDots();
 }
 
+// Back to User ID step
+function backToUserId(){
+  pinBuffer='';pinUser='';
+  document.getElementById('userIdInput').value='';
+  document.getElementById('loginErr1').textContent='';
+  document.getElementById('loginErr').textContent='';
+  document.getElementById('loginStep2').style.display='none';
+  document.getElementById('loginStep1').style.display='';
+  updatePinDots();
+}
+
 function pinKey(k){
-  if(!pinUser){document.getElementById('loginErr').textContent='Select a profile first';return;}
+  if(!pinUser)return;
   if(pinBuffer.length>=4)return;
   pinBuffer+=k;
   updatePinDots();
@@ -650,6 +686,7 @@ function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updatePinDots();}
 function updatePinDots(){
   for(let i=0;i<4;i++){
     const d=document.getElementById('pd'+i);
+    if(!d)continue;
     d.classList.toggle('filled',i<pinBuffer.length);
     d.classList.remove('error');
   }
@@ -658,7 +695,6 @@ function updatePinDots(){
 function checkPin(){
   const cred=CREDS[pinUser];
   if(pinBuffer===cred.pin){
-    // Correct
     currentUser={username:pinUser,...cred};
     if(document.getElementById('rememberMe').checked){
       try{localStorage.setItem(LS_SESSION,JSON.stringify({...currentUser,expiry:Date.now()+30*24*3600*1000}));}catch(e){}
@@ -666,7 +702,6 @@ function checkPin(){
     document.getElementById('loginScreen').style.display='none';
     onAuthenticated();
   }else{
-    // Wrong PIN
     pinBuffer='';
     for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);d.classList.add('error');d.classList.remove('filled');}
     document.getElementById('loginErr').textContent='Incorrect PIN — try again';
@@ -677,11 +712,12 @@ function checkPin(){
 function logOut(){
   try{localStorage.removeItem(LS_SESSION);}catch(e){}
   currentUser=null;pinBuffer='';pinUser='';
-  document.querySelectorAll('.user-chip').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('pinLabel').textContent='Enter PIN';
+  document.getElementById('userIdInput').value='';
+  document.getElementById('loginErr1').textContent='';
   document.getElementById('loginErr').textContent='';
+  document.getElementById('loginStep1').style.display='';
+  document.getElementById('loginStep2').style.display='none';
   updatePinDots();
-  // Hide everything, show login
   document.getElementById('dashboard').style.display='none';
   document.getElementById('selectorScreen').style.display='none';
   document.getElementById('uploadZone').classList.add('hidden');
@@ -696,11 +732,8 @@ function checkSession(){
   return false;
 }
 
-// Called after successful login or session restore
 function onAuthenticated(){
-  // Update welcome text
   document.getElementById('selWelcome').textContent=currentUser.role==='admin'?'Select RM':`Welcome, ${currentUser.display}`;
-  // Trigger data load
   initDashboard();
 }
 
@@ -734,7 +767,7 @@ let _lastComputedData = null;
 let _lastErrToastTs = 0;
 
 // NEW: Google Sheet CSV URL
-const SHEET_URL ="https://docs.google.com/spreadsheets/d/1JY_13jABqOpgyeTnmBh2EtafHs4-B01npqXtMcEB9JQ/edit?usp=sharing";
+const SHEET_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTalSshnxDgdG9kqJNMZAgjH2j_Tu2TpjvZ9tjCvMg2G1ECIvervKbM9XlvfPta2svaUI3U7FdcFrdi/pub?gid=1099151370&single=true&output=csv';
 const LS_SHEET    = 'pf-sheet-v2';
 const LS_PRICES   = 'pf-prices-v2';
 const LS_THEME    = 'pf-theme';
@@ -917,24 +950,58 @@ function guessSector(c){
 //  GOOGLE SHEET FETCH — Direct (no proxy needed)
 //  Published Google Sheets set CORS headers correctly
 // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  GOOGLE SHEET FETCH
+//  1) Direct fetch (works on some browsers/hosts)
+//  2) corsproxy.io fallback
+//  3) allorigins fallback
+// ══════════════════════════════════════════════════════
 async function fetchSheetCSV(){
-  console.log('[SHEET] Fetching directly from Google…');
+  const timeout=ms=>new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),ms));
+
+  // Attempt 1 — direct (no proxy)
+  console.log('[SHEET] Attempt 1 — direct…');
   try{
-    const r=await Promise.race([
-      fetch(SHEET_URL,{cache:'no-store'}),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout 15s')),15000))
-    ]);
+    const r=await Promise.race([fetch(SHEET_URL,{cache:'no-store'}),timeout(12000)]);
     if(!r.ok)throw new Error('HTTP '+r.status);
     const text=await r.text();
-    if(!text||text.length<50||!text.includes(','))throw new Error('Response looks invalid');
-    console.log('[SHEET] Success, len='+text.length);
-    lastSheetSync=new Date();
-    updateSyncedBar();
-    return text;
-  }catch(e){
-    console.warn('[SHEET] Direct fetch failed:',e.message);
-    return null;
-  }
+    if(text&&text.length>50&&text.includes(',')&&!text.includes('<!DOCTYPE')){
+      console.log('[SHEET] Direct OK, len='+text.length);
+      lastSheetSync=new Date();updateSyncedBar();return text;
+    }
+    throw new Error('Invalid response');
+  }catch(e){console.warn('[SHEET] Direct failed:',e.message);}
+
+  // Attempt 2 — corsproxy.io
+  console.log('[SHEET] Attempt 2 — corsproxy.io…');
+  try{
+    const url='https://corsproxy.io/?'+encodeURIComponent(SHEET_URL);
+    const r=await Promise.race([fetch(url),timeout(12000)]);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const text=await r.text();
+    if(text&&text.length>50&&text.includes(',')&&!text.includes('<!DOCTYPE')){
+      console.log('[SHEET] corsproxy OK, len='+text.length);
+      lastSheetSync=new Date();updateSyncedBar();return text;
+    }
+    throw new Error('Invalid response');
+  }catch(e){console.warn('[SHEET] corsproxy failed:',e.message);}
+
+  // Attempt 3 — allorigins
+  console.log('[SHEET] Attempt 3 — allorigins…');
+  try{
+    const url='https://api.allorigins.win/raw?url='+encodeURIComponent(SHEET_URL);
+    const r=await Promise.race([fetch(url),timeout(14000)]);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const text=await r.text();
+    if(text&&text.length>50&&text.includes(',')&&!text.includes('<!DOCTYPE')){
+      console.log('[SHEET] allorigins OK, len='+text.length);
+      lastSheetSync=new Date();updateSyncedBar();return text;
+    }
+    throw new Error('Invalid response');
+  }catch(e){console.warn('[SHEET] allorigins failed:',e.message);}
+
+  console.warn('[SHEET] All attempts failed');
+  return null;
 }
 
 // NEW: Load + parse sheet, cache on success, fall back to cache/seed
@@ -1173,57 +1240,66 @@ function compute(){
 // ══════════════════════════════════════════════════════
 //  PRICE FETCH — Reliable Two-Tier Approach
 //  Tier 1: Sheet VALRATE (instant, always works)
-//  Tier 2: Live via Yahoo direct + proxy fallback
+//  Tier 2: Live via Stooq (CORS-friendly, direct)
 // ══════════════════════════════════════════════════════
 
-async function fetchBatchWithRetry(symbols,retries=2){
-  // Try direct Yahoo first (no proxy), then with proxies
-  const apiUrl=`https://query2.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}&fields=regularMarketPrice,regularMarketChangePercent,regularMarketChange`;
-
-  const endpoints=[
-    ()=>fetch(apiUrl,{cache:'no-store'}),  // Direct — sometimes works
-    ()=>fetch(`https://corsproxy.io/?${encodeURIComponent(apiUrl)}`),
-    ()=>fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`),
-  ];
-
-  for(let attempt=0;attempt<Math.min(retries+1,endpoints.length);attempt++){
-    try{
-      const r=await Promise.race([
-        endpoints[attempt](),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),8000))
-      ]);
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      const text=await r.text();
-      let data;
-      if(text.trim().startsWith('{"contents')){
-        try{data=JSON.parse(JSON.parse(text).contents);}catch(e){data=JSON.parse(text);}
-      }else{data=JSON.parse(text);}
-      const res=data?.quoteResponse?.result;
-      if(!res||!res.length)throw new Error('Empty result');
-      return res;
-    }catch(e){
-      console.warn(`[PRICE] Attempt ${attempt+1} failed (${symbols[0]}…):`,e.message);
-      if(attempt<retries)await sleep(500);
-    }
+// ══════════════════════════════════════════════════════
+//  PRICE FETCH — Stooq (CORS-friendly, no proxy needed)
+//  URL: https://stooq.com/q/l/?s=sym1.ns,sym2.ns&f=sd2ohlcv&e=csv
+//  Returns: Symbol,Date,Open,High,Low,Close,Volume
+//  Day % calculated from Open vs Close
+// ══════════════════════════════════════════════════════
+async function fetchStooqBatch(symbols){
+  const syms=symbols.map(s=>s.toLowerCase()).join(',');
+  const url=`https://stooq.com/q/l/?s=${syms}&f=sd2ohlcv&e=csv`;
+  try{
+    const r=await Promise.race([
+      fetch(url,{cache:'no-store'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),10000))
+    ]);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const text=await r.text();
+    return parseStooqCSV(text);
+  }catch(e){
+    console.warn('[PRICE] Stooq batch failed ('+symbols[0]+'…):',e.message);
+    return[];
   }
-  return [];
 }
 
-// UPDATED: processQuotes — handle both .NS and .BO + record timestamp
-function processQuotes(quotes){
+function parseStooqCSV(text){
+  const results=[];
+  const lines=text.replace(/\r/g,'').split('\n').filter(Boolean);
+  if(lines.length<2)return results;
+  for(let i=1;i<lines.length;i++){
+    const c=lines[i].split(',');
+    if(c.length<6)continue;
+    const sym=c[0].trim().toUpperCase();
+    const open=parseFloat(c[2])||0;
+    const close=parseFloat(c[5])||0;
+    if(!close||close<=0||close===0.01)continue; // 0.01 = Stooq N/D marker
+    const dayPct=open>0?(close-open)/open*100:0;
+    const dayAbs=open>0?close-open:0;
+    results.push({symbol:sym,price:close,dayPct,dayAbs});
+  }
+  return results;
+}
+
+function processStooqQuotes(quotes){
   const now=Date.now();
   for(const q of quotes){
     let code=YF_REV[q.symbol];
-    if(!code){const base=q.symbol.replace(/\.(NS|BO)$/,'');code=YF_REV[base+'.NS']||YF_REV[base+'.BO']||base;}
-    if(!code)continue;
-    const price=q.regularMarketPrice;
-    if(price&&price>0){
-      livePrices[code]=price;
-      liveChangePct[code]=q.regularMarketChangePercent??0;
-      liveChangeAbs[code]=q.regularMarketChange??0;
-      livePriceTS[code]=now;
-      liveCount++;
+    if(!code){
+      const base=q.symbol.replace(/\.(NS|BO)$/,'');
+      code=YF_REV[base+'.NS']||YF_REV[base+'.BO']||base;
     }
+    // Also try direct match without suffix
+    if(!code)code=YF_REV[q.symbol+''] || q.symbol.replace(/\.(NS|BO)$/,'');
+    if(!PORTFOLIO.find(s=>s.code===code))continue;
+    livePrices[code]=q.price;
+    liveChangePct[code]=q.dayPct;
+    liveChangeAbs[code]=q.dayAbs;
+    livePriceTS[code]=now;
+    liveCount++;
   }
 }
 
@@ -1242,37 +1318,27 @@ async function refreshPrices(){
   renderAll();
   setLiveStatus('loading',0,PORTFOLIO.length);
 
-  // TIER 2: Attempt live prices
+  // TIER 2: Stooq live prices — CORS-friendly, no proxy needed
   const codes=[...new Set(PORTFOLIO.map(s=>s.code))];
   const nsSymbols=codes.map(c=>YF[c]||c+'.NS');
-  const BSIZE=8,DELAY=500;
-  const failedBatches=[];
+  const BSIZE=20,DELAY=300; // Stooq handles up to 20+ symbols per request
 
-  console.log(`[PRICE] Fetching ${nsSymbols.length} symbols in batches of ${BSIZE}`);
+  console.log(`[PRICE] Stooq fetch: ${nsSymbols.length} symbols in batches of ${BSIZE}`);
 
   for(let i=0;i<nsSymbols.length;i+=BSIZE){
     const batch=nsSymbols.slice(i,i+BSIZE);
-    const quotes=await fetchBatchWithRetry(batch,2);
+    const quotes=await fetchStooqBatch(batch);
     if(quotes.length>0){
-      processQuotes(quotes);
+      processStooqQuotes(quotes);
     }else{
-      failedBatches.push(...batch);
-      console.log('[PRICE] Trying BSE fallback for:',batch.join(','));
+      // Try .BO suffix as fallback
       const boBatch=batch.map(s=>s.replace('.NS','.BO'));
-      const boQuotes=await fetchBatchWithRetry(boBatch,1);
-      if(boQuotes.length>0)processQuotes(boQuotes);
+      const boQuotes=await fetchStooqBatch(boBatch);
+      if(boQuotes.length>0)processStooqQuotes(boQuotes);
     }
     setLiveStatus('loading',liveCount,codes.length);
     if(i+BSIZE<nsSymbols.length)await sleep(DELAY);
   }
-
-  // Apply fallback for any still-missing
-  let fbCount=0;
-  PORTFOLIO.forEach(s=>{
-    if(!liveChangePct.hasOwnProperty(s.code)&&s.valRate>0&&!livePriceTS[s.code]){fbCount++;}
-  });
-  if(fbCount)console.log(`[PRICE] ${fbCount} using sheet VALRATE`);
-  if(failedBatches.length)console.warn('[PRICE] Failed symbols:',failedBatches);
 
   // Cache live prices
   try{localStorage.setItem(LS_PRICES,JSON.stringify(livePrices));}catch(e){}
@@ -1659,15 +1725,15 @@ function filterClientCards(){
 // ══════════════════════════════════════════════════════
 (async function init(){
   console.log('[INIT] Portfolio Dashboard starting…');
-  buildUserChips();
-
   // Check for saved session — skip login if valid
   if(checkSession()){
     console.log('[INIT] Session restored for',currentUser.username);
     document.getElementById('loginScreen').style.display='none';
     onAuthenticated();
+  }else{
+    // Show login — focus the User ID input
+    setTimeout(()=>document.getElementById('userIdInput')?.focus(),100);
   }
-  // Otherwise login screen is already visible
 })();
 
 async function initDashboard(){
