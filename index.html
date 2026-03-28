@@ -293,7 +293,46 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .snap-val{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--text)}
 
 /* ── PRICE TIMESTAMP ── */
-.price-ts{font-size:9px;color:var(--muted);font-family:var(--mono);display:block;margin-top:1px}
+.price-ts{font-size:8.5px;color:var(--muted);font-family:var(--mono);display:block;margin-top:1px;letter-spacing:.2px}
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:480px){
+  .topbar{padding:0 10px;height:50px}
+  .t-title{font-size:13px}
+  .btn{padding:5px 8px;font-size:10px}
+  main{padding:8px 10px}
+  .kpi-strip{grid-template-columns:repeat(2,1fr);gap:8px}
+  .kpi-val{font-size:15px}
+  .tabs{gap:4px}
+  .tab{padding:6px 10px;font-size:11px}
+  .two-col{grid-template-columns:1fr!important}
+  table{font-size:11px}
+  thead th{padding:6px 8px;font-size:8.5px}
+  td{padding:7px 8px}
+  .client-bar{padding:5px 10px;gap:6px;font-size:10px;flex-wrap:wrap}
+  .rm-grid{grid-template-columns:repeat(2,1fr)}
+  .client-grid{grid-template-columns:1fr}
+  .client-card{padding:12px 14px}
+  .cc-name{font-size:13px}
+  .snap-strip{grid-template-columns:repeat(2,1fr)}
+  .india-heatmap{grid-template-columns:repeat(2,1fr)!important}
+  .global-strip{grid-template-columns:repeat(2,1fr)!important}
+  .comm-grid{grid-template-columns:repeat(2,1fr)!important}
+  .ih-val{font-size:14px}
+  .ih-cell.big .ih-val{font-size:16px}
+  .login-card{padding:24px 18px}
+  .pin-pad{gap:8px}
+  .pin-key{padding:12px;font-size:16px}
+  .t-right .btn.sync-btn .btn-label,.t-right .btn.upload-btn span{display:none}
+}
+@media(max-width:360px){
+  .kpi-val{font-size:13px}
+  .t-right{gap:3px}
+  .btn{padding:5px 6px}
+}
+.t-wrap.scroll{-webkit-overflow-scrolling:touch}
+html{-webkit-text-size-adjust:100%}
+</style>
 
 /* ── SELECTOR SCREEN ── */
 #selectorScreen{padding:16px 14px;max-width:600px;margin:0 auto}
@@ -331,6 +370,64 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .client-bar .cb-arrow{color:var(--border2)}
 .client-bar .cb-client{color:var(--text);font-weight:700}
 .client-bar .cb-code{color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:4px;padding:1px 7px;font-size:10px}
+/* ── MARKET VIEW — Bloomberg Style ── */
+.market-header{display:flex;align-items:center;gap:10px;margin:16px 0 8px;flex-wrap:wrap}
+.market-title{font-size:13px;font-weight:700;color:var(--text)}
+.market-ts{font-size:10px;color:var(--muted);font-family:var(--mono);flex:1}
+.mkt-section-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+.mkt-section-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Indian heatmap — large tiles */
+.india-heatmap{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:4px}
+@media(min-width:480px){.india-heatmap{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:700px){.india-heatmap{grid-template-columns:repeat(4,1fr)}}
+.ih-cell{border-radius:var(--r2);padding:12px 14px;cursor:default;position:relative;overflow:hidden;min-height:72px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid transparent}
+.ih-cell.big{min-height:88px}
+.ih-cell.pos{background:rgba(15,122,75,.12);border-color:rgba(15,122,75,.2)}
+.ih-cell.neg{background:rgba(192,57,43,.12);border-color:rgba(192,57,43,.2)}
+.ih-cell.neu{background:var(--surface2);border-color:var(--border)}
+.ih-cell.loading{background:var(--surface2);border-color:var(--border);opacity:.6}
+.ih-top{display:flex;align-items:center;justify-content:space-between}
+.ih-flag{font-size:13px}
+.ih-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text2);flex:1;padding-left:5px}
+.ih-ts{font-size:8px;color:var(--muted);font-family:var(--mono)}
+.ih-val{font-size:17px;font-weight:700;font-family:var(--mono);color:var(--text);line-height:1.1;margin:4px 0 2px}
+.ih-cell.big .ih-val{font-size:20px}
+.ih-chg{font-size:11px;font-weight:700;font-family:var(--mono)}
+.ih-cell.pos .ih-chg{color:var(--green)}
+.ih-cell.neg .ih-chg{color:var(--red)}
+.ih-cell.neu .ih-chg{color:var(--muted)}
+.ih-loading{font-size:11px;color:var(--muted);font-family:var(--mono);text-align:center;padding:20px 0}
+
+/* Global strip — horizontal scroll cards */
+.global-strip{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:4px}
+@media(min-width:500px){.global-strip{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:700px){.global-strip{grid-template-columns:repeat(5,1fr)}}
+.gs-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:10px 12px;border-left:3px solid transparent}
+.gs-card.pos{border-left-color:var(--green)}
+.gs-card.neg{border-left-color:var(--red)}
+.gs-card.neu{border-left-color:var(--muted)}
+.gs-flag{font-size:11px;margin-right:3px}
+.gs-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:4px}
+.gs-val{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.gs-chg{font-size:10px;font-weight:700;font-family:var(--mono);margin-top:2px}
+.gs-card.pos .gs-chg{color:var(--green)}
+.gs-card.neg .gs-chg{color:var(--red)}
+.gs-ts{font-size:8px;color:var(--muted);font-family:var(--mono);display:block;margin-top:2px}
+
+/* Commodities grid */
+.comm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+@media(min-width:480px){.comm-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:700px){.comm-grid{grid-template-columns:repeat(4,1fr)}}
+.cm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:10px 12px;display:flex;align-items:center;gap:10px}
+.cm-icon{font-size:20px;flex-shrink:0}
+.cm-body{flex:1;min-width:0}
+.cm-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:3px}
+.cm-val{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.cm-chg{font-size:10px;font-weight:700;font-family:var(--mono)}
+.cm-card.pos .cm-chg{color:var(--green)}
+.cm-card.neg .cm-chg{color:var(--red)}
+.cm-ts{font-size:8px;color:var(--muted);font-family:var(--mono);display:block;margin-top:1px}
 </style>
 </head>
 <body>
@@ -398,10 +495,6 @@ td:first-child{text-align:left;font-family:var(--sans)}
         <div class="pin-key zero" onclick="pinKey('0')">0</div>
         <div class="pin-key del" onclick="pinDel()">⌫</div>
       </div>
-      <label class="remember-row"><input type="checkbox" id="rememberMe" checked> Remember this device for 30 days</label>
-      <div style="margin-top:10px">
-        <span class="back-to-id" onclick="backToUserId()">← Change User ID</span>
-      </div>
     </div>
 
   </div>
@@ -447,7 +540,7 @@ td:first-child{text-align:left;font-family:var(--sans)}
   </div>
   <!-- Step 2: Client list under RM -->
   <div id="clientListView" style="display:none">
-    <div class="sel-back">
+    <div class="sel-back" id="selBackRow">
       <button class="back-btn" onclick="showRMList()">← Back</button>
       <span class="sel-crumb">RM: <strong id="selRMName">—</strong></span>
     </div>
@@ -465,7 +558,7 @@ td:first-child{text-align:left;font-family:var(--sans)}
 <div id="dashboard" style="display:none">
 <!-- Client identity bar (sticky under topbar) -->
 <div class="client-bar" id="clientBar" style="display:none">
-  <span class="cb-back" onclick="backToSelector()">← All Clients</span>
+  <span class="cb-back" id="cbBackBtn" onclick="backToSelector()">← All Clients</span>
   <span class="cb-rm" id="cbRM">—</span>
   <span class="cb-arrow">›</span>
   <span class="cb-client" id="cbClient">—</span>
@@ -505,7 +598,7 @@ td:first-child{text-align:left;font-family:var(--sans)}
     <div class="tab active"  onclick="showTab('ov',this)">📈 Overview + Market</div>
     <div class="tab" onclick="showTab('hd',this)">📋 Holdings</div>
     <div class="tab" onclick="showTab('sc',this)">🏭 Sectors</div>
-    <div class="tab" onclick="showTab('gu',this)">❓ GitHub Guide</div>
+
   </div>
 
   <!-- ═══ OVERVIEW ═══ -->
@@ -526,18 +619,25 @@ td:first-child{text-align:left;font-family:var(--sans)}
         </div>
       </div>
     </div>
-    <div class="idx-section">
-      <div class="idx-label">🇮🇳 Indian Indices</div>
-      <div class="idx-grid" id="idx-india"></div>
+
+    <!-- MARKET VIEW -->
+    <div class="market-header">
+      <span class="market-title">🌐 Market Overview</span>
+      <span class="market-ts" id="marketTS">—</span>
+      <button class="btn" style="font-size:10px;padding:4px 10px" onclick="refreshIndices()"><span id="mri">↻</span> Refresh</button>
     </div>
-    <div class="idx-section">
-      <div class="idx-label">🌍 Global Indices</div>
-      <div class="idx-grid" id="idx-global"></div>
-    </div>
-    <div class="idx-section">
-      <div class="idx-label">💱 Currencies &amp; Commodities</div>
-      <div class="idx-grid" id="idx-comm"></div>
-    </div>
+
+    <!-- Indian Indices Heatmap -->
+    <div class="mkt-section-lbl">🇮🇳 Indian Indices</div>
+    <div class="india-heatmap" id="indiaHeatmap"></div>
+
+    <!-- Global Indices Strip -->
+    <div class="mkt-section-lbl">🌍 Global Markets</div>
+    <div class="global-strip" id="globalStrip"></div>
+
+    <!-- Currencies & Commodities -->
+    <div class="mkt-section-lbl">💱 Currencies &amp; Commodities</div>
+    <div class="comm-grid" id="commGrid"></div>
   </div>
 
   <!-- ═══ HOLDINGS ═══ -->
@@ -696,9 +796,7 @@ function checkPin(){
   const cred=CREDS[pinUser];
   if(pinBuffer===cred.pin){
     currentUser={username:pinUser,...cred};
-    if(document.getElementById('rememberMe').checked){
-      try{localStorage.setItem(LS_SESSION,JSON.stringify({...currentUser,expiry:Date.now()+30*24*3600*1000}));}catch(e){}
-    }
+    // No persistent session — login required every time
     document.getElementById('loginScreen').style.display='none';
     onAuthenticated();
   }else{
@@ -725,10 +823,7 @@ function logOut(){
 }
 
 function checkSession(){
-  try{
-    const raw=localStorage.getItem(LS_SESSION);
-    if(raw){const s=JSON.parse(raw);if(s.expiry>Date.now()){currentUser=s;return true;}}
-  }catch(e){}
+  // Always require login on fresh page open
   return false;
 }
 
@@ -803,40 +898,79 @@ const YF_STATIC = {
 let YF     = {};
 let YF_REV = {};
 
-// Static market indices
-const INDIA_INDICES=[
-  {name:"NIFTY 50",    val:23355.85,chg:443.45, pct:1.94, flag:"🇮🇳"},
-  {name:"NIFTY BANK",  val:53858.10,chg:1252.45,pct:2.38, flag:"🏦"},
-  {name:"BSE SENSEX",  val:75430.76,chg:1362.31,pct:1.84, flag:"📈"},
-  {name:"NIFTY IT",    val:29767.30,chg:118.40, pct:0.40, flag:"💻"},
-  {name:"NIFTY PHARMA",val:22721.85,chg:482.05, pct:2.17, flag:"💊"},
-  {name:"NIFTY AUTO",  val:25124.05,chg:608.80, pct:2.48, flag:"🚗"},
-  {name:"NIFTY FMCG",  val:47399.55,chg:991.25, pct:2.14, flag:"🛒"},
-  {name:"NIFTY METAL", val:11357.95,chg:298.80, pct:2.70, flag:"⚙️"},
-  {name:"NIFTY PSU BK",val:8593.00, chg:235.45, pct:2.82, flag:"🏛️"},
-  {name:"INDIA VIX",   val:13.82,   chg:-0.75,  pct:-5.14,flag:"⚡"},
+// ══════════════════════════════════════════════════════
+//  MARKET DATA — Live via Stooq
+// ══════════════════════════════════════════════════════
+let liveIndices = {};        // keyed by stooq symbol
+let indicesLastUpdated = null;
+
+const INDIA_INDEX_CFG = [
+  {sym:'^nsei',    name:'NIFTY 50',     flag:'🇮🇳', big:true},
+  {sym:'^bsesn',   name:'SENSEX',       flag:'📈', big:true},
+  {sym:'^nsebank', name:'BANK NIFTY',   flag:'🏦'},
+  {sym:'niftyf.sg',name:'GIFT NIFTY',   flag:'🎁'},
+  {sym:'^nseit',   name:'NIFTY IT',     flag:'💻'},
+  {sym:'^crsldx',  name:'NIFTY PHARMA', flag:'💊'},
+  {sym:'^cnxauto', name:'NIFTY AUTO',   flag:'🚗'},
+  {sym:'^cnxfmcg', name:'NIFTY FMCG',   flag:'🛒'},
+  {sym:'^cnxmetal',name:'NIFTY METAL',  flag:'⚙️'},
+  {sym:'^cnxpsubn',name:'NIFTY PSU BK', flag:'🏛️'},
+  {sym:'^indiavix',name:'INDIA VIX',    flag:'⚡'},
 ];
-const GLOBAL_INDICES=[
-  {name:"S&P 500",     val:6556.37, chg:-24.63, pct:-0.37,flag:"🇺🇸"},
-  {name:"NASDAQ 100",  val:24002.45,chg:-186.14,pct:-0.77,flag:"🇺🇸"},
-  {name:"DOW JONES",   val:46124.06,chg:-84.41, pct:-0.18,flag:"🇺🇸"},
-  {name:"NIKKEI 225",  val:53749.62,chg:1497.34,pct:2.87, flag:"🇯🇵"},
-  {name:"HANG SENG",   val:23627.45,chg:312.80, pct:1.34, flag:"🇭🇰"},
-  {name:"DAX",         val:22936.79,chg:215.40, pct:0.95, flag:"🇩🇪"},
-  {name:"FTSE 100",    val:8726.43, chg:45.20,  pct:0.52, flag:"🇬🇧"},
-  {name:"SHANGHAI",    val:3378.40, chg:28.60,  pct:0.85, flag:"🇨🇳"},
-  {name:"CAC 40",      val:8115.30, chg:98.20,  pct:1.22, flag:"🇫🇷"},
-  {name:"ASX 200",     val:8021.50, chg:-18.40, pct:-0.23,flag:"🇦🇺"},
+const GLOBAL_INDEX_CFG = [
+  {sym:'^spx',  name:'S&P 500',    flag:'🇺🇸'},
+  {sym:'^ndx',  name:'NASDAQ 100', flag:'🇺🇸'},
+  {sym:'^dji',  name:'DOW JONES',  flag:'🇺🇸'},
+  {sym:'^n225', name:'NIKKEI 225', flag:'🇯🇵'},
+  {sym:'^hsi',  name:'HANG SENG',  flag:'🇭🇰'},
+  {sym:'^dax',  name:'DAX',        flag:'🇩🇪'},
+  {sym:'^ftse', name:'FTSE 100',   flag:'🇬🇧'},
+  {sym:'^ssec', name:'SHANGHAI',   flag:'🇨🇳'},
+  {sym:'^fchi', name:'CAC 40',     flag:'🇫🇷'},
+  {sym:'^axjo', name:'ASX 200',    flag:'🇦🇺'},
 ];
-const COMM_INDICES=[
-  {name:"USD/INR",    val:94.03,   chg:0.01,  pct:0.01, flag:"💵"},
-  {name:"EUR/INR",    val:102.85,  chg:0.15,  pct:0.15, flag:"💶"},
-  {name:"GOLD ₹/10g", val:88120,   chg:850,   pct:0.97, flag:"🟡"},
-  {name:"SILVER ₹/kg",val:98450,   chg:620,   pct:0.63, flag:"⬜"},
-  {name:"CRUDE OIL",  val:6840,    chg:-85,   pct:-1.23,flag:"🛢️"},
-  {name:"NAT GAS",    val:285.40,  chg:3.20,  pct:1.13, flag:"🔵"},
-  {name:"BITCOIN ₹",  val:7842500, chg:125000,pct:1.62, flag:"₿"},
+const COMM_INDEX_CFG = [
+  {sym:'usd/inr', name:'USD/INR',   flag:'💵'},
+  {sym:'eur/inr', name:'EUR/INR',   flag:'💶'},
+  {sym:'gbp/inr', name:'GBP/INR',   flag:'🇬🇧'},
+  {sym:'xau/usd', name:'GOLD',      flag:'🟡'},
+  {sym:'xag/usd', name:'SILVER',    flag:'⬜'},
+  {sym:'cl.f',    name:'CRUDE OIL', flag:'🛢️'},
+  {sym:'btc/usd', name:'BITCOIN',   flag:'₿'},
 ];
+
+// Fetch all indices in one Stooq call
+async function fetchLiveIndices(){
+  const allSyms=[...INDIA_INDEX_CFG,...GLOBAL_INDEX_CFG,...COMM_INDEX_CFG].map(c=>c.sym);
+  const syms=allSyms.join(',');
+  const url=`https://stooq.com/q/l/?s=${syms}&f=sd2ohlcv&e=csv`;
+  try{
+    const r=await Promise.race([
+      fetch(url,{cache:'no-store'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),12000))
+    ]);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const text=await r.text();
+    const lines=text.replace(/\r/g,'').split('\n').filter(Boolean);
+    let count=0;
+    for(let i=1;i<lines.length;i++){
+      const c=lines[i].split(',');
+      if(c.length<6)continue;
+      const sym=c[0].trim().toLowerCase();
+      const open=parseFloat(c[2])||0;
+      const close=parseFloat(c[5])||0;
+      if(!close||close<=0||close===0.01)continue;
+      const pct=open>0?(close-open)/open*100:0;
+      const chg=open>0?close-open:0;
+      liveIndices[sym]={val:close,chg,pct,ts:Date.now()};
+      count++;
+    }
+    if(count>0){indicesLastUpdated=new Date();console.log('[INDICES] Fetched '+count+' live indices');}
+    else console.warn('[INDICES] No valid data in response');
+  }catch(e){
+    console.warn('[INDICES] Fetch failed:',e.message);
+  }
+}
 
 // ══════════════════════════════════════════════════════
 //  THEME
@@ -1004,9 +1138,10 @@ async function fetchSheetCSV(){
   return null;
 }
 
-// NEW: Load + parse sheet, cache on success, fall back to cache/seed
-async function loadSheetData(spinner=true){
-  if(spinner)showLoading('Syncing from Google Sheet…');
+// Load + parse sheet, cache on success, fall back to cache/seed
+// silent=true → update data only, never change screen
+async function loadSheetData(navigate=true){
+  if(navigate)showLoading('Syncing from Google Sheet…');
   let parsed=null,source='live';
 
   const csv=await fetchSheetCSV();
@@ -1014,76 +1149,80 @@ async function loadSheetData(spinner=true){
     parsed=parseSheetCSV(csv);
     if(parsed.length>0){
       try{localStorage.setItem(LS_SHEET,JSON.stringify({ts:Date.now(),data:parsed}));}catch(e){}
-    }else{
-      parsed=null;
-      console.warn('[SHEET] Parse = 0 rows, trying cache');
-    }
+    }else{parsed=null;console.warn('[SHEET] Parse = 0 rows, trying cache');}
   }
 
   if(!parsed){
-    // Load cached data
     try{
       const raw=localStorage.getItem(LS_SHEET);
       if(raw){const s=JSON.parse(raw);if(s.data&&s.data.length){
         parsed=s.data;source='cache';
         const ago=Math.round((Date.now()-s.ts)/60000);
-        toast(`⚠️ Using last saved data (${ago}m ago)`,'warn');
-        console.log('[SHEET] Cache loaded, age='+ago+'m');
+        toast(`⚠️ Using saved data (${ago}m ago)`,'warn');
       }}
     }catch(e){}
   }
 
-  if(!parsed){
-    parsed=SEED;source='seed';
-    toast('⚠️ Sheet unavailable — showing sample data','warn');
-    console.warn('[SHEET] Fell back to SEED');
-  }
+  if(!parsed){parsed=SEED;source='seed';toast('⚠️ Sheet unavailable — showing sample data','warn');console.warn('[SHEET] Fell back to SEED');}
 
-  hideLoading();
-  applyPortfolioData(parsed,source);
+  if(navigate)hideLoading();
+
+  // Always update portfolio data
+  PORTFOLIO=parsed;
+  try{const cp=JSON.parse(localStorage.getItem(LS_PRICES)||'{}');Object.assign(livePrices,cp);}catch(e){}
+  PORTFOLIO.forEach(s=>{if(s.valRate>0)livePrices[s.code]=s.valRate;});
+  rebuildYFMaps();
+  buildClientList();
+  lastCSVDate=source==='live'?'Sheet '+(lastSheetSync?lastSheetSync.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):''):(source==='cache'?'Cache':'Sample');
+
+  if(navigate){
+    // First load — show selector or dashboard
+    const hasMultiClient=allClients.length>1;
+    document.getElementById('uploadZone').classList.add('hidden');
+    renderSnapshot();
+    if(hasMultiClient){
+      buildSelectorScreen();
+      document.getElementById('selectorScreen').style.display='';
+      document.getElementById('dashboard').style.display='none';
+      if(currentUser?.role==='rm'&&currentUser.subgroup)showClientList(currentUser.subgroup);
+      else showRMList();
+    }else{
+      document.getElementById('selectorScreen').style.display='none';
+      document.getElementById('clientBar').style.display='none';
+      showDashboard();
+      renderAll();
+    }
+  }else{
+    // Silent refresh — just update numbers wherever user is
+    if(document.getElementById('dashboard').style.display!=='none')renderAll();
+    renderSnapshot();
+  }
+  console.log(`[SHEET] Ready (${source}), ${parsed.length} rows`);
 }
 
 // NEW: Apply parsed rows → rebuild state → render
-function applyPortfolioData(rows,source='live'){
+function applyPortfolioData(rows,source='upload'){
   PORTFOLIO=rows;
-
-  // Restore cached prices
   try{const cp=JSON.parse(localStorage.getItem(LS_PRICES)||'{}');Object.assign(livePrices,cp);}catch(e){}
-
-  // Seed initial prices from valRate (always works)
   PORTFOLIO.forEach(s=>{if(s.valRate>0)livePrices[s.code]=s.valRate;});
-
-  // Rebuild YF maps
   rebuildYFMaps();
-
-  // Build client dropdown (legacy, used inside dashboard)
   buildClientList();
-
-  lastCSVDate=source==='live'?'Sheet':(source==='cache'?'Cache':(source==='upload'?'CSV Upload':'Sample'));
-
+  lastCSVDate='CSV Upload';
+  renderSnapshot();
   const hasMultiClient=allClients.length>1;
   document.getElementById('uploadZone').classList.add('hidden');
-
-  // Render portfolio snapshot for selector screen
-  renderSnapshot();
-
   if(hasMultiClient){
     buildSelectorScreen();
     document.getElementById('selectorScreen').style.display='';
     document.getElementById('dashboard').style.display='none';
-    // RM role: skip RM list, go straight to their clients
-    if(currentUser?.role==='rm'&&currentUser.subgroup){
-      showClientList(currentUser.subgroup);
-    }else{
-      showRMList();
-    }
+    if(currentUser?.role==='rm'&&currentUser.subgroup)showClientList(currentUser.subgroup);
+    else showRMList();
   }else{
     document.getElementById('selectorScreen').style.display='none';
     document.getElementById('clientBar').style.display='none';
-    showDashboard();
-    renderAll();
+    showDashboard();renderAll();
   }
-  console.log(`[INIT] Ready (${source}), ${rows.length} rows, ${allClients.length} clients`);
+  console.log(`[UPLOAD] ${rows.length} rows`);
 }
 
 // UPDATED: Build YF map from static + portfolio
@@ -1153,6 +1292,9 @@ function showClientList(rm){
   document.getElementById('selRMName').textContent=rm==='DEFAULT'?'All Clients':rm;
   document.getElementById('rmListView').style.display='none';
   document.getElementById('clientListView').style.display='';
+  // Hide back button for RM role — only admin can navigate between RMs
+  const backRow=document.getElementById('selBackRow');
+  if(backRow)backRow.style.display=currentUser?.role==='rm'?'none':'flex';
 
   // Build client cards for this RM
   const clients=PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===rm);
@@ -1178,15 +1320,14 @@ function selectClientFromSelector(clientCode, rm){
   selectedClient=clientCode;
   document.getElementById('clientSelect').value=clientCode;
   updateClientBadge();
-
-  // Update client identity bar
   const clientInfo=allClients.find(c=>c.code===clientCode);
   document.getElementById('cbRM').textContent=rm==='DEFAULT'?'All':rm;
   document.getElementById('cbClient').textContent=clientInfo?clientInfo.name:clientCode;
   document.getElementById('cbCode').textContent=clientCode;
+  // Hide back arrow for RM — only admin navigates back to selector
+  const cbBackEl=document.getElementById('cbBackBtn');
+  if(cbBackEl)cbBackEl.style.display=currentUser?.role==='rm'?'none':'';
   document.getElementById('clientBar').style.display='flex';
-
-  // Hide selector, show dashboard
   document.getElementById('selectorScreen').style.display='none';
   document.getElementById('dashboard').style.display='';
   renderAll();
@@ -1364,18 +1505,16 @@ async function refreshPrices(){
   _refreshing=false;
 }
 
-// NEW: Sync Sheet button
+// Sync Sheet button — only refreshes data, never navigates away
 async function syncSheet(){
   const btn=document.getElementById('syncBtn');
   const icon=document.getElementById('si');
   btn.disabled=true;icon.className='spin';
-  selectedClient='';selectedRM='';
-  document.getElementById('clientBar').style.display='none';
-  document.getElementById('clientSearch').value='';
-  await loadSheetData(true);
+  await loadSheetData(false); // silent — no spinner, no navigation reset
   renderSnapshot();
   btn.disabled=false;
   icon.className='';icon.textContent='🔄';
+  toast('✅ Sheet synced','ok');
 }
 
 // ══════════════════════════════════════════════════════
@@ -1583,16 +1722,6 @@ function clearSectorFilter(){
   renderHoldingsFromCurrent();
 }
 
-function renderIndices(){
-  const card=i=>`<div class="ic ${i.pct>=0?'pos-card':'neg-card'}">
-    <div class="ic-name">${i.flag||''} ${i.name}</div>
-    <div class="ic-val">${i.val.toLocaleString('en-IN',{maximumFractionDigits:2})}</div>
-    <div class="ic-chg ${cls(i.pct)}"><span class="ic-pct" style="background:${i.pct>=0?'var(--green-bg)':'var(--red-bg)'};">${fmtP(i.pct)}</span>&nbsp;${i.chg>=0?'+':''}${Math.abs(i.chg)<10?i.chg.toFixed(2):i.chg.toFixed(0)}</div>
-  </div>`;
-  document.getElementById('idx-india').innerHTML=INDIA_INDICES.map(card).join('');
-  document.getElementById('idx-global').innerHTML=GLOBAL_INDICES.map(card).join('');
-  document.getElementById('idx-comm').innerHTML=COMM_INDICES.map(card).join('');
-}
 
 // FIXED: setLiveStatus with correct labels
 function setLiveStatus(state,count,total){
@@ -1618,13 +1747,95 @@ function setLiveStatus(state,count,total){
   }
 }
 
+// ══════════════════════════════════════════════════════
+//  RENDER MARKET VIEW
+// ══════════════════════════════════════════════════════
+function fmtIdx(val){
+  if(!val||isNaN(val))return '—';
+  if(val>=100000)return (val/100000).toFixed(2)+' L';
+  if(val>=1000)return val.toLocaleString('en-IN',{maximumFractionDigits:2});
+  return val.toFixed(val<10?4:2);
+}
+
+function renderIndices(){
+  const ts=indicesLastUpdated
+    ?'Updated '+indicesLastUpdated.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
+    :'Tap ↻ to load live data';
+  const el=document.getElementById('marketTS');
+  if(el)el.textContent=ts;
+
+  // ── Indian Heatmap — large Bloomberg-style tiles ──
+  const indiaEl=document.getElementById('indiaHeatmap');
+  if(indiaEl){
+    indiaEl.innerHTML=INDIA_INDEX_CFG.map(cfg=>{
+      const d=liveIndices[cfg.sym];
+      const live=!!d;
+      const pct=live?d.pct:0;
+      const cls=!live?'neu':pct>=0?'pos':'neg';
+      const arrow=pct>=0?'▲':'▼';
+      return `<div class="ih-cell${cfg.big?' big':''} ${cls}">
+        <div class="ih-top">
+          <span class="ih-flag">${cfg.flag}</span>
+          <span class="ih-name">${cfg.name}</span>
+        </div>
+        <div class="ih-val">${live?fmtIdx(d.val):'—'}</div>
+        <div class="ih-chg">${live?arrow+' '+Math.abs(pct).toFixed(2)+'%':'Fetching…'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Global Markets — card grid ──
+  const globalEl=document.getElementById('globalStrip');
+  if(globalEl){
+    globalEl.innerHTML=GLOBAL_INDEX_CFG.map(cfg=>{
+      const d=liveIndices[cfg.sym];
+      const live=!!d;
+      const pct=live?d.pct:0;
+      const cls=!live?'neu':pct>=0?'pos':'neg';
+      return `<div class="gs-card ${cls}">
+        <div class="gs-name"><span class="gs-flag">${cfg.flag}</span>${cfg.name}</div>
+        <div class="gs-val">${live?fmtIdx(d.val):'—'}</div>
+        <div class="gs-chg">${live?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Currencies & Commodities ──
+  const commEl=document.getElementById('commGrid');
+  if(commEl){
+    commEl.innerHTML=COMM_INDEX_CFG.map(cfg=>{
+      const d=liveIndices[cfg.sym];
+      const live=!!d;
+      const pct=live?d.pct:0;
+      const cls=!live?'':pct>=0?' pos':' neg';
+      return `<div class="cm-card${cls}">
+        <div class="cm-icon">${cfg.flag}</div>
+        <div class="cm-body">
+          <div class="cm-name">${cfg.name}</div>
+          <div class="cm-val">${live?fmtIdx(d.val):'—'}</div>
+          <div class="cm-chg">${live?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+async function refreshIndices(){
+  const icon=document.getElementById('mri');
+  if(icon)icon.className='spin';
+  await fetchLiveIndices();
+  renderIndices();
+  if(icon)icon.className='';
+}
+
 function renderAll(){
   const data=compute();
   _lastComputedData=data;
   renderKPI(data);renderOverview(data);renderHoldings(data);renderSectors(data);renderIndices();
   const now=new Date();
   document.getElementById('tDate').textContent=now.toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'2-digit'});
-  document.getElementById('lastUp').textContent=(lastCSVDate?'Source: '+lastCSVDate+' · ':'')+' Updated: '+now.toLocaleTimeString('en-IN');
+  const srcLabel=lastCSVDate||'—';
+  document.getElementById('lastUp').textContent='Data: '+srcLabel+' · Prices: '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 }
 
 // ══════════════════════════════════════════════════════
@@ -1690,7 +1901,7 @@ function renderSnapshot(){
 }
 
 // ══════════════════════════════════════════════════════
-//  PULL TO REFRESH
+//  PULL TO REFRESH — prices only, never navigate
 // ══════════════════════════════════════════════════════
 (function initPTR(){
   let startY=0,pulling=false;
@@ -1704,7 +1915,11 @@ function renderSnapshot(){
     if(dy>50){pulling=true;ind.classList.add('visible');}
   },{passive:true});
   document.addEventListener('touchend',()=>{
-    if(pulling){syncSheet();}
+    if(pulling){
+      // Only refresh prices silently — never navigate
+      refreshPrices();
+      refreshIndices();
+    }
     pulling=false;startY=0;ind.classList.remove('visible');
   });
 })();
@@ -1737,9 +1952,16 @@ function filterClientCards(){
 })();
 
 async function initDashboard(){
-  await loadSheetData(true);
-  setLiveStatus('stale');
-  setInterval(refreshPrices,5*60*1000);
+  await loadSheetData(true);          // First load — full navigate
+  await fetchLiveIndices();           // Fetch indices immediately
+  renderIndices();
+  await refreshPrices();              // Fetch prices immediately
+  // Auto-refresh prices + indices every 5 min — NEVER touches navigation
+  setInterval(async()=>{
+    await refreshPrices();
+    await fetchLiveIndices();
+    renderIndices();
+  }, 5*60*1000);
 }
 </script>
 </body>
