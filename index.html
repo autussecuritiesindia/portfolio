@@ -2,8 +2,12 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Portfolio — MJ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AUTUS Portfolio">
+<title>AUTUS Portfolio Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 /* ══ BASE THEME (Light) ══ */
@@ -427,6 +431,71 @@ html{-webkit-text-size-adjust:100%}
 .cm-card.pos .cm-chg{color:var(--green)}
 .cm-card.neg .cm-chg{color:var(--red)}
 .cm-ts{font-size:8px;color:var(--muted);font-family:var(--mono);display:block;margin-top:1px}
+/* ── LOGIN CANVAS & BRAND ── */
+#loginScreen{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#0a0f1e 0%,#0d1b2a 50%,#0a1628 100%)}
+#loginCanvas{position:absolute;inset:0;pointer-events:none}
+.login-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:36px 32px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.5);text-align:center;position:relative;z-index:1}
+.login-brand{display:flex;align-items:center;gap:14px;margin-bottom:28px;justify-content:center}
+.login-logo-ring{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#1D4ED8,#0F7A4B);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(29,78,216,0.5);flex-shrink:0}
+.login-logo-inner{font-weight:900;font-size:22px;color:#fff;font-family:var(--mono)}
+.login-title{font-size:18px;font-weight:800;color:#fff;text-align:left;letter-spacing:.3px}
+.login-sub{font-size:10px;color:rgba(255,255,255,0.5);font-family:var(--mono);text-align:left;margin-top:2px}
+.pin-return-user{font-size:14px;font-weight:700;color:#fff;margin-bottom:12px}
+/* Override login inputs for dark bg */
+.login-card .userid-input{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#fff}
+.login-card .userid-input::placeholder{color:rgba(255,255,255,0.35)}
+.login-card .userid-input:focus{border-color:rgba(99,179,237,0.6);box-shadow:0 0 0 3px rgba(99,179,237,0.15)}
+.login-card .pin-label{color:rgba(255,255,255,0.7)}
+.login-card .pin-dot{border-color:rgba(255,255,255,0.25)}
+.login-card .pin-dot.filled{background:#60A5FA;border-color:#60A5FA}
+.login-card .pin-dot.error{background:#F87171;border-color:#F87171}
+.login-card .pin-key{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.1);color:#fff}
+.login-card .pin-key:hover{background:rgba(255,255,255,0.14);border-color:rgba(99,179,237,0.4)}
+.login-card .login-err{color:#F87171}
+.login-card .remember-row{color:rgba(255,255,255,0.5)}
+.login-card .back-to-id{color:#60A5FA}
+
+/* ── CLIENT SWITCHER in bar ── */
+.cb-switcher{margin-left:auto}
+.sw-select{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:4px 8px;color:var(--text);font-size:11px;font-family:var(--sans);font-weight:600;outline:none;cursor:pointer;max-width:180px}
+.sw-select:focus{border-color:var(--blue)}
+
+/* ── HEATMAP TAB ── */
+.hm-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.hm-filters{display:flex;gap:6px;flex-wrap:wrap}
+.hm-filter{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);font-family:var(--mono)}
+.hm-filter.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.hm-ts{font-size:10px;color:var(--muted);font-family:var(--mono);margin-left:auto}
+.hm-drill-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--r2);padding:8px 12px}
+.hm-back-btn{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--mono)}
+.hm-drill-bar span{font-size:12px;font-weight:700;color:var(--text)}
+.hm-grid{width:100%}
+.hm-sector{margin-bottom:16px}
+.hm-sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.hm-sec-count{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0 6px;font-size:9px}
+.hm-tiles{display:flex;flex-wrap:wrap;gap:4px}
+.hm-flat{display:flex;flex-wrap:wrap;gap:4px}
+.hm-tile{border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s,box-shadow .15s;padding:4px;text-align:center;min-width:60px}
+.hm-tile:hover{transform:scale(1.06);box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:2}
+.hm-t-code{font-size:9px;font-weight:800;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.hm-t-pct{font-size:11px;font-weight:700;font-family:var(--mono);margin:1px 0}
+.hm-t-wt{font-size:8px;font-family:var(--mono);opacity:.8}
+.hm-drill{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.hm-drill-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border)}
+@media(max-width:480px){.hm-drill-summary{grid-template-columns:repeat(2,1fr)}}
+.hm-drill-kpi{padding:12px 14px;border-right:1px solid var(--border)}
+.hm-drill-kpi:last-child{border-right:none}
+.hm-dkpi-l{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;font-weight:600}
+.hm-dkpi-v{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.hm-dkpi-v.pos{color:var(--green)}.hm-dkpi-v.neg{color:var(--red)}
+.hm-drill-table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hm-drill-table table{width:100%;border-collapse:collapse}
+.hm-drill-table thead th{background:var(--surface2);padding:8px 12px;font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--border);text-align:right}
+.hm-drill-table thead th:first-child{text-align:left}
+.hm-drill-table tbody tr{border-top:1px solid var(--border)}
+.hm-drill-table tbody tr:hover{background:var(--surface2)}
+.hm-drill-table td{padding:9px 12px;text-align:right;font-size:12px;font-family:var(--mono);color:var(--text)}
+.hm-drill-table td:first-child{text-align:left;font-family:var(--sans)}
 </style>
 </head>
 <body>
@@ -453,16 +522,20 @@ html{-webkit-text-size-adjust:100%}
 
 <!-- LOGIN SCREEN -->
 <div id="loginScreen">
+  <canvas id="loginCanvas"></canvas>
   <div class="login-card">
-    <div class="login-logo">MJ</div>
-    <div class="login-title">Portfolio Dashboard</div>
-    <div class="login-sub">Enter your User ID to continue</div>
-
-    <!-- Step 1: User ID input -->
+    <div class="login-brand">
+      <div class="login-logo-ring"><div class="login-logo-inner">A</div></div>
+      <div>
+        <div class="login-title">AUTUS Portfolio</div>
+        <div class="login-sub">Portfolio Dashboard</div>
+      </div>
+    </div>
+    <!-- Step 1: User ID -->
     <div id="loginStep1">
       <div class="userid-wrap">
         <input class="userid-input" id="userIdInput" type="text"
-          placeholder="User ID"
+          placeholder="Enter User ID"
           autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
           oninput="this.value=this.value.toUpperCase()"
           onkeydown="if(event.key==='Enter')proceedToPin()">
@@ -470,32 +543,40 @@ html{-webkit-text-size-adjust:100%}
       <div class="login-err" id="loginErr1"></div>
       <button class="userid-btn" onclick="proceedToPin()">Continue →</button>
     </div>
-
-    <!-- Step 2: PIN entry (hidden until User ID confirmed) -->
+    <!-- Step 2: PIN (first login) -->
     <div id="loginStep2" style="display:none">
       <div class="pin-label" id="pinLabel">Enter PIN</div>
       <div class="pin-dots" id="pinDots">
-        <div class="pin-dot" id="pd0"></div>
-        <div class="pin-dot" id="pd1"></div>
-        <div class="pin-dot" id="pd2"></div>
-        <div class="pin-dot" id="pd3"></div>
+        <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
       </div>
       <div class="login-err" id="loginErr"></div>
       <div class="pin-pad">
-        <div class="pin-key" onclick="pinKey('1')">1</div>
-        <div class="pin-key" onclick="pinKey('2')">2</div>
-        <div class="pin-key" onclick="pinKey('3')">3</div>
-        <div class="pin-key" onclick="pinKey('4')">4</div>
-        <div class="pin-key" onclick="pinKey('5')">5</div>
-        <div class="pin-key" onclick="pinKey('6')">6</div>
-        <div class="pin-key" onclick="pinKey('7')">7</div>
-        <div class="pin-key" onclick="pinKey('8')">8</div>
-        <div class="pin-key" onclick="pinKey('9')">9</div>
-        <div class="pin-key zero" onclick="pinKey('0')">0</div>
-        <div class="pin-key del" onclick="pinDel()">⌫</div>
+        <div class="pin-key" onclick="pinKey('1')">1</div><div class="pin-key" onclick="pinKey('2')">2</div><div class="pin-key" onclick="pinKey('3')">3</div>
+        <div class="pin-key" onclick="pinKey('4')">4</div><div class="pin-key" onclick="pinKey('5')">5</div><div class="pin-key" onclick="pinKey('6')">6</div>
+        <div class="pin-key" onclick="pinKey('7')">7</div><div class="pin-key" onclick="pinKey('8')">8</div><div class="pin-key" onclick="pinKey('9')">9</div>
+        <div class="pin-key zero" onclick="pinKey('0')">0</div><div class="pin-key del" onclick="pinDel()">⌫</div>
       </div>
+      <label class="remember-row"><input type="checkbox" id="rememberMe" checked> Remember for 7 days</label>
+      <div style="margin-top:10px"><span class="back-to-id" onclick="backToUserId()">← Change User ID</span></div>
     </div>
-
+    <!-- Step 3: PIN-only return (7-day session) -->
+    <div id="loginStep3" style="display:none">
+      <div class="pin-return-user" id="pinReturnName"></div>
+      <div class="pin-label">Enter PIN to continue</div>
+      <div class="pin-dots" id="pinDots3">
+        <div class="pin-dot" id="pd30"></div><div class="pin-dot" id="pd31"></div>
+        <div class="pin-dot" id="pd32"></div><div class="pin-dot" id="pd33"></div>
+      </div>
+      <div class="login-err" id="loginErr3"></div>
+      <div class="pin-pad">
+        <div class="pin-key" onclick="pinKey3('1')">1</div><div class="pin-key" onclick="pinKey3('2')">2</div><div class="pin-key" onclick="pinKey3('3')">3</div>
+        <div class="pin-key" onclick="pinKey3('4')">4</div><div class="pin-key" onclick="pinKey3('5')">5</div><div class="pin-key" onclick="pinKey3('6')">6</div>
+        <div class="pin-key" onclick="pinKey3('7')">7</div><div class="pin-key" onclick="pinKey3('8')">8</div><div class="pin-key" onclick="pinKey3('9')">9</div>
+        <div class="pin-key zero" onclick="pinKey3('0')">0</div><div class="pin-key del" onclick="pinDel3()">⌫</div>
+      </div>
+      <div style="margin-top:12px"><span class="back-to-id" onclick="clearSessionAndReset()">← Not you?</span></div>
+    </div>
   </div>
 </div>
 
@@ -557,11 +638,12 @@ html{-webkit-text-size-adjust:100%}
 <div id="dashboard" style="display:none">
 <!-- Client identity bar (sticky under topbar) -->
 <div class="client-bar" id="clientBar" style="display:none">
-  <span class="cb-back" id="cbBackBtn" onclick="backToSelector()">← All Clients</span>
+  <span class="cb-back" id="cbBackBtn" onclick="backToSelector()">← Back</span>
   <span class="cb-rm" id="cbRM">—</span>
   <span class="cb-arrow">›</span>
   <span class="cb-client" id="cbClient">—</span>
   <span class="cb-code" id="cbCode">—</span>
+  <div class="cb-switcher" id="clientSwitcher" style="display:none"></div>
 </div>
 <!-- Last synced bar -->
 <div class="synced-bar" id="syncedBar">
@@ -594,10 +676,10 @@ html{-webkit-text-size-adjust:100%}
 
   <!-- TABS -->
   <div class="tabs">
-    <div class="tab active"  onclick="showTab('ov',this)">📈 Overview + Market</div>
+    <div class="tab active"  onclick="showTab('ov',this)">📈 Overview</div>
     <div class="tab" onclick="showTab('hd',this)">📋 Holdings</div>
     <div class="tab" onclick="showTab('sc',this)">🏭 Sectors</div>
-
+    <div class="tab" onclick="showTab('hm',this)">🔥 Heatmap</div>
   </div>
 
   <!-- ═══ OVERVIEW ═══ -->
@@ -700,20 +782,23 @@ html{-webkit-text-size-adjust:100%}
     </div>
   </div>
 
-  <!-- ═══ GUIDE ═══ -->
-  <div id="t-gu" style="display:none">
-    <div class="note info">📱 <strong>Goal:</strong> This HTML file hosted on GitHub Pages becomes a permanent free URL you can bookmark on your phone — works like an app, opens in one tap.</div>
-    <div class="steps">
-      <div class="steps-title">🐙 GitHub Pages Setup — Free Forever (5 min)</div>
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Create a free GitHub account</div><div class="step-desc">Go to <span class="chip">github.com</span> → Sign up (free) → Verify email.</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Create a new repository</div><div class="step-desc">Click <strong>+</strong> → <strong>New repository</strong>, name it <span class="chip">portfolio</span>, set to <strong>Public</strong>, tick ✅ <strong>Add a README file</strong>, then <strong>Create repository</strong>.</div></div></div>
-      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Upload the dashboard file</div><div class="step-desc">In repo → <strong>Add file</strong> → <strong>Upload files</strong> → drag <span class="chip">index.html</span> → Commit changes.</div></div></div>
-      <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Enable GitHub Pages</div><div class="step-desc">Settings → Pages → Source: <strong>Deploy from branch</strong> → Branch: <strong>main / (root)</strong> → Save.</div></div></div>
-      <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Get your permanent URL</div><div class="step-desc">Wait ~60s → your URL: <span class="chip">https://YourUsername.github.io/portfolio</span> — bookmark it!</div></div></div>
-      <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Update Google Sheet data</div><div class="step-desc">Just update the sheet → tap <span class="chip">🔄 Sync Sheet</span> → dashboard auto-refreshes. No file uploads needed!</div></div></div>
+  <!-- ═══ HEATMAP ═══ -->
+  <div id="t-hm" style="display:none">
+    <div class="hm-toolbar">
+      <div class="hm-filters">
+        <button class="hm-filter active" onclick="setHmView('sector',this)">By Sector</button>
+        <button class="hm-filter" onclick="setHmView('all',this)">All Stocks</button>
+        <button class="hm-filter" onclick="setHmView('gainers',this)">Top Gainers</button>
+        <button class="hm-filter" onclick="setHmView('losers',this)">Top Losers</button>
+      </div>
+      <span class="hm-ts" id="hmTS">—</span>
     </div>
-    <div class="note warn">🔒 <strong>100% Private:</strong> CSV data is read entirely in your browser — nothing leaves your device.</div>
-    <div class="note ok">💡 <strong>Export Tip:</strong> Use the ⬇ Export CSV button in Holdings tab to download a shareable report with live P&amp;L data. Opens perfectly in Excel.</div>
+    <div id="hmDrillBar" style="display:none" class="hm-drill-bar">
+      <button class="hm-back-btn" onclick="closeHmDrill()">← Back to Heatmap</button>
+      <span id="hmDrillTitle"></span>
+    </div>
+    <div id="hmGrid" class="hm-grid"></div>
+    <div id="hmDrill" style="display:none" class="hm-drill"></div>
   </div>
 
 </main>
@@ -741,10 +826,9 @@ const CREDS={
   'HRISHI': {pin:'0003',role:'rm',    subgroup:'HRISHI',display:'Hrishi'},
   'GBL':    {pin:'0004',role:'rm',    subgroup:'GBL',   display:'GBL'},
 };
-const LS_SESSION='pf-session-v1';
+const LS_SESSION='pf-session-v2';
 let currentUser=null;
-let pinBuffer='';
-let pinUser='';
+let pinBuffer='';let pinUser='';let pinBuffer3='';
 
 // Step 1 — validate User ID, move to PIN screen
 function proceedToPin(){
@@ -795,9 +879,10 @@ function checkPin(){
   const cred=CREDS[pinUser];
   if(pinBuffer===cred.pin){
     currentUser={username:pinUser,...cred};
-    // No persistent session — login required every time
-    document.getElementById('loginScreen').style.display='none';
-    onAuthenticated();
+    if(document.getElementById('rememberMe')?.checked){
+      try{localStorage.setItem(LS_SESSION,JSON.stringify({...currentUser,expiry:Date.now()+7*24*3600*1000}));}catch(e){}
+    }
+    completeLogin();
   }else{
     pinBuffer='';
     for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);d.classList.add('error');d.classList.remove('filled');}
@@ -808,27 +893,63 @@ function checkPin(){
 
 function logOut(){
   try{localStorage.removeItem(LS_SESSION);}catch(e){}
-  currentUser=null;pinBuffer='';pinUser='';
+  currentUser=null;pinBuffer='';pinBuffer3='';pinUser='';
   document.getElementById('userIdInput').value='';
-  document.getElementById('loginErr1').textContent='';
-  document.getElementById('loginErr').textContent='';
+  ['loginErr1','loginErr','loginErr3'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='';});
   document.getElementById('loginStep1').style.display='';
   document.getElementById('loginStep2').style.display='none';
-  updatePinDots();
+  document.getElementById('loginStep3').style.display='none';
+  updatePinDots();updatePinDots3();
   document.getElementById('dashboard').style.display='none';
   document.getElementById('selectorScreen').style.display='none';
   document.getElementById('uploadZone').classList.add('hidden');
   document.getElementById('loginScreen').style.display='flex';
+  startLoginCanvas();
 }
 
 function checkSession(){
-  // Always require login on fresh page open
+  try{
+    const raw=localStorage.getItem(LS_SESSION);
+    if(raw){const s=JSON.parse(raw);if(s.expiry>Date.now()){currentUser=s;return true;}}
+  }catch(e){}
   return false;
 }
 
-function onAuthenticated(){
+function completeLogin(){
+  document.getElementById('loginScreen').style.display='none';
   document.getElementById('selWelcome').textContent=currentUser.role==='admin'?'Select RM':`Welcome, ${currentUser.display}`;
   initDashboard();
+}
+
+// 7-day PIN return functions
+function showPinReturn(){
+  const d=currentUser.display;
+  document.getElementById('loginStep1').style.display='none';
+  document.getElementById('loginStep2').style.display='none';
+  document.getElementById('loginStep3').style.display='';
+  const rn=document.getElementById('pinReturnName');
+  if(rn)rn.textContent='👋 Welcome back, '+d;
+  pinBuffer3='';updatePinDots3();
+}
+function pinKey3(k){if(pinBuffer3.length>=4)return;pinBuffer3+=k;updatePinDots3();if(pinBuffer3.length===4)setTimeout(checkPin3,80);}
+function pinDel3(){pinBuffer3=pinBuffer3.slice(0,-1);updatePinDots3();}
+function updatePinDots3(){for(let i=0;i<4;i++){const d=document.getElementById('pd3'+i);if(!d)continue;d.classList.toggle('filled',i<pinBuffer3.length);d.classList.remove('error');}}
+function checkPin3(){
+  const cred=CREDS[currentUser.username];
+  if(pinBuffer3===cred.pin){completeLogin();}
+  else{
+    pinBuffer3='';
+    for(let i=0;i<4;i++){const d=document.getElementById('pd3'+i);d?.classList.add('error');d?.classList.remove('filled');}
+    document.getElementById('loginErr3').textContent='Incorrect PIN';
+    setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('pd3'+i)?.classList.remove('error');},600);
+  }
+}
+function clearSessionAndReset(){
+  try{localStorage.removeItem(LS_SESSION);}catch(e){}
+  currentUser=null;pinBuffer3='';
+  document.getElementById('loginStep3').style.display='none';
+  document.getElementById('loginStep1').style.display='';
+  document.getElementById('userIdInput').value='';
 }
 
 // ══════════════════════════════════════════════════════
@@ -904,17 +1025,16 @@ let liveIndices = {};        // keyed by stooq symbol
 let indicesLastUpdated = null;
 
 const INDIA_INDEX_CFG = [
-  {sym:'^nsei',    name:'NIFTY 50',     flag:'🇮🇳', big:true},
-  {sym:'^bsesn',   name:'SENSEX',       flag:'📈', big:true},
-  {sym:'^nsebank', name:'BANK NIFTY',   flag:'🏦'},
-  {sym:'niftyf.sg',name:'GIFT NIFTY',   flag:'🎁'},
-  {sym:'^nseit',   name:'NIFTY IT',     flag:'💻'},
-  {sym:'^crsldx',  name:'NIFTY PHARMA', flag:'💊'},
-  {sym:'^cnxauto', name:'NIFTY AUTO',   flag:'🚗'},
-  {sym:'^cnxfmcg', name:'NIFTY FMCG',   flag:'🛒'},
-  {sym:'^cnxmetal',name:'NIFTY METAL',  flag:'⚙️'},
-  {sym:'^cnxpsubn',name:'NIFTY PSU BK', flag:'🏛️'},
-  {sym:'^indiavix',name:'INDIA VIX',    flag:'⚡'},
+  {sym:'^nsei',     name:'NIFTY 50',     flag:'🇮🇳', big:true},
+  {sym:'^bsesn',    name:'SENSEX',       flag:'📈',  big:true},
+  {sym:'^nsebank',  name:'BANK NIFTY',   flag:'🏦'},
+  {sym:'^cnxit',    name:'NIFTY IT',     flag:'💻'},
+  {sym:'^cnxpharma',name:'NIFTY PHARMA', flag:'💊'},
+  {sym:'^cnxauto',  name:'NIFTY AUTO',   flag:'🚗'},
+  {sym:'^cnxfmcg',  name:'NIFTY FMCG',  flag:'🛒'},
+  {sym:'^cnxmetal', name:'NIFTY METAL',  flag:'⚙️'},
+  {sym:'^cnxpsubn', name:'NIFTY PSU BK', flag:'🏛️'},
+  {sym:'^indiavix', name:'INDIA VIX',    flag:'⚡'},
 ];
 const GLOBAL_INDEX_CFG = [
   {sym:'^spx',  name:'S&P 500',    flag:'🇺🇸'},
@@ -926,7 +1046,6 @@ const GLOBAL_INDEX_CFG = [
   {sym:'^ftse', name:'FTSE 100',   flag:'🇬🇧'},
   {sym:'^ssec', name:'SHANGHAI',   flag:'🇨🇳'},
   {sym:'^fchi', name:'CAC 40',     flag:'🇫🇷'},
-  {sym:'^axjo', name:'ASX 200',    flag:'🇦🇺'},
 ];
 const COMM_INDEX_CFG = [
   {sym:'usd/inr', name:'USD/INR',   flag:'💵'},
@@ -938,36 +1057,63 @@ const COMM_INDEX_CFG = [
   {sym:'btc/usd', name:'BITCOIN',   flag:'₿'},
 ];
 
-// Fetch all indices in one Stooq call
-async function fetchLiveIndices(){
-  const allSyms=[...INDIA_INDEX_CFG,...GLOBAL_INDEX_CFG,...COMM_INDEX_CFG].map(c=>c.sym);
-  const syms=allSyms.join(',');
-  const url=`https://stooq.com/q/l/?s=${syms}&f=sd2ohlcv&e=csv`;
-  try{
-    const r=await Promise.race([
-      fetch(url,{cache:'no-store'}),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),12000))
-    ]);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const text=await r.text();
-    const lines=text.replace(/\r/g,'').split('\n').filter(Boolean);
-    let count=0;
-    for(let i=1;i<lines.length;i++){
-      const c=lines[i].split(',');
-      if(c.length<6)continue;
-      const sym=c[0].trim().toLowerCase();
-      const open=parseFloat(c[2])||0;
-      const close=parseFloat(c[5])||0;
-      if(!close||close<=0||close===0.01)continue;
-      const pct=open>0?(close-open)/open*100:0;
-      const chg=open>0?close-open:0;
-      liveIndices[sym]={val:close,chg,pct,ts:Date.now()};
-      count++;
+// Fetch indices in batches of 10 — Stooq drops oversized batches silently
+async function fetchStooqIndicesBatch(syms){
+  const stooqUrl=`https://stooq.com/q/l/?s=${syms.join(',')}&f=sd2ohlcv&e=csv`;
+  const proxies=[
+    `https://corsproxy.io/?${encodeURIComponent(stooqUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(stooqUrl)}`,
+    `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(stooqUrl)}`,
+  ];
+  for(const proxyUrl of proxies){
+    try{
+      const r=await Promise.race([
+        fetch(proxyUrl,{cache:'no-store'}),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),12000))
+      ]);
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const text=await r.text();
+      if(!text||text.length<10||text.includes('<!DOCTYPE'))throw new Error('Bad response');
+      const lines=text.replace(/\r/g,'').split('\n').filter(Boolean);
+      let count=0;
+      for(let i=1;i<lines.length;i++){
+        const c=lines[i].split(',');
+        if(c.length<6)continue;
+        const sym=c[0].trim().toLowerCase();
+        const open=parseFloat(c[2])||0;
+        const close=parseFloat(c[5])||0;
+        if(!close||isNaN(close)||close<=0||close===0.01)continue;
+        const pct=open>0?(close-open)/open*100:0;
+        const chg=open>0?close-open:0;
+        liveIndices[sym]={val:close,chg,pct,ts:Date.now()};
+        count++;
+      }
+      if(count>0){console.log('[INDICES] Proxy OK: '+count+' symbols');return count;}
+      throw new Error('0 valid rows');
+    }catch(e){
+      console.warn('[INDICES] Proxy attempt failed:',e.message);
     }
-    if(count>0){indicesLastUpdated=new Date();console.log('[INDICES] Fetched '+count+' live indices');}
-    else console.warn('[INDICES] No valid data in response');
-  }catch(e){
-    console.warn('[INDICES] Fetch failed:',e.message);
+  }
+  console.warn('[INDICES] All proxies failed for batch');
+  return 0;
+}
+
+async function fetchLiveIndices(){
+  const allCfg=[...INDIA_INDEX_CFG,...GLOBAL_INDEX_CFG,...COMM_INDEX_CFG];
+  const allSyms=allCfg.map(c=>c.sym);
+  const BSIZE=10;
+  let total=0;
+  for(let i=0;i<allSyms.length;i+=BSIZE){
+    const batch=allSyms.slice(i,i+BSIZE);
+    const count=await fetchStooqIndicesBatch(batch);
+    total+=count;
+    if(i+BSIZE<allSyms.length)await sleep(300);
+  }
+  if(total>0){
+    indicesLastUpdated=new Date();
+    console.log('[INDICES] Fetched '+total+' live indices');
+  }else{
+    console.warn('[INDICES] No data returned from any batch');
   }
 }
 
@@ -1092,7 +1238,7 @@ function guessSector(c){
 async function fetchSheetCSV(){
   const timeout=ms=>new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),ms));
 
-  // Attempt 1 — direct (no proxy)
+  // Attempt 1 — direct
   console.log('[SHEET] Attempt 1 — direct…');
   try{
     const r=await Promise.race([fetch(SHEET_URL,{cache:'no-store'}),timeout(12000)]);
@@ -1132,6 +1278,20 @@ async function fetchSheetCSV(){
     }
     throw new Error('Invalid response');
   }catch(e){console.warn('[SHEET] allorigins failed:',e.message);}
+
+  // Attempt 4 — thingproxy
+  console.log('[SHEET] Attempt 4 — thingproxy…');
+  try{
+    const url='https://thingproxy.freeboard.io/fetch/'+encodeURIComponent(SHEET_URL);
+    const r=await Promise.race([fetch(url),timeout(14000)]);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const text=await r.text();
+    if(text&&text.length>50&&text.includes(',')&&!text.includes('<!DOCTYPE')){
+      console.log('[SHEET] thingproxy OK, len='+text.length);
+      lastSheetSync=new Date();updateSyncedBar();return text;
+    }
+    throw new Error('Invalid response');
+  }catch(e){console.warn('[SHEET] thingproxy failed:',e.message);}
 
   console.warn('[SHEET] All attempts failed');
   return null;
@@ -1175,28 +1335,29 @@ async function loadSheetData(navigate=true){
   lastCSVDate=source==='live'?'Sheet '+(lastSheetSync?lastSheetSync.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):''):(source==='cache'?'Cache':'Sample');
 
   if(navigate){
-    // First load — show selector or dashboard
-    const hasMultiClient=allClients.length>1;
     document.getElementById('uploadZone').classList.add('hidden');
     renderSnapshot();
-    if(hasMultiClient){
+    // Count unique clients across ALL data (not RM-filtered) to decide selector vs direct
+    const totalClients=new Set(PORTFOLIO.map(s=>s.clientCode)).size;
+    if(totalClients>1){
       buildSelectorScreen();
       document.getElementById('selectorScreen').style.display='';
       document.getElementById('dashboard').style.display='none';
-      if(currentUser?.role==='rm'&&currentUser.subgroup)showClientList(currentUser.subgroup);
-      else showRMList();
+      if(currentUser?.role==='rm'&&currentUser.subgroup){
+        showClientList(currentUser.subgroup);
+      }else{
+        showRMList();
+      }
     }else{
       document.getElementById('selectorScreen').style.display='none';
       document.getElementById('clientBar').style.display='none';
-      showDashboard();
-      renderAll();
+      showDashboard();renderAll();
     }
   }else{
-    // Silent refresh — just update numbers wherever user is
     if(document.getElementById('dashboard').style.display!=='none')renderAll();
     renderSnapshot();
   }
-  console.log(`[SHEET] Ready (${source}), ${parsed.length} rows`);
+  console.log(`[SHEET] Ready (${source}), ${parsed.length} rows, ${new Set(PORTFOLIO.map(s=>s.clientCode)).size} clients`);
 }
 
 // NEW: Apply parsed rows → rebuild state → render
@@ -1238,12 +1399,15 @@ function rebuildYFMaps(){
 let selectedRM = '';
 
 function buildClientList(){
+  // SECURITY: RM sees only their assigned clients
+  const scope=currentUser?.role==='rm'
+    ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
+    :PORTFOLIO;
   const seen=new Map();
-  PORTFOLIO.forEach(s=>{if(!seen.has(s.clientCode))seen.set(s.clientCode,s.clientName||s.clientCode);});
-  allClients=[...seen.entries()].map(([code,name])=>({code,name})).sort((a,b)=>a.code.localeCompare(b.code));
-
+  scope.forEach(s=>{if(!seen.has(s.clientCode))seen.set(s.clientCode,s.clientName||s.clientCode);});
+  allClients=[...seen.entries()].map(([code,name])=>({code,name})).sort((a,b)=>a.name.localeCompare(b.name));
   const sel=document.getElementById('clientSelect');
-  sel.innerHTML='<option value="">All Clients</option>';
+  sel.innerHTML='<option value="">— Select Client —</option>';
   allClients.forEach(c=>{
     const opt=document.createElement('option');
     opt.value=c.code;
@@ -1253,19 +1417,59 @@ function buildClientList(){
   document.getElementById('clientRow').style.display=allClients.length>1?'flex':'none';
   if(selectedClient&&!allClients.find(c=>c.code===selectedClient)){selectedClient='';sel.value='';}
   updateClientBadge();
+  buildClientSwitcher();
+}
+
+// RM client switcher — quick switch inside dashboard without going back to selector
+function buildClientSwitcher(){
+  const sw=document.getElementById('clientSwitcher');
+  if(!sw)return;
+  if(allClients.length<2){sw.style.display='none';return;}
+  sw.style.display='';
+  sw.innerHTML=`<select class="sw-select" onchange="switchClient(this.value)">
+    ${allClients.map(c=>`<option value="${c.code}" ${c.code===selectedClient?'selected':''}>${c.name||c.code}</option>`).join('')}
+  </select>`;
+}
+
+function switchClient(code){
+  if(!code)return;
+  selectedClient=code;
+  document.getElementById('clientSelect').value=code;
+  const ci=allClients.find(c=>c.code===code);
+  document.getElementById('cbClient').textContent=ci?ci.name:code;
+  document.getElementById('cbCode').textContent=code;
+  buildClientSwitcher();
+  updateClientBadge();
+  renderAll();
+  toast(`Switched to ${ci?ci.name:code}`,'ok');
 }
 
 // Build RM grid for selector screen
 function buildSelectorScreen(){
-  // Group clients by RM (subgroup)
+  // SECURITY: RM only sees their own subgroup in the RM grid
+  const visibleData=currentUser?.role==='rm'
+    ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
+    :PORTFOLIO;
+
   const rmMap=new Map();
-  PORTFOLIO.forEach(s=>{
+  visibleData.forEach(s=>{
     const rm=s.subgroup||'DEFAULT';
     if(!rmMap.has(rm))rmMap.set(rm,{clients:new Map()});
     const rm_=rmMap.get(rm);
     if(!rm_.clients.has(s.clientCode))rm_.clients.set(s.clientCode,{name:s.clientName||s.clientCode,stocks:0});
     rm_.clients.get(s.clientCode).stocks++;
   });
+
+  // If no data found for this RM, show a warning
+  if(rmMap.size===0){
+    document.getElementById('rmGrid').innerHTML=`
+      <div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:8px">📭</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">No data loaded</div>
+        <div style="font-size:12px;margin-top:6px">Tap 🔄 Sync Sheet to load portfolio data</div>
+      </div>`;
+    return;
+  }
 
   const rmGrid=document.getElementById('rmGrid');
   rmGrid.innerHTML=[...rmMap.entries()].map(([rm,data])=>{
@@ -1344,7 +1548,11 @@ function backToSelector(){
 
 // NEW: filter by selected client
 function getFilteredData(){
-  return selectedClient?PORTFOLIO.filter(s=>s.clientCode===selectedClient):PORTFOLIO;
+  // First filter by RM scope (security), then by selected client
+  const rmScope=currentUser?.role==='rm'
+    ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
+    :PORTFOLIO;
+  return selectedClient?rmScope.filter(s=>s.clientCode===selectedClient):rmScope;
 }
 
 function onClientChange(){
@@ -1391,19 +1599,30 @@ function compute(){
 // ══════════════════════════════════════════════════════
 async function fetchStooqBatch(symbols){
   const syms=symbols.map(s=>s.toLowerCase()).join(',');
-  const url=`https://stooq.com/q/l/?s=${syms}&f=sd2ohlcv&e=csv`;
-  try{
-    const r=await Promise.race([
-      fetch(url,{cache:'no-store'}),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),10000))
-    ]);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const text=await r.text();
-    return parseStooqCSV(text);
-  }catch(e){
-    console.warn('[PRICE] Stooq batch failed ('+symbols[0]+'…):',e.message);
-    return[];
+  const stooqUrl=`https://stooq.com/q/l/?s=${syms}&f=sd2ohlcv&e=csv`;
+  // Stooq is CORS-blocked — must go through proxy
+  const proxies=[
+    `https://corsproxy.io/?${encodeURIComponent(stooqUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(stooqUrl)}`,
+    `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(stooqUrl)}`,
+  ];
+  for(const proxyUrl of proxies){
+    try{
+      const r=await Promise.race([
+        fetch(proxyUrl,{cache:'no-store'}),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),10000))
+      ]);
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const text=await r.text();
+      if(!text||text.length<10||text.includes('<!DOCTYPE'))throw new Error('Bad response');
+      const result=parseStooqCSV(text);
+      if(result.length>0){console.log('[PRICE] Stooq OK via proxy, '+result.length+' prices');return result;}
+      throw new Error('Empty parse');
+    }catch(e){
+      console.warn('[PRICE] Proxy failed ('+symbols[0]+'…):',e.message);
+    }
   }
+  return[];
 }
 
 function parseStooqCSV(text){
@@ -1841,7 +2060,12 @@ function renderAll(){
 //  UI HELPERS
 // ══════════════════════════════════════════════════════
 function showDashboard(){document.getElementById('uploadZone').classList.add('hidden');document.getElementById('selectorScreen').style.display='none';document.getElementById('dashboard').style.display='';}
-function showTab(id,el){['ov','hd','sc','gu'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+function showTab(id,el){
+  ['ov','hd','sc','hm'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  if(id==='hm')renderHeatmap();
+}
 
 // UPDATED: debounced search
 let _srchT;
@@ -1939,28 +2163,204 @@ function filterClientCards(){
 // ══════════════════════════════════════════════════════
 (async function init(){
   console.log('[INIT] Portfolio Dashboard starting…');
-  // Check for saved session — skip login if valid
+  startLoginCanvas();
   if(checkSession()){
-    console.log('[INIT] Session restored for',currentUser.username);
-    document.getElementById('loginScreen').style.display='none';
-    onAuthenticated();
+    console.log('[INIT] Session valid for',currentUser.username,', showing PIN return');
+    showPinReturn();
   }else{
-    // Show login — focus the User ID input
     setTimeout(()=>document.getElementById('userIdInput')?.focus(),100);
   }
 })();
 
+// ── Market hours helper (IST) ──
+function isMarketOpen(){
+  const now=new Date();
+  const ist=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));
+  const day=ist.getDay(); // 0=Sun,6=Sat
+  if(day===0||day===6)return false;
+  const h=ist.getHours(),m=ist.getMinutes();
+  const mins=h*60+m;
+  return mins>=555&&mins<=930; // 9:15 to 15:30
+}
+
+function getRefreshInterval(){return isMarketOpen()?60*1000:15*60*1000;}
+
 async function initDashboard(){
-  await loadSheetData(true);          // First load — full navigate
-  await fetchLiveIndices();           // Fetch indices immediately
-  renderIndices();
-  await refreshPrices();              // Fetch prices immediately
-  // Auto-refresh prices + indices every 5 min — NEVER touches navigation
-  setInterval(async()=>{
+  await loadSheetData(true);
+  await fetchLiveIndices();renderIndices();
+  await refreshPrices();
+  // Smart adaptive interval — 60s open, 15min closed
+  let _iv=setInterval(async()=>{
     await refreshPrices();
-    await fetchLiveIndices();
-    renderIndices();
-  }, 5*60*1000);
+    await fetchLiveIndices();renderIndices();
+  },getRefreshInterval());
+  // Re-check interval every minute in case market opens/closes
+  setInterval(()=>{
+    const newIv=getRefreshInterval();
+    clearInterval(_iv);
+    _iv=setInterval(async()=>{await refreshPrices();await fetchLiveIndices();renderIndices();},newIv);
+  },60*1000);
+}
+
+// ── Canvas login animation ──
+function startLoginCanvas(){
+  const canvas=document.getElementById('loginCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let W,H,pts=[];
+  function resize(){
+    W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;
+    pts=Array.from({length:50},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,r:Math.random()*2+1}));
+  }
+  resize();window.addEventListener('resize',resize);
+  let af;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const t=Date.now()/1000;
+    ctx.lineWidth=1.5;
+    for(let i=0;i<3;i++){
+      ctx.strokeStyle=`rgba(99,179,237,${0.06+i*0.03})`;
+      ctx.beginPath();
+      for(let x=0;x<=W;x+=6){
+        const y=H*(.4+i*.1)+Math.sin(x/90+t+i*1.3)*55+Math.sin(x/35+t*.8+i)*20;
+        x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }ctx.stroke();
+    }
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(147,197,253,0.2)';ctx.fill();
+    });
+    ctx.strokeStyle='rgba(147,197,253,0.05)';ctx.lineWidth=.5;
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y;
+      if(dx*dx+dy*dy<8000){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}
+    }
+    af=requestAnimationFrame(draw);
+  }
+  if(window._loginAF)cancelAnimationFrame(window._loginAF);
+  draw();window._loginAF=af;
+}
+
+// ══════════════════════════════════════════════════════
+//  HEATMAP — TradingView style
+// ══════════════════════════════════════════════════════
+let hmView='sector';
+
+function setHmView(v,el){
+  hmView=v;
+  document.querySelectorAll('.hm-filter').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderHeatmap();
+}
+
+function renderHeatmap(){
+  const scope=getFilteredData();
+  if(!scope.length){document.getElementById('hmGrid').innerHTML='<div style="padding:32px;text-align:center;color:var(--muted)">No data — select a client first</div>';return;}
+  const now=livePriceTS&&Object.keys(livePriceTS).length?new Date(Math.max(...Object.values(livePriceTS))):null;
+  const tsEl=document.getElementById('hmTS');
+  if(tsEl)tsEl.textContent=now?'Updated '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'Sheet prices';
+
+  // Build stock map — aggregate qty/invest across clients
+  const stockMap=new Map();
+  scope.forEach(s=>{
+    if(!stockMap.has(s.code))stockMap.set(s.code,{code:s.code,name:s.name,sector:s.sector,totalQty:0,totalInvest:0,clients:[]});
+    const m=stockMap.get(s.code);
+    m.totalQty+=s.qty;m.totalInvest+=s.buy*s.qty;
+    m.clients.push({clientCode:s.clientCode,clientName:s.clientName,qty:s.qty,invest:s.buy*s.qty});
+  });
+
+  let stocks=[...stockMap.values()].map(s=>{
+    const cmp=livePrices[s.code]||0;
+    const pct=liveChangePct[s.code]??null;
+    return{...s,cmp,pct,currVal:cmp*s.totalQty};
+  });
+
+  if(hmView==='gainers')stocks=[...stocks].filter(s=>s.pct!==null&&s.pct>0).sort((a,b)=>b.pct-a.pct).slice(0,20);
+  else if(hmView==='losers')stocks=[...stocks].filter(s=>s.pct!==null&&s.pct<0).sort((a,b)=>a.pct-b.pct).slice(0,20);
+
+  const grid=document.getElementById('hmGrid');
+  if(hmView==='sector'||hmView==='all'){
+    // Group by sector
+    const sectors=new Map();
+    stocks.forEach(s=>{
+      const sec=s.sector||'Other';
+      if(!sectors.has(sec))sectors.set(sec,[]);
+      sectors.get(sec).push(s);
+    });
+    const totalInvest=stocks.reduce((a,s)=>a+s.totalInvest,0);
+    grid.innerHTML=[...sectors.entries()].sort((a,b)=>b[1].length-a[1].length).map(([sec,ss])=>`
+      <div class="hm-sector">
+        <div class="hm-sec-label">${sec} <span class="hm-sec-count">${ss.length}</span></div>
+        <div class="hm-tiles">${ss.map(s=>hmTile(s,totalInvest)).join('')}</div>
+      </div>`).join('');
+  }else{
+    const totalInvest=stocks.reduce((a,s)=>a+s.totalInvest,0);
+    grid.innerHTML=`<div class="hm-tiles hm-flat">${stocks.map(s=>hmTile(s,totalInvest)).join('')}</div>`;
+  }
+}
+
+function hmTile(s,totalInvest){
+  const pct=s.pct;
+  const live=pct!==null;
+  const wt=totalInvest>0?(s.totalInvest/totalInvest*100):0;
+  // Size tiles by weight — bigger allocation = bigger tile
+  const sz=Math.max(60,Math.min(130,60+wt*8));
+  const t=live?Math.min(Math.abs(pct)/5,1):0;
+  const bg=!live?'var(--surface2)':pct>0?`rgba(15,122,75,${.12+t*.55})`:`rgba(192,57,43,${.12+t*.55})`;
+  const col=!live?'var(--muted)':pct>0?'#a7f3d0':'#fecaca';
+  const textCol=!live?'var(--text2)':pct>0?'#064e3b':'#7f1d1d';
+  const safe=s.code.replace(/'/g,"\\'");
+  return `<div class="hm-tile" style="background:${bg};width:${sz}px;height:${sz}px" onclick="showHmDrill('${safe}')" title="${s.name}">
+    <div class="hm-t-code" style="color:${textCol}">${s.code}</div>
+    <div class="hm-t-pct" style="color:${col}">${live?(pct>=0?'▲':'▼')+Math.abs(pct).toFixed(2)+'%':'—'}</div>
+    <div class="hm-t-wt" style="color:${textCol}">${wt.toFixed(1)}%</div>
+  </div>`;
+}
+
+function showHmDrill(code){
+  const scope=getFilteredData();
+  const rows=scope.filter(s=>s.code===code);
+  if(!rows.length)return;
+  const s=rows[0];
+  const cmp=livePrices[code]||s.valRate||s.buy;
+  const pct=liveChangePct[code]??null;
+  document.getElementById('hmDrillTitle').textContent=`${code} — ${s.name}`;
+  document.getElementById('hmDrillBar').style.display='flex';
+  document.getElementById('hmGrid').style.display='none';
+  const drill=document.getElementById('hmDrill');
+  drill.style.display='';
+  const totalQty=rows.reduce((a,r)=>a+r.qty,0);
+  drill.innerHTML=`
+    <div class="hm-drill-summary">
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">CMP</div><div class="hm-dkpi-v ${pct>=0?'pos':'neg'}">${cmp.toFixed(2)}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Day %</div><div class="hm-dkpi-v ${pct>=0?'pos':'neg'}">${pct!==null?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Total Qty</div><div class="hm-dkpi-v">${totalQty.toLocaleString('en-IN')}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Sector</div><div class="hm-dkpi-v">${s.sector}</div></div>
+    </div>
+    <div class="hm-drill-table">
+      <table><thead><tr><th style="text-align:left">Client</th><th>Code</th><th>Qty</th><th>Avg Buy</th><th>Curr Val</th><th>P&L %</th><th>% Hold</th></tr></thead>
+      <tbody>${rows.map(r=>{
+        const cv=cmp*r.qty,inv=r.buy*r.qty,pnl=cv-inv,pp=inv>0?(pnl/inv)*100:0;
+        const holdPct=totalQty>0?(r.qty/totalQty*100):0;
+        return`<tr>
+          <td><span style="font-weight:600">${r.clientName||r.clientCode}</span></td>
+          <td class="neu">${r.clientCode}</td>
+          <td class="neu">${r.qty.toLocaleString('en-IN')}</td>
+          <td class="neu">${r.buy.toFixed(2)}</td>
+          <td class="neu">₹${fmtC(cv)}</td>
+          <td><span class="pill ${clsPill(pp)}">${fmtP(pp)}</span></td>
+          <td class="neu">${holdPct.toFixed(1)}%</td>
+        </tr>`;}).join('')}
+      </tbody></table>
+    </div>`;
+}
+
+function closeHmDrill(){
+  document.getElementById('hmDrillBar').style.display='none';
+  document.getElementById('hmGrid').style.display='';
+  document.getElementById('hmDrill').style.display='none';
 }
 </script>
 </body>
