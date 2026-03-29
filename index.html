@@ -496,6 +496,52 @@ html{-webkit-text-size-adjust:100%}
 .hm-drill-table tbody tr:hover{background:var(--surface2)}
 .hm-drill-table td{padding:9px 12px;text-align:right;font-size:12px;font-family:var(--mono);color:var(--text)}
 .hm-drill-table td:first-child{text-align:left;font-family:var(--sans)}
+
+/* ── SEARCHABLE CLIENT SWITCHER ── */
+.sw-wrap{position:relative;min-width:160px;max-width:220px}
+.sw-trigger{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--sans);font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;max-width:220px}
+.sw-trigger:hover{background:var(--surface3);border-color:var(--blue)}
+.sw-cur{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.sw-arrow{color:var(--muted);font-size:10px;flex-shrink:0}
+.sw-panel{position:absolute;top:calc(100% + 4px);right:0;width:260px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:var(--shadow2);z-index:500;overflow:hidden}
+.sw-search{width:100%;background:var(--surface2);border:none;border-bottom:1px solid var(--border);padding:8px 12px;color:var(--text);font-family:var(--sans);font-size:12px;outline:none}
+.sw-search::placeholder{color:var(--muted)}
+.sw-list{max-height:240px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sw-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);gap:8px}
+.sw-item:hover{background:var(--surface2)}
+.sw-item.active{background:var(--blue-bg)}
+.sw-item:last-child{border-bottom:none}
+.sw-item-name{font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.sw-item-code{font-size:10px;color:var(--muted);font-family:var(--mono);flex-shrink:0}
+.sw-item.active .sw-item-name{color:var(--blue)}
+.sw-item.active .sw-item-code{color:var(--blue)}
+.sw-empty{padding:12px;text-align:center;color:var(--muted);font-size:11px}
+
+/* ── SCRIPTS TAB ── */
+.sc-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+.sc-ts{font-size:10px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
+#scriptTable tbody tr{cursor:pointer}
+#scriptTable tbody tr:hover td{background:var(--blue-bg)}
+.sc-drill-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;
+  border-bottom:1px solid var(--border);margin-top:8px}
+@media(max-width:480px){.sc-drill-kpi-row{grid-template-columns:repeat(2,1fr)}}
+.sc-dkpi{padding:11px 14px;border-right:1px solid var(--border)}
+.sc-dkpi:last-child{border-right:none}
+.sc-dkpi-l{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;font-weight:600}
+.sc-dkpi-v{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.sc-dkpi-v.pos{color:var(--green)}.sc-dkpi-v.neg{color:var(--red)}
+.sc-client-table{background:var(--surface);border:1px solid var(--border);
+  border-top:none;border-radius:0 0 var(--r) var(--r);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sc-client-table table{width:100%;border-collapse:collapse}
+.sc-client-table thead th{background:var(--surface2);padding:8px 12px;font-size:9.5px;
+  text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;
+  white-space:nowrap;border-bottom:1px solid var(--border);text-align:right}
+.sc-client-table thead th:first-child{text-align:left}
+.sc-client-table tbody tr{border-top:1px solid var(--border);cursor:pointer}
+.sc-client-table tbody tr:hover{background:var(--surface2)}
+.sc-client-table td{padding:9px 12px;text-align:right;font-size:12px;font-family:var(--mono);color:var(--text)}
+.sc-client-table td:first-child{text-align:left;font-family:var(--sans);font-weight:600}
 </style>
 </head>
 <body>
@@ -503,7 +549,7 @@ html{-webkit-text-size-adjust:100%}
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="t-left">
-    <div class="logo">MJ</div>
+    <div class="logo">A</div>
     <div>
       <div class="t-title">Portfolio</div>
       <div class="t-sub" id="tDate">—</div>
@@ -679,6 +725,7 @@ html{-webkit-text-size-adjust:100%}
     <div class="tab active"  onclick="showTab('ov',this)">📈 Overview</div>
     <div class="tab" onclick="showTab('hd',this)">📋 Holdings</div>
     <div class="tab" onclick="showTab('sc',this)">🏭 Sectors</div>
+    <div class="tab" onclick="showTab('st',this)">📊 Scripts</div>
     <div class="tab" onclick="showTab('hm',this)">🔥 Heatmap</div>
   </div>
 
@@ -783,6 +830,46 @@ html{-webkit-text-size-adjust:100%}
   </div>
 
   <!-- ═══ HEATMAP ═══ -->
+  <!-- ═══ SCRIPTS SUMMARY ═══ -->
+  <div id="t-st" style="display:none">
+    <div class="sc-toolbar">
+      <div class="search-wrap" style="flex:1;margin-bottom:0">
+        <span class="s-icon">🔍</span>
+        <input class="search" id="scriptSearch" placeholder="Search script name or code…"
+          oninput="filterScriptRows(this.value)">
+      </div>
+      <span class="sc-ts" id="scTS">—</span>
+    </div>
+    <div class="sec" style="margin-top:10px">
+      <div class="sec-hdr">
+        <span class="sec-title">📊 Script Summary — RM Portfolio</span>
+        <span class="sec-badge" id="scBadge">—</span>
+      </div>
+      <div class="t-wrap scroll">
+        <table id="scriptTable">
+          <thead><tr>
+            <th style="text-align:left">Script</th>
+            <th>Sector</th>
+            <th>Clients</th>
+            <th>Total Qty</th>
+            <th>Avg Buy</th>
+            <th>CMP</th>
+            <th>Curr Value</th>
+            <th>Day %</th>
+            <th>% of Portfolio</th>
+          </tr></thead>
+          <tbody id="tb-scripts"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Client drilldown panel (hidden until script clicked) -->
+    <div id="scDrillBar" style="display:none" class="hm-drill-bar">
+      <button class="hm-back-btn" onclick="closeScDrill()">← Back to Scripts</button>
+      <span id="scDrillTitle" style="font-size:12px;font-weight:700;color:var(--text)"></span>
+    </div>
+    <div id="scDrill" style="display:none"></div>
+  </div>
+
   <div id="t-hm" style="display:none">
     <div class="hm-toolbar">
       <div class="hm-filters">
@@ -960,6 +1047,7 @@ let livePrices     = {};
 let liveChangePct  = {};
 let liveChangeAbs  = {};
 let livePriceTS    = {}; // NEW: timestamp per symbol
+let livePrevClose  = {}; // previous session close per symbol
 let lastCSVDate    = null;
 let liveCount      = 0;
 let lastSheetSync  = null; // NEW: sheet sync timestamp
@@ -1059,7 +1147,8 @@ const COMM_INDEX_CFG = [
 
 // Fetch indices in batches of 10 — Stooq drops oversized batches silently
 async function fetchStooqIndicesBatch(syms){
-  const stooqUrl=`https://stooq.com/q/l/?s=${syms.join(',')}&f=sd2ohlcv&e=csv`;
+  const stooqUrl=`https://stooq.com/q/l/?s=${syms.join(',')}&f=sd2ohlcvp&e=csv`;
+  // f=sd2ohlcvp: Symbol(0),Date(1),Open(2),High(3),Low(4),Close(5),Volume(6),PrevClose(7)
   const proxies=[
     `https://corsproxy.io/?${encodeURIComponent(stooqUrl)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(stooqUrl)}`,
@@ -1080,12 +1169,15 @@ async function fetchStooqIndicesBatch(syms){
         const c=lines[i].split(',');
         if(c.length<6)continue;
         const sym=c[0].trim().toLowerCase();
-        const open=parseFloat(c[2])||0;
         const close=parseFloat(c[5])||0;
         if(!close||isNaN(close)||close<=0||close===0.01)continue;
-        const pct=open>0?(close-open)/open*100:0;
-        const chg=open>0?close-open:0;
-        liveIndices[sym]={val:close,chg,pct,ts:Date.now()};
+        // Use prevClose (col 7) for accurate day%; fallback to open (col 2)
+        const prevClose=c.length>=8?(parseFloat(c[7])||0):0;
+        const open=parseFloat(c[2])||0;
+        const base=prevClose>0?prevClose:(open>0?open:close);
+        const pct=base>0?(close-base)/base*100:0;
+        const chg=base>0?close-base:0;
+        liveIndices[sym]={val:close,chg,pct,prevClose:base,ts:Date.now()};
         count++;
       }
       if(count>0){console.log('[INDICES] Proxy OK: '+count+' symbols');return count;}
@@ -1420,28 +1512,80 @@ function buildClientList(){
   buildClientSwitcher();
 }
 
-// RM client switcher — quick switch inside dashboard without going back to selector
+// RM client switcher — searchable dropdown inside dashboard bar
+let _swOpen=false;
 function buildClientSwitcher(){
   const sw=document.getElementById('clientSwitcher');
   if(!sw)return;
   if(allClients.length<2){sw.style.display='none';return;}
   sw.style.display='';
-  sw.innerHTML=`<select class="sw-select" onchange="switchClient(this.value)">
-    ${allClients.map(c=>`<option value="${c.code}" ${c.code===selectedClient?'selected':''}>${c.name||c.code}</option>`).join('')}
-  </select>`;
+  const ci=allClients.find(c=>c.code===selectedClient);
+  sw.innerHTML=`
+    <div class="sw-wrap" id="swWrap">
+      <div class="sw-trigger" onclick="toggleSwDropdown(event)">
+        <span class="sw-cur" id="swCur">${ci?ci.name:selectedClient||'Select Client'}</span>
+        <span class="sw-arrow">▾</span>
+      </div>
+      <div class="sw-panel" id="swPanel" style="display:none">
+        <input class="sw-search" id="swSearch" placeholder="Search name or code…"
+          oninput="filterSwClients(this.value)"
+          onclick="event.stopPropagation()" autocomplete="off">
+        <div class="sw-list" id="swList"></div>
+      </div>
+    </div>`;
+  renderSwList('');
+}
+
+function toggleSwDropdown(e){
+  e.stopPropagation();
+  const panel=document.getElementById('swPanel');
+  const srch=document.getElementById('swSearch');
+  if(!panel)return;
+  _swOpen=panel.style.display==='none';
+  panel.style.display=_swOpen?'':'none';
+  if(_swOpen){srch&&srch.focus();renderSwList('');}
+  if(_swOpen){
+    const close=()=>{panel.style.display='none';_swOpen=false;document.removeEventListener('click',close);};
+    document.addEventListener('click',close);
+  }
+}
+
+function filterSwClients(q){
+  renderSwList(q.toLowerCase());
+}
+
+function renderSwList(q){
+  const list=document.getElementById('swList');
+  if(!list)return;
+  const filtered=q?allClients.filter(c=>
+    c.name.toLowerCase().includes(q)||c.code.toLowerCase().includes(q)
+  ):allClients;
+  if(!filtered.length){list.innerHTML='<div class="sw-empty">No match</div>';return;}
+  list.innerHTML=filtered.map(c=>`
+    <div class="sw-item ${c.code===selectedClient?'active':''}"
+      onclick="switchClient('${c.code.replace(/'/g,"\\'")}')">
+      <span class="sw-item-name">${c.name||c.code}</span>
+      <span class="sw-item-code">${c.code}</span>
+    </div>`).join('');
 }
 
 function switchClient(code){
   if(!code)return;
   selectedClient=code;
-  document.getElementById('clientSelect').value=code;
+  // Close dropdown
+  const panel=document.getElementById('swPanel');
+  if(panel)panel.style.display='none';
+  _swOpen=false;
   const ci=allClients.find(c=>c.code===code);
+  document.getElementById('clientSelect').value=code;
   document.getElementById('cbClient').textContent=ci?ci.name:code;
   document.getElementById('cbCode').textContent=code;
-  buildClientSwitcher();
+  const cur=document.getElementById('swCur');
+  if(cur)cur.textContent=ci?ci.name:code;
+  renderSwList('');
   updateClientBadge();
   renderAll();
-  toast(`Switched to ${ci?ci.name:code}`,'ok');
+  toast('Viewing: '+(ci?ci.name:code),'ok');
 }
 
 // Build RM grid for selector screen
@@ -1579,28 +1723,76 @@ function compute(){
   return getFilteredData().map(s=>{
     const cmp=livePrices[s.code]||s.valRate||s.buy;
     const hasLive=!!livePrices[s.code];
+    const prevClose=livePrevClose[s.code]||cmp;
     const invest=s.buy*s.qty,curr=cmp*s.qty,pnl=curr-invest;
     const pnlPct=invest>0?(pnl/invest)*100:0;
-    return{...s,cmp,invest,curr,pnl,pnlPct,hasLive,dayPct:liveChangePct[s.code]??null,dayAbs:liveChangeAbs[s.code]??null};
+    // Use day% from API (accurate); fallback to compute from prevClose
+    let dayPct=liveChangePct[s.code]??null;
+    let dayAbs=liveChangeAbs[s.code]??null;
+    if(dayPct===null&&hasLive&&prevClose>0){
+      dayPct=(cmp-prevClose)/prevClose*100;
+      dayAbs=cmp-prevClose;
+    }
+    return{...s,cmp,prevClose,invest,curr,pnl,pnlPct,hasLive,dayPct,dayAbs};
   });
 }
 
 // ══════════════════════════════════════════════════════
-//  PRICE FETCH — Reliable Two-Tier Approach
 //  Tier 1: Sheet VALRATE (instant, always works)
 //  Tier 2: Live via Stooq (CORS-friendly, direct)
 // ══════════════════════════════════════════════════════
 
 // ══════════════════════════════════════════════════════
-//  PRICE FETCH — Stooq (CORS-friendly, no proxy needed)
-//  URL: https://stooq.com/q/l/?s=sym1.ns,sym2.ns&f=sd2ohlcv&e=csv
-//  Returns: Symbol,Date,Open,High,Low,Close,Volume
-//  Day % calculated from Open vs Close
+//  PRICE FETCH
+//  PRIMARY:  Yahoo Finance v7 → LTP + previousClose + dayChangePct
+//  FALLBACK: Stooq CSV with f=sd2ohlcvp → LTP + prevClose column
+//
+//  Concept:
+//    regularMarketPrice        = LTP (live during hours, close after)
+//    regularMarketPreviousClose = official previous session close
+//    regularMarketChangePercent = (LTP-prevClose)/prevClose×100 ✓ accurate
+//    Stooq col[7] with 'p' fmt  = same previous close
 // ══════════════════════════════════════════════════════
-async function fetchStooqBatch(symbols){
-  const syms=symbols.map(s=>s.toLowerCase()).join(',');
-  const stooqUrl=`https://stooq.com/q/l/?s=${syms}&f=sd2ohlcv&e=csv`;
-  // Stooq is CORS-blocked — must go through proxy
+
+async function fetchYahooBatch(symbols){
+  const apiUrl=`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketChangePercent,regularMarketChange`;
+  const proxies=[
+    `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
+    `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`,
+    `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(apiUrl)}`,
+  ];
+  for(const proxyUrl of proxies){
+    try{
+      const r=await Promise.race([
+        fetch(proxyUrl,{cache:'no-store'}),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),10000))
+      ]);
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const text=await r.text();
+      if(!text||text.length<20)throw new Error('Empty response');
+      let data;
+      try{
+        const p=JSON.parse(text);
+        // allorigins /get wraps response in {contents:"..."}
+        data=p.contents?JSON.parse(p.contents):p;
+      }catch(e){throw new Error('JSON parse: '+e.message);}
+      const results=data?.quoteResponse?.result;
+      if(!results||!results.length)throw new Error('No quoteResponse results');
+      console.log('[PRICE] Yahoo OK: '+results.length+' quotes');
+      return results; // [{regularMarketPrice, regularMarketPreviousClose, ...}]
+    }catch(e){
+      console.warn('[PRICE] Yahoo proxy failed:',e.message);
+    }
+  }
+  // All Yahoo proxies failed — try Stooq as fallback
+  return fetchStooqFallbackBatch(symbols);
+}
+
+// Stooq fallback — uses f=sd2ohlcvp to get previous close in col[7]
+async function fetchStooqFallbackBatch(symbols){
+  // Strip .NS/.BO for Stooq (uses lowercase bare symbol)
+  const syms=symbols.map(s=>s.replace(/\.(NS|BO)$/i,'').toLowerCase()).join(',');
+  const stooqUrl=`https://stooq.com/q/l/?s=${syms}&f=sd2ohlcvp&e=csv`;
   const proxies=[
     `https://corsproxy.io/?${encodeURIComponent(stooqUrl)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(stooqUrl)}`,
@@ -1615,17 +1807,19 @@ async function fetchStooqBatch(symbols){
       if(!r.ok)throw new Error('HTTP '+r.status);
       const text=await r.text();
       if(!text||text.length<10||text.includes('<!DOCTYPE'))throw new Error('Bad response');
-      const result=parseStooqCSV(text);
-      if(result.length>0){console.log('[PRICE] Stooq OK via proxy, '+result.length+' prices');return result;}
-      throw new Error('Empty parse');
+      const parsed=parseStooqWithPrevClose(text);
+      if(parsed.length>0){console.log('[PRICE] Stooq fallback OK: '+parsed.length);return parsed;}
+      throw new Error('0 rows parsed');
     }catch(e){
-      console.warn('[PRICE] Proxy failed ('+symbols[0]+'…):',e.message);
+      console.warn('[PRICE] Stooq fallback proxy failed:',e.message);
     }
   }
-  return[];
+  return [];
 }
 
-function parseStooqCSV(text){
+// Stooq CSV parser — handles f=sd2ohlcvp (with prev close col[7])
+// Returns [{symbol, price, prevClose, dayPct, dayAbs}]
+function parseStooqWithPrevClose(text){
   const results=[];
   const lines=text.replace(/\r/g,'').split('\n').filter(Boolean);
   if(lines.length<2)return results;
@@ -1633,28 +1827,53 @@ function parseStooqCSV(text){
     const c=lines[i].split(',');
     if(c.length<6)continue;
     const sym=c[0].trim().toUpperCase();
-    const open=parseFloat(c[2])||0;
     const close=parseFloat(c[5])||0;
-    if(!close||close<=0||close===0.01)continue; // 0.01 = Stooq N/D marker
-    const dayPct=open>0?(close-open)/open*100:0;
-    const dayAbs=open>0?close-open:0;
-    results.push({symbol:sym,price:close,dayPct,dayAbs});
+    if(!close||isNaN(close)||close<=0||close===0.01)continue;
+    const prevClose=c.length>=8&&parseFloat(c[7])>0?parseFloat(c[7]):0;
+    const open=parseFloat(c[2])||0;
+    const base=prevClose>0?prevClose:(open>0?open:close);
+    const dayPct=base>0?(close-base)/base*100:0;
+    const dayAbs=base>0?close-base:0;
+    results.push({symbol:sym,price:close,prevClose:base,dayPct,dayAbs});
   }
   return results;
 }
+// Alias for backward compatibility
+function parseStooqCSV(text){return parseStooqWithPrevClose(text);}
 
+// Process Yahoo v7 response — extracts LTP, prevClose, day%
+function processYahooQuotes(quotes){
+  const now=Date.now();
+  for(const q of quotes){
+    let code=YF_REV[q.symbol];
+    if(!code){
+      const base=q.symbol.replace(/\.(NS|BO)$/i,'');
+      code=YF_REV[base+'.NS']||YF_REV[base+'.BO']||base;
+    }
+    if(!PORTFOLIO.find(s=>s.code===code))continue;
+    const price=q.regularMarketPrice;
+    if(!price||price<=0)continue;
+    livePrices[code]=price;
+    livePrevClose[code]=q.regularMarketPreviousClose||price;
+    liveChangePct[code]=q.regularMarketChangePercent??0;
+    liveChangeAbs[code]=q.regularMarketChange??0;
+    livePriceTS[code]=now;
+    liveCount++;
+  }
+}
+
+// Process Stooq fallback — extracts LTP, prevClose, day%
 function processStooqQuotes(quotes){
   const now=Date.now();
   for(const q of quotes){
     let code=YF_REV[q.symbol];
     if(!code){
-      const base=q.symbol.replace(/\.(NS|BO)$/,'');
+      const base=q.symbol.replace(/\.(NS|BO)$/i,'');
       code=YF_REV[base+'.NS']||YF_REV[base+'.BO']||base;
     }
-    // Also try direct match without suffix
-    if(!code)code=YF_REV[q.symbol+''] || q.symbol.replace(/\.(NS|BO)$/,'');
     if(!PORTFOLIO.find(s=>s.code===code))continue;
     livePrices[code]=q.price;
+    livePrevClose[code]=q.prevClose||q.price;
     liveChangePct[code]=q.dayPct;
     liveChangeAbs[code]=q.dayAbs;
     livePriceTS[code]=now;
@@ -1662,7 +1881,6 @@ function processStooqQuotes(quotes){
   }
 }
 
-let _refreshing=false;
 async function refreshPrices(){
   if(!PORTFOLIO.length){toast('Load data first','warn');return;}
   if(_refreshing)return;
@@ -1670,30 +1888,41 @@ async function refreshPrices(){
   const btn=document.getElementById('rfBtn');
   const icon=document.getElementById('ri');
   btn.disabled=true;icon.className='spin';
-  liveCount=0;liveChangePct={};liveChangeAbs={};livePriceTS={};
+  liveCount=0;liveChangePct={};liveChangeAbs={};livePriceTS={};livePrevClose={};
 
   // TIER 1: Apply VALRATE from sheet immediately — dashboard always shows data
   PORTFOLIO.forEach(s=>{if(s.valRate>0)livePrices[s.code]=s.valRate;});
   renderAll();
   setLiveStatus('loading',0,PORTFOLIO.length);
 
-  // TIER 2: Stooq live prices — CORS-friendly, no proxy needed
+  // TIER 2: Yahoo Finance v7 (primary) → Stooq (fallback)
+  //  Yahoo gives: LTP, previousClose, dayChangePct (accurate)
+  //  Stooq gives: LTP, prevClose (via f=sd2ohlcvp format)
   const codes=[...new Set(PORTFOLIO.map(s=>s.code))];
   const nsSymbols=codes.map(c=>YF[c]||c+'.NS');
-  const BSIZE=20,DELAY=300; // Stooq handles up to 20+ symbols per request
+  const BSIZE=15,DELAY=400;
 
-  console.log(`[PRICE] Stooq fetch: ${nsSymbols.length} symbols in batches of ${BSIZE}`);
+  console.log(`[PRICE] Fetching ${nsSymbols.length} symbols (Yahoo v7 + Stooq fallback)`);
 
   for(let i=0;i<nsSymbols.length;i+=BSIZE){
     const batch=nsSymbols.slice(i,i+BSIZE);
-    const quotes=await fetchStooqBatch(batch);
+    const quotes=await fetchYahooBatch(batch);
     if(quotes.length>0){
-      processStooqQuotes(quotes);
+      // Yahoo returns objects with regularMarketPrice etc
+      if(quotes[0].regularMarketPrice!==undefined){
+        processYahooQuotes(quotes);
+      }else{
+        // Stooq fallback returned {symbol,price,dayPct,...} format
+        processStooqQuotes(quotes);
+      }
     }else{
-      // Try .BO suffix as fallback
+      // .BO BSE fallback
       const boBatch=batch.map(s=>s.replace('.NS','.BO'));
-      const boQuotes=await fetchStooqBatch(boBatch);
-      if(boQuotes.length>0)processStooqQuotes(boQuotes);
+      const boQ=await fetchYahooBatch(boBatch);
+      if(boQ.length>0){
+        if(boQ[0].regularMarketPrice!==undefined) processYahooQuotes(boQ);
+        else processStooqQuotes(boQ);
+      }
     }
     setLiveStatus('loading',liveCount,codes.length);
     if(i+BSIZE<nsSymbols.length)await sleep(DELAY);
@@ -1798,10 +2027,15 @@ function renderKPI(data){
 }
 
 function cmpCell(s){
-  const ts=livePriceTS[s.code]?new Date(livePriceTS[s.code]).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'Sheet';
-  const p=`<span class="${cls(s.cmp-s.buy)}" style="font-weight:700;font-size:13px">${s.cmp.toFixed(2)}</span>`;
+  const ts=livePriceTS[s.code]?new Date(livePriceTS[s.code]).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):(s.hasLive?'Live':'Sheet');
+  const priceColor=cls(s.cmp-s.buy);
+  const p=`<span class="${priceColor}" style="font-weight:700;font-size:13px">${s.cmp.toFixed(2)}</span>`;
   const tsHtml=`<span class="price-ts">${ts}</span>`;
-  if(s.dayPct!==null){const dc=s.dayPct>=0?'pos':'neg';return `<div class="cmp-wrap">${p}<span class="cmp-badge ${dc}">${s.dayPct>=0?'▲':'▼'}${Math.abs(s.dayPct).toFixed(2)}%</span>${tsHtml}</div>`;}
+  if(s.dayPct!==null){
+    const dc=s.dayPct>=0?'pos':'neg';
+    const sign=s.dayPct>=0?'▲':'▼';
+    return `<div class="cmp-wrap">${p}<span class="cmp-badge ${dc}">${sign}${Math.abs(s.dayPct).toFixed(2)}%</span>${tsHtml}</div>`;
+  }
   return `<div class="cmp-wrap">${p}<span class="cmp-badge neu">—</span>${tsHtml}</div>`;
 }
 
@@ -1958,10 +2192,13 @@ function setLiveStatus(state,count,total){
     meta.textContent='Last: '+new Date().toLocaleTimeString('en-IN');
   }else if(state==='cached'){
     dot.className='live-dot';
-    lbl.textContent='Using Cached Prices';  // FIXED label
-    meta.textContent='Sheet prices used as fallback · Tap ↻ Live to retry';
+    const mktOpen=isMarketOpen();
+    lbl.textContent=mktOpen?'Using Sheet Prices':'Market Closed · Last Closing Prices';
+    meta.textContent=mktOpen?'Live fetch failed · Tap ↻ to retry':'NSE closed · Showing previous session close';
   }else{
-    dot.className='live-dot';lbl.textContent='Using sheet/close prices';meta.textContent='Tap ↻ Live to fetch real-time NSE data';
+    dot.className='live-dot';
+    lbl.textContent=isMarketOpen()?'Sheet prices — tap ↻ Live':'Market closed · Sheet closing prices';
+    meta.textContent='Tap ↻ Live to fetch real-time data';
   }
 }
 
@@ -2061,10 +2298,11 @@ function renderAll(){
 // ══════════════════════════════════════════════════════
 function showDashboard(){document.getElementById('uploadZone').classList.add('hidden');document.getElementById('selectorScreen').style.display='none';document.getElementById('dashboard').style.display='';}
 function showTab(id,el){
-  ['ov','hd','sc','hm'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
+  ['ov','hd','sc','st','hm'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   if(id==='hm')renderHeatmap();
+  if(id==='st')renderScripts();
 }
 
 // UPDATED: debounced search
@@ -2171,6 +2409,187 @@ function filterClientCards(){
     setTimeout(()=>document.getElementById('userIdInput')?.focus(),100);
   }
 })();
+
+
+// ══════════════════════════════════════════════════════
+//  SCRIPTS SUMMARY TAB
+//  Shows all unique scripts across RM's clients
+//  with % of total RM portfolio + client drilldown
+// ══════════════════════════════════════════════════════
+
+function renderScripts(){
+  // Scope: all data for this RM (regardless of selected client)
+  const scope = currentUser?.role==='rm'
+    ? PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
+    : PORTFOLIO;
+
+  if(!scope.length){
+    document.getElementById('tb-scripts').innerHTML=
+      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">No data — sync sheet first</td></tr>';
+    return;
+  }
+
+  // Aggregate by script code
+  const scriptMap = new Map();
+  scope.forEach(s=>{
+    if(!scriptMap.has(s.code)){
+      scriptMap.set(s.code,{
+        code:s.code, name:s.name, sector:s.sector,
+        totalQty:0, totalInvest:0, clients:new Set(), rows:[]
+      });
+    }
+    const m=scriptMap.get(s.code);
+    m.totalQty  += s.qty;
+    m.totalInvest += s.buy*s.qty;
+    m.clients.add(s.clientCode);
+    m.rows.push(s);
+  });
+
+  const totalPortfolio = [...scriptMap.values()].reduce((a,m)=>a+m.totalInvest,0);
+  const now = livePriceTS&&Object.keys(livePriceTS).length
+    ? new Date(Math.max(...Object.values(livePriceTS))).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
+    : null;
+
+  const tsEl=document.getElementById('scTS');
+  if(tsEl) tsEl.textContent = now
+    ? (isMarketOpen()?'Live ':'Closed · ')+now
+    : (isMarketOpen()?'Tap ↻ Live':'Market closed · Sheet prices');
+
+  // Sort by portfolio weight desc
+  const scripts = [...scriptMap.values()].map(m=>{
+    const cmp  = livePrices[m.code]||0;
+    const pct  = liveChangePct[m.code]??null;
+    const currVal = cmp>0 ? cmp*m.totalQty : m.totalInvest;
+    const wtPct   = totalPortfolio>0 ? m.totalInvest/totalPortfolio*100 : 0;
+    return {...m, cmp, pct, currVal, wtPct, clientCount:m.clients.size};
+  }).sort((a,b)=>b.wtPct-a.wtPct);
+
+  document.getElementById('scBadge').textContent = scripts.length+' scripts · '+scope.length+' holdings';
+
+  document.getElementById('tb-scripts').innerHTML = scripts.map(sc=>{
+    const dayHtml = sc.pct!==null
+      ? `<span class="${sc.pct>=0?'pos':'neg'}">${sc.pct>=0?'▲ +':'▼ '}${Math.abs(sc.pct).toFixed(2)}%</span>`
+      : '<span class="neu">—</span>';
+    const safe = sc.code.replace(/'/g,"\'");
+    return `<tr onclick="showScDrill('${safe}')" data-q="${sc.code.toLowerCase()} ${sc.name.toLowerCase()} ${sc.sector.toLowerCase()}">
+      <td>
+        <span class="sn">${sc.code}</span>
+        <span class="ss" style="max-width:130px">${sc.name}</span>
+      </td>
+      <td class="neu" style="font-size:10px;text-align:left">${sc.sector}</td>
+      <td class="neu">${sc.clientCount}</td>
+      <td class="neu">${sc.totalQty.toLocaleString('en-IN')}</td>
+      <td class="neu">${(sc.totalInvest/sc.totalQty).toFixed(2)}</td>
+      <td class="${sc.cmp>0&&sc.cmp>sc.totalInvest/sc.totalQty?'pos':'neg'}" style="font-weight:700">
+        ${sc.cmp>0?sc.cmp.toFixed(2):'—'}
+      </td>
+      <td class="neu">₹${fmtC(sc.currVal)}</td>
+      <td>${dayHtml}</td>
+      <td>
+        <div class="bar-row">
+          <span style="font-size:11px;font-weight:700;color:var(--text2)">${sc.wtPct.toFixed(1)}%</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.min(sc.wtPct*3,100)}%"></div></div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterScriptRows(q){
+  const ql=q.toLowerCase();
+  document.querySelectorAll('#tb-scripts tr').forEach(r=>{
+    const dq=r.getAttribute('data-q')||'';
+    r.style.display=dq.includes(ql)?'':'none';
+  });
+}
+
+function showScDrill(code){
+  // Get all rows for this script across RM scope
+  const scope = currentUser?.role==='rm'
+    ? PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
+    : PORTFOLIO;
+  const rows = scope.filter(s=>s.code===code);
+  if(!rows.length)return;
+
+  const cmp       = livePrices[code]||rows[0].valRate||rows[0].buy;
+  const prevClose = livePrevClose[code]||cmp;
+  const pct       = liveChangePct[code]??null;
+  const totalQty  = rows.reduce((a,r)=>a+r.qty,0);
+  const totalInv  = rows.reduce((a,r)=>a+r.buy*r.qty,0);
+  const totalCurr = cmp*totalQty;
+  const avgBuy    = totalQty>0?totalInv/totalQty:0;
+  const dayStr    = pct!==null?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—';
+
+  document.getElementById('scDrillTitle').textContent = `${code} — ${rows[0].name}`;
+  document.getElementById('scDrillBar').style.display = 'flex';
+  document.getElementById('scriptTable').closest('.sec').style.display = 'none';
+  document.querySelector('.sc-toolbar').style.display = 'none';
+
+  const drill = document.getElementById('scDrill');
+  drill.style.display = '';
+
+  // Sort clients by qty descending
+  const sorted = [...rows].sort((a,b)=>b.qty-a.qty);
+
+  drill.innerHTML = `
+    <div class="sc-drill-kpi-row">
+      <div class="sc-dkpi"><div class="sc-dkpi-l">LTP / CMP</div><div class="sc-dkpi-v">${cmp.toFixed(2)}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Prev Close</div><div class="sc-dkpi-v">${prevClose.toFixed(2)}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Day %</div>
+        <div class="sc-dkpi-v ${pct!==null?(pct>=0?'pos':'neg'):''}">${dayStr}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Total Qty</div><div class="sc-dkpi-v">${totalQty.toLocaleString('en-IN')}</div></div>
+    </div>
+    <div class="sc-drill-kpi-row" style="border-top:none;border-radius:0;margin-top:0">
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Avg Buy Rate</div><div class="sc-dkpi-v">${avgBuy.toFixed(2)}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Total Invested</div><div class="sc-dkpi-v">₹${fmtC(totalInv)}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Current Value</div><div class="sc-dkpi-v">₹${fmtC(totalCurr)}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Sector</div><div class="sc-dkpi-v" style="font-size:11px">${rows[0].sector}</div></div>
+    </div>
+    <div class="sc-client-table">
+      <table>
+        <thead><tr>
+          <th style="text-align:left">Client Name</th>
+          <th>Code</th>
+          <th>Qty</th>
+          <th>Avg Buy ₹</th>
+          <th>Curr Val</th>
+          <th>P&L %</th>
+          <th>% of Script</th>
+        </tr></thead>
+        <tbody>
+          ${sorted.map(r=>{
+            const cv=cmp*r.qty,inv=r.buy*r.qty,pnl=cv-inv;
+            const pp=inv>0?(pnl/inv)*100:0;
+            const holdPct=totalQty>0?(r.qty/totalQty)*100:0;
+            const safe=r.clientCode.replace(/'/g,"\'");
+            return `<tr onclick="selectClientFromSelector('${safe}','${(r.subgroup||'DEFAULT').replace(/'/g,"\'")}')">
+              <td>${r.clientName||r.clientCode}</td>
+              <td>${r.clientCode}</td>
+              <td>${r.qty.toLocaleString('en-IN')}</td>
+              <td>${r.buy.toFixed(2)}</td>
+              <td>₹${fmtC(cv)}</td>
+              <td><span class="pill ${clsPill(pp)}">${fmtP(pp)}</span></td>
+              <td>
+                <div class="bar-row">
+                  <span style="font-size:10px;font-weight:700;color:var(--text2)">${holdPct.toFixed(1)}%</span>
+                  <div class="bar-track"><div class="bar-fill" style="width:${Math.min(holdPct*2,100)}%"></div></div>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function closeScDrill(){
+  document.getElementById('scDrillBar').style.display='none';
+  document.getElementById('scDrill').style.display='none';
+  const sec=document.getElementById('scriptTable')?.closest('.sec');
+  if(sec)sec.style.display='';
+  const tb=document.querySelector('.sc-toolbar');
+  if(tb)tb.style.display='flex';
+}
 
 // ── Market hours helper (IST) ──
 function isMarketOpen(){
@@ -2332,12 +2751,14 @@ function showHmDrill(code){
   const drill=document.getElementById('hmDrill');
   drill.style.display='';
   const totalQty=rows.reduce((a,r)=>a+r.qty,0);
+  const prevCl=(livePrevClose[code]||cmp);
+  const dayChg=pct!==null?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—';
   drill.innerHTML=`
     <div class="hm-drill-summary">
-      <div class="hm-drill-kpi"><div class="hm-dkpi-l">CMP</div><div class="hm-dkpi-v ${pct>=0?'pos':'neg'}">${cmp.toFixed(2)}</div></div>
-      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Day %</div><div class="hm-dkpi-v ${pct>=0?'pos':'neg'}">${pct!==null?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</div></div>
-      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Total Qty</div><div class="hm-dkpi-v">${totalQty.toLocaleString('en-IN')}</div></div>
-      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Sector</div><div class="hm-dkpi-v">${s.sector}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">LTP / CMP</div><div class="hm-dkpi-v">${cmp.toFixed(2)}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Prev Close</div><div class="hm-dkpi-v">${prevCl.toFixed(2)}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Day %</div><div class="hm-dkpi-v ${pct!==null?(pct>=0?'pos':'neg'):''}">\${dayChg}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Sector</div><div class="hm-dkpi-v" style="font-size:11px">${s.sector}</div></div>
     </div>
     <div class="hm-drill-table">
       <table><thead><tr><th style="text-align:left">Client</th><th>Code</th><th>Qty</th><th>Avg Buy</th><th>Curr Val</th><th>P&L %</th><th>% Hold</th></tr></thead>
