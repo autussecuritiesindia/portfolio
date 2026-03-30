@@ -1086,6 +1086,7 @@ let _lastErrToastTs = 0;
 
 // NEW: Google Sheet CSV URL
 const SHEET_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTalSshnxDgdG9kqJNMZAgjH2j_Tu2TpjvZ9tjCvMg2G1ECIvervKbM9XlvfPta2svaUI3U7FdcFrdi/pub?gid=1099151370&single=true&output=csv';
+const WORKER_URL  = 'https://autus-prices.autus-securities.workers.dev'; // Cloudflare Worker
 const LS_SHEET    = 'pf-sheet-v2';
 const LS_PRICES   = 'pf-prices-v2';
 const LS_THEME    = 'pf-theme';
@@ -1201,23 +1202,45 @@ const INDEX_FALLBACK = {
 })();
 // Fetch indices in batches of 10 — Stooq drops oversized batches silently
 async function fetchStooqIndicesBatch(syms){
+  // PRIMARY: Cloudflare Worker /indices
+  try{
+    const url=WORKER_URL+'/indices?s='+encodeURIComponent(syms.join(','));
+    const r=await Promise.race([
+      fetch(url,{cache:'no-store'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),12000))
+    ]);
+    if(!r.ok)throw new Error('Worker HTTP '+r.status);
+    const json=await r.json();
+    if(!json.ok||!json.data?.length)throw new Error('No data');
+    let count=0;
+    for(const d of json.data){
+      if(!d.sym||!d.val)continue;
+      liveIndices[d.sym]={val:d.val,chg:d.chg,pct:d.pct,prevClose:d.prevClose,ts:Date.now(),isFallback:false};
+      count++;
+    }
+    if(count>0){console.log('[INDICES] Worker OK: '+count+' symbols');return count;}
+    throw new Error('0 valid rows');
+  }catch(e){
+    console.warn('[INDICES] Worker failed:',e.message);
+  }
+  // FALLBACK: old proxy chain
   const stooqUrl=`https://stooq.com/q/l/?s=${syms.join(',')}&f=sd2ohlcvp&e=csv`;
-  // f=sd2ohlcvp: Symbol(0),Date(1),Open(2),High(3),Low(4),Close(5),Volume(6),PrevClose(7)
   const proxies=[
     `https://corsproxy.io/?${encodeURIComponent(stooqUrl)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(stooqUrl)}`,
-    `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(stooqUrl)}`,
   ];
   for(const proxyUrl of proxies){
     try{
       const r=await Promise.race([
         fetch(proxyUrl,{cache:'no-store'}),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),12000))
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),10000))
       ]);
       if(!r.ok)throw new Error('HTTP '+r.status);
       const text=await r.text();
-      if(!text||text.length<10||text.includes('<!DOCTYPE'))throw new Error('Bad response');
-      const lines=text.replace(/\r/g,'').split('\n').filter(Boolean);
+      if(!text||text.length<10||text.includes('<!DOCTYPE'))throw new Error('Bad');
+      const lines=text.replace(/
+/g,'').split('
+').filter(Boolean);
       let count=0;
       for(let i=1;i<lines.length;i++){
         const c=lines[i].split(',');
@@ -1225,24 +1248,21 @@ async function fetchStooqIndicesBatch(syms){
         const sym=c[0].trim().toLowerCase();
         const close=parseFloat(c[5])||0;
         if(!close||isNaN(close)||close<=0||close===0.01)continue;
-        // Use prevClose (col 7) for accurate day%; fallback to open (col 2)
         const prevClose=c.length>=8?(parseFloat(c[7])||0):0;
         const open=parseFloat(c[2])||0;
         const base=prevClose>0?prevClose:(open>0?open:close);
         const pct=base>0?(close-base)/base*100:0;
         const chg=base>0?close-base:0;
-        liveIndices[sym]={val:close,chg,pct,prevClose:base,ts:Date.now()};
+        liveIndices[sym]={val:close,chg,pct,prevClose:base,ts:Date.now(),isFallback:false};
         count++;
       }
-      if(count>0){console.log('[INDICES] Proxy OK: '+count+' symbols');return count;}
-      throw new Error('0 valid rows');
-    }catch(e){
-      console.warn('[INDICES] Proxy attempt failed:',e.message);
-    }
+      if(count>0){console.log('[INDICES] Proxy fallback OK: '+count);return count;}
+    }catch(e){console.warn('[INDICES] Proxy failed:',e.message);}
   }
-  console.warn('[INDICES] All proxies failed for batch');
+  console.warn('[INDICES] All attempts failed for batch');
   return 0;
 }
+
 
 async function fetchLiveIndices(){
   const allCfg=[...INDIA_INDEX_CFG,...GLOBAL_INDEX_CFG,...COMM_INDEX_CFG];
@@ -1382,66 +1402,46 @@ function guessSector(c){
 //  3) allorigins fallback
 // ══════════════════════════════════════════════════════
 async function fetchSheetCSV(){
-  const timeout=ms=>new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),ms));
-
-  // Attempt 1 — direct
-  console.log('[SHEET] Attempt 1 — direct…');
+  // PRIMARY: Cloudflare Worker
+  console.log('[SHEET] Fetching via Worker…');
   try{
-    const r=await Promise.race([fetch(SHEET_URL,{cache:'no-store'}),timeout(12000)]);
-    if(!r.ok)throw new Error('HTTP '+r.status);
+    const r=await Promise.race([
+      fetch(WORKER_URL+'/sheet',{cache:'no-store'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),15000))
+    ]);
+    if(!r.ok)throw new Error('Worker HTTP '+r.status);
     const text=await r.text();
     if(text&&text.length>50&&text.includes(',')&&!text.includes('<!DOCTYPE')){
-      console.log('[SHEET] Direct OK, len='+text.length);
+      console.log('[SHEET] Worker OK, len='+text.length);
       lastSheetSync=new Date();updateSyncedBar();return text;
     }
     throw new Error('Invalid response');
+  }catch(e){console.warn('[SHEET] Worker failed:',e.message);}
+  // Fallback: direct fetch
+  try{
+    const r=await Promise.race([fetch(SHEET_URL,{cache:'no-store'}),new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),12000))]);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const text=await r.text();
+    if(text&&text.length>50&&text.includes(',')&&!text.includes('<!DOCTYPE')){
+      console.log('[SHEET] Direct OK');lastSheetSync=new Date();updateSyncedBar();return text;
+    }
+    throw new Error('Invalid');
   }catch(e){console.warn('[SHEET] Direct failed:',e.message);}
-
-  // Attempt 2 — corsproxy.io
-  console.log('[SHEET] Attempt 2 — corsproxy.io…');
+  // Fallback: corsproxy
   try{
     const url='https://corsproxy.io/?'+encodeURIComponent(SHEET_URL);
-    const r=await Promise.race([fetch(url),timeout(12000)]);
+    const r=await Promise.race([fetch(url),new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),12000))]);
     if(!r.ok)throw new Error('HTTP '+r.status);
     const text=await r.text();
     if(text&&text.length>50&&text.includes(',')&&!text.includes('<!DOCTYPE')){
-      console.log('[SHEET] corsproxy OK, len='+text.length);
       lastSheetSync=new Date();updateSyncedBar();return text;
     }
-    throw new Error('Invalid response');
+    throw new Error('Invalid');
   }catch(e){console.warn('[SHEET] corsproxy failed:',e.message);}
-
-  // Attempt 3 — allorigins
-  console.log('[SHEET] Attempt 3 — allorigins…');
-  try{
-    const url='https://api.allorigins.win/raw?url='+encodeURIComponent(SHEET_URL);
-    const r=await Promise.race([fetch(url),timeout(14000)]);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const text=await r.text();
-    if(text&&text.length>50&&text.includes(',')&&!text.includes('<!DOCTYPE')){
-      console.log('[SHEET] allorigins OK, len='+text.length);
-      lastSheetSync=new Date();updateSyncedBar();return text;
-    }
-    throw new Error('Invalid response');
-  }catch(e){console.warn('[SHEET] allorigins failed:',e.message);}
-
-  // Attempt 4 — thingproxy
-  console.log('[SHEET] Attempt 4 — thingproxy…');
-  try{
-    const url='https://thingproxy.freeboard.io/fetch/'+encodeURIComponent(SHEET_URL);
-    const r=await Promise.race([fetch(url),timeout(14000)]);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const text=await r.text();
-    if(text&&text.length>50&&text.includes(',')&&!text.includes('<!DOCTYPE')){
-      console.log('[SHEET] thingproxy OK, len='+text.length);
-      lastSheetSync=new Date();updateSyncedBar();return text;
-    }
-    throw new Error('Invalid response');
-  }catch(e){console.warn('[SHEET] thingproxy failed:',e.message);}
-
   console.warn('[SHEET] All attempts failed');
   return null;
 }
+
 
 // Load + parse sheet, cache on success, fall back to cache/seed
 // silent=true → update data only, never change screen
@@ -1809,36 +1809,29 @@ function compute(){
 // ══════════════════════════════════════════════════════
 
 async function fetchYahooBatch(symbols){
-  const apiUrl=`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketChangePercent,regularMarketChange`;
-  const proxies=[
-    `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
-    `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`,
-    `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(apiUrl)}`,
-  ];
-  for(const proxyUrl of proxies){
-    try{
-      const r=await Promise.race([
-        fetch(proxyUrl,{cache:'no-store'}),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),10000))
-      ]);
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      const text=await r.text();
-      if(!text||text.length<20)throw new Error('Empty response');
-      let data;
-      try{
-        const p=JSON.parse(text);
-        // allorigins /get wraps response in {contents:"..."}
-        data=p.contents?JSON.parse(p.contents):p;
-      }catch(e){throw new Error('JSON parse: '+e.message);}
-      const results=data?.quoteResponse?.result;
-      if(!results||!results.length)throw new Error('No quoteResponse results');
-      console.log('[PRICE] Yahoo OK: '+results.length+' quotes');
-      return results; // [{regularMarketPrice, regularMarketPreviousClose, ...}]
-    }catch(e){
-      console.warn('[PRICE] Yahoo proxy failed:',e.message);
-    }
+  // PRIMARY: Cloudflare Worker /prices
+  try{
+    const url=WORKER_URL+'/prices?s='+encodeURIComponent(symbols.join(','));
+    const r=await Promise.race([
+      fetch(url,{cache:'no-store'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),12000))
+    ]);
+    if(!r.ok)throw new Error('Worker HTTP '+r.status);
+    const json=await r.json();
+    if(!json.ok||!json.data?.length)throw new Error('Worker no data');
+    console.log('[PRICE] Worker OK: '+json.data.length+' quotes');
+    // Normalise to Yahoo-format fields for processYahooQuotes
+    return json.data.map(q=>({
+      symbol:                     q.symbol,
+      regularMarketPrice:         q.price,
+      regularMarketPreviousClose: q.prevClose,
+      regularMarketChangePercent: q.changePct,
+      regularMarketChange:        q.changeAbs,
+    }));
+  }catch(e){
+    console.warn('[PRICE] Worker failed:',e.message);
   }
-  // All Yahoo proxies failed — try Stooq as fallback
+  // FALLBACK: Stooq proxy chain
   return fetchStooqFallbackBatch(symbols);
 }
 
