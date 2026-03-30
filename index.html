@@ -1203,51 +1203,30 @@ const INDEX_FALLBACK = {
     if(!liveIndices[sym])liveIndices[sym]={...d,ts:now,isFallback:true};
   }
 })();
-// Fetch indices — direct browser fetch via CORS proxies (Worker is IP-blocked by Stooq)
+// fetchStooqIndicesBatch — routes through Cloudflare Worker /indices
+// Worker fetches each index symbol individually from Stooq (avoids N/D batch block)
 async function fetchStooqIndicesBatch(syms){
-  const stooqUrl=`https://stooq.com/q/l/?s=${syms.join(',')}&f=sd2ohlcvp&e=csv`;
-
-  const proxies=[
-    {url:`https://corsproxy.io/?url=${encodeURIComponent(stooqUrl)}`,  json:false},
-    {url:`https://api.allorigins.win/get?url=${encodeURIComponent(stooqUrl)}`, json:true},
-    {url:`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(stooqUrl)}`, json:false},
-    {url:`https://cors-anywhere.herokuapp.com/${stooqUrl}`, json:false},
-  ];
-
-  for(let i=0;i<proxies.length;i++){
-    const {url:proxyUrl,json:isJson}=proxies[i];
-    try{
-      const r=await Promise.race([
-        fetch(proxyUrl,{cache:'no-store',headers:{'X-Requested-With':'XMLHttpRequest'}}),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),10000))
-      ]);
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      let text;
-      if(isJson){const j=await r.json();text=j?.contents||'';}
-      else{text=await r.text();}
-      if(!text||text.length<10||text.includes('<!DOCTYPE'))throw new Error('Bad response');
-      const lines=text.replace(/\r/g,'').split('\n').filter(Boolean);
-      let count=0;
-      for(let k=1;k<lines.length;k++){
-        const c=lines[k].split(',');
-        if(c.length<6)continue;
-        const sym=c[0].trim().toLowerCase();
-        const close=parseFloat(c[5])||0;
-        if(!close||isNaN(close)||close<=0||close===0.01)continue;
-        const prevClose=c.length>=8?(parseFloat(c[7])||0):0;
-        const open=parseFloat(c[2])||0;
-        const base=prevClose>0?prevClose:(open>0?open:close);
-        const pct=base>0?(close-base)/base*100:0;
-        const chg=base>0?close-base:0;
-        liveIndices[sym]={val:close,chg,pct,prevClose:base,ts:Date.now(),isFallback:false};
-        count++;
-      }
-      if(count>0){console.log(`[INDICES] Proxy[${i}] OK: ${count} symbols`);return count;}
-      throw new Error('0 valid rows');
-    }catch(e){console.warn(`[INDICES] Proxy[${i}] failed:`,e.message);}
+  try{
+    const url=WORKER_URL+'/indices?s='+encodeURIComponent(syms.join(','));
+    const r=await Promise.race([
+      fetch(url,{cache:'no-store'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),25000))
+    ]);
+    if(!r.ok)throw new Error('Worker HTTP '+r.status);
+    const j=await r.json();
+    if(!j.ok||!j.data?.length)throw new Error(j.error||'No data');
+    let count=0;
+    for(const d of j.data){
+      if(!d.sym||!d.val)continue;
+      liveIndices[d.sym]={val:d.val,chg:d.chg,pct:d.pct,prevClose:d.prevClose,ts:Date.now(),isFallback:false};
+      count++;
+    }
+    if(count>0){console.log('[INDICES] Worker OK: '+count+' symbols');return count;}
+    throw new Error('0 valid symbols');
+  }catch(e){
+    console.warn('[INDICES] Worker failed:',e.message);
+    return 0;
   }
-  console.warn('[INDICES] All proxies failed for batch');
-  return 0;
 }
 async function fetchLiveIndices(){
   const allCfg=[...INDIA_INDEX_CFG,...GLOBAL_INDEX_CFG,...COMM_INDEX_CFG];
@@ -1794,60 +1773,36 @@ function compute(){
 // ══════════════════════════════════════════════════════
 
 async function fetchYahooBatch(symbols){
-  // Browser-direct fetch — cloud workers are IP-blocked by finance APIs.
-  // Browser IPs are never blocked. We go directly from browser → CORS proxy → Stooq.
-  return fetchStooqFallbackBatch(symbols);
+  // Worker fetches each symbol individually from Stooq (batch returns N/D from datacenter IPs)
+  try{
+    const url=WORKER_URL+'/prices?s='+encodeURIComponent(symbols.join(','));
+    const r=await Promise.race([
+      fetch(url,{cache:'no-store'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),25000))
+    ]);
+    if(!r.ok)throw new Error('Worker HTTP '+r.status);
+    const j=await r.json();
+    if(!j.ok||!j.data?.length)throw new Error('Worker: '+(j.error||'no data'));
+    console.log('[PRICE] Worker OK: '+j.data.length+' quotes ('+j.source+')');
+    return j.data.map(q=>({
+      symbol:                     q.symbol,
+      regularMarketPrice:         q.price,
+      regularMarketPreviousClose: q.prevClose,
+      regularMarketChangePercent: q.changePct,
+      regularMarketChange:        q.changeAbs,
+    }));
+  }catch(e){
+    console.warn('[PRICE] Worker failed:',e.message);
+    return [];
+  }
 }
 
-// Stooq browser fetch — uses multiple CORS proxies
-// Browser fetches are never IP-blocked by Stooq (only server/datacenter IPs are blocked)
+// fetchStooqFallbackBatch — not used directly anymore.
+// All price fetching now goes through the Cloudflare Worker (/prices endpoint)
+// which fetches each symbol individually from Stooq server-side.
+// Third-party CORS proxies are all blocked from autussecuritiesindia.github.io.
 async function fetchStooqFallbackBatch(symbols){
-  const syms=symbols.map(s=>s.replace(/\.(NS|BO)$/i,'').toLowerCase()).join(',');
-  const stooqUrl=`https://stooq.com/q/l/?s=${syms}&f=sd2ohlcvp&e=csv`;
-
-  // CORS proxies that work from GitHub Pages (tested 2025)
-  // corsproxy.io and allorigins now block github.io — use alternatives
-  const proxies=[
-    // proxy1: corsproxy.io with explicit header bypass
-    `https://corsproxy.io/?url=${encodeURIComponent(stooqUrl)}`,
-    // proxy2: allorigins (json wrapper — parse .contents)
-    `https://api.allorigins.win/get?url=${encodeURIComponent(stooqUrl)}`,
-    // proxy3: htmldriven cors anywhere (no restriction)
-    `https://cors-anywhere.herokuapp.com/${stooqUrl}`,
-    // proxy4: codetabs proxy
-    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(stooqUrl)}`,
-  ];
-
-  for(let i=0;i<proxies.length;i++){
-    const proxyUrl=proxies[i];
-    try{
-      const r=await Promise.race([
-        fetch(proxyUrl,{cache:'no-store',headers:{'X-Requested-With':'XMLHttpRequest'}}),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),10000))
-      ]);
-      if(!r.ok)throw new Error('HTTP '+r.status);
-
-      let text;
-      // allorigins returns JSON wrapper {contents:'...', status:{...}}
-      if(i===1){
-        const j=await r.json();
-        text=j?.contents||'';
-      }else{
-        text=await r.text();
-      }
-
-      if(!text||text.length<10||text.includes('<!DOCTYPE'))throw new Error('Bad response');
-      const parsed=parseStooqWithPrevClose(text);
-      if(parsed.length>0){
-        console.log(`[PRICE] Stooq proxy[${i}] OK: ${parsed.length} symbols`);
-        return parsed;
-      }
-      throw new Error('0 rows parsed');
-    }catch(e){
-      console.warn(`[PRICE] Stooq proxy[${i}] failed:`,e.message);
-    }
-  }
-  console.warn('[PRICE] All CORS proxies failed for batch');
+  console.warn('[PRICE] fetchStooqFallbackBatch called — all CORS proxies blocked from github.io');
   return [];
 }
 
