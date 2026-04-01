@@ -206,6 +206,52 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .two-col{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:680px){.two-col{grid-template-columns:1fr 1fr}}
 
+/* ══ OVERVIEW PANEL LAYOUT ══ */
+.ov-panel-layout{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:800px){.ov-panel-layout{grid-template-columns:1fr 380px}}
+
+/* Left panel — portfolio table */
+.ov-panel-left{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.ov-ph{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface3);border-bottom:1px solid var(--border)}
+.ov-ph-title{font-size:12px;font-weight:700;color:var(--text)}
+.ov-ph-badge{font-size:10px;color:var(--muted);font-family:var(--mono);background:var(--surface);border:1px solid var(--border);padding:2px 8px;border-radius:5px}
+.ov-sort-btn{margin-left:auto;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:4px 10px;border-radius:6px;font-size:10px;font-family:var(--mono);cursor:pointer;font-weight:600}
+.ov-sort-btn:hover{background:var(--surface3)}
+.ov-table-wrap{overflow-y:auto;max-height:calc(100vh - 280px);-webkit-overflow-scrolling:touch}
+.ov-table{width:100%;border-collapse:collapse;font-size:12px}
+.ov-table thead th{position:sticky;top:0;z-index:2;background:var(--surface2);padding:7px 10px;font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap}
+.ov-table thead th.r{text-align:right}
+.ov-table tbody tr{border-top:1px solid var(--border)}
+.ov-table tbody tr:hover{background:var(--surface2)}
+.ov-table td{padding:7px 10px;font-family:var(--mono);font-size:12px;white-space:nowrap}
+.ov-table td.r{text-align:right}
+.ov-code{font-weight:700;font-size:12px;color:var(--text);font-family:var(--mono)}
+/* Colored cells like reference */
+.ov-chg-pos{background:rgba(15,122,75,.12);color:var(--green);font-weight:700;text-align:right;border-radius:3px;padding:3px 8px;display:inline-block;min-width:60px;text-align:center}
+.ov-chg-neg{background:rgba(192,57,43,.12);color:var(--red);font-weight:700;text-align:right;border-radius:3px;padding:3px 8px;display:inline-block;min-width:60px;text-align:center}
+.ov-chg-neu{background:var(--surface2);color:var(--muted);font-weight:600;text-align:right;border-radius:3px;padding:3px 8px;display:inline-block;min-width:60px;text-align:center}
+.ov-pnl-pos{color:var(--green);font-weight:700}
+.ov-pnl-neg{color:var(--red);font-weight:700}
+
+/* Right panel — market indices */
+.ov-panel-right{display:flex;flex-direction:column;gap:8px}
+.ov-mkt-hdr{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface3);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0}
+.ov-idx-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.ov-idx-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);padding:7px 12px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.ov-idx-table{width:100%;border-collapse:collapse;font-size:12px}
+.ov-idx-table thead th{background:var(--surface2);padding:6px 10px;font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border)}
+.ov-idx-table thead th.r{text-align:right}
+.ov-idx-table tbody tr{border-top:1px solid var(--border)}
+.ov-idx-table tbody tr:hover{background:var(--surface2)}
+.ov-idx-table td{padding:6px 10px;font-family:var(--mono);font-size:12px;white-space:nowrap}
+.ov-idx-table td.r{text-align:right}
+.ov-idx-name{font-size:11px;font-weight:600;color:var(--text)}
+.ov-idx-val{font-weight:700;color:var(--text)}
+.ov-idx-chg-pos{font-weight:700;color:var(--green)}
+.ov-idx-chg-neg{font-weight:700;color:var(--red)}
+.ov-idx-pct-pos{background:rgba(15,122,75,.12);color:var(--green);font-weight:700;padding:2px 7px;border-radius:3px;display:inline-block;min-width:52px;text-align:center}
+.ov-idx-pct-neg{background:rgba(192,57,43,.12);color:var(--red);font-weight:700;padding:2px 7px;border-radius:3px;display:inline-block;min-width:52px;text-align:center}
+
 /* ── GUIDE ── */
 .steps{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
 .steps-title{font-size:13px;font-weight:700;margin-bottom:14px;color:var(--text);display:flex;align-items:center;gap:8px}
@@ -744,43 +790,68 @@ html{-webkit-text-size-adjust:100%}
     <div class="tab" onclick="showTab('hm',this)">🔥 Heatmap</div>
   </div>
 
-  <!-- ═══ OVERVIEW ═══ -->
+  <!-- ═══ OVERVIEW — two-panel layout matching reference ═══ -->
   <div id="t-ov">
-    <div class="two-col">
-      <div class="sec">
-        <div class="sec-hdr"><span class="sec-title">🚀 Top Gainers</span><span class="sec-badge" id="gBadge">—</span></div>
-        <div class="t-wrap scroll">
-          <table><thead><tr><th>Stock</th><th>CMP ⚡</th><th>Day%</th><th>Avg Buy</th><th>P&amp;L%</th><th>P&amp;L ₹</th></tr></thead>
-          <tbody id="tb-gain"></tbody></table>
+    <div class="ov-panel-layout">
+
+      <!-- ── LEFT: Client Portfolio Summary ── -->
+      <div class="ov-panel-left">
+        <div class="ov-ph">
+          <span class="ov-ph-title">Portfolio Summary</span>
+          <span class="ov-ph-badge" id="ovBadge">—</span>
+          <button class="ov-sort-btn" onclick="cycleOvSort()" id="ovSortBtn" title="Sort">↕ Sort</button>
+        </div>
+        <div class="ov-table-wrap">
+          <table class="ov-table">
+            <thead><tr>
+              <th>Scrip Code</th>
+              <th class="r">CMP</th>
+              <th class="r">Today's Change%</th>
+              <th class="r">P&amp;L %</th>
+              <th class="r">Holding %</th>
+            </tr></thead>
+            <tbody id="tb-ov-holdings"></tbody>
+          </table>
         </div>
       </div>
-      <div class="sec">
-        <div class="sec-hdr"><span class="sec-title">📉 Top Losers</span><span class="sec-badge" id="lBadge">—</span></div>
-        <div class="t-wrap scroll">
-          <table><thead><tr><th>Stock</th><th>CMP ⚡</th><th>Day%</th><th>Avg Buy</th><th>P&amp;L%</th><th>P&amp;L ₹</th></tr></thead>
-          <tbody id="tb-lose"></tbody></table>
+
+      <!-- ── RIGHT: Market View ── -->
+      <div class="ov-panel-right">
+        <div class="ov-mkt-hdr">
+          <span class="ov-ph-title">Market View</span>
+          <span class="market-ts" id="marketTS">—</span>
+          <button class="ov-sort-btn" onclick="refreshIndices()"><span id="mri">↻</span> Refresh</button>
+        </div>
+
+        <!-- Indian Indices — table style like reference -->
+        <div class="ov-idx-section">
+          <div class="ov-idx-lbl">🇮🇳 Indian Indices</div>
+          <table class="ov-idx-table">
+            <thead><tr><th>Index</th><th class="r">CMP</th><th class="r">Change</th><th class="r">%</th></tr></thead>
+            <tbody id="tb-india-idx"></tbody>
+          </table>
+        </div>
+
+        <!-- Global Indices -->
+        <div class="ov-idx-section">
+          <div class="ov-idx-lbl">🌍 Global Markets</div>
+          <table class="ov-idx-table">
+            <thead><tr><th>Index</th><th class="r">CMP</th><th class="r">Change</th><th class="r">%</th></tr></thead>
+            <tbody id="tb-global-idx"></tbody>
+          </table>
+        </div>
+
+        <!-- Currencies & Commodities -->
+        <div class="ov-idx-section">
+          <div class="ov-idx-lbl">💱 Currencies &amp; Commodities</div>
+          <table class="ov-idx-table">
+            <thead><tr><th>Name</th><th class="r">CMP</th><th class="r">Change</th><th class="r">%</th></tr></thead>
+            <tbody id="tb-comm-idx"></tbody>
+          </table>
         </div>
       </div>
+
     </div>
-
-    <!-- MARKET VIEW -->
-    <div class="market-header">
-      <span class="market-title">🌐 Market Overview</span>
-      <span class="market-ts" id="marketTS">—</span>
-      <button class="btn" style="font-size:10px;padding:4px 10px" onclick="refreshIndices()"><span id="mri">↻</span> Refresh</button>
-    </div>
-
-    <!-- Indian Indices Heatmap -->
-    <div class="mkt-section-lbl">🇮🇳 Indian Indices</div>
-    <div class="india-heatmap" id="indiaHeatmap"></div>
-
-    <!-- Global Indices Strip -->
-    <div class="mkt-section-lbl">🌍 Global Markets</div>
-    <div class="global-strip" id="globalStrip"></div>
-
-    <!-- Currencies & Commodities -->
-    <div class="mkt-section-lbl">💱 Currencies &amp; Commodities</div>
-    <div class="comm-grid" id="commGrid"></div>
   </div>
 
   <!-- ═══ HOLDINGS ═══ -->
@@ -2044,12 +2115,69 @@ function glRow(s){
   </tr>`;
 }
 
+// Overview sort state
+let _ovSort='code'; // 'code' | 'cmp' | 'daypct' | 'pnlpct' | 'wt'
+const _ovSortCycles=['code','daypct','pnlpct','cmp','wt'];
+
+function cycleOvSort(){
+  const idx=(_ovSortCycles.indexOf(_ovSort)+1)%_ovSortCycles.length;
+  _ovSort=_ovSortCycles[idx];
+  const labels={code:'A–Z',daypct:'Day %',pnlpct:'P&L %',cmp:'CMP',wt:'Weight'};
+  document.getElementById('ovSortBtn').textContent='↕ '+labels[_ovSort];
+  renderOverview(_lastComputedData||[]);
+}
+
 function renderOverview(data){
-  const sorted=[...data].sort((a,b)=>b.pnlPct-a.pnlPct);
-  document.getElementById('tb-gain').innerHTML=sorted.slice(0,5).map(glRow).join('');
-  document.getElementById('tb-lose').innerHTML=sorted.slice(-5).reverse().map(glRow).join('');
-  document.getElementById('gBadge').textContent='Top 5 of '+data.length;
-  document.getElementById('lBadge').textContent='Bottom 5';
+  if(!data||!data.length){
+    document.getElementById('tb-ov-holdings').innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Select a client to view portfolio</td></tr>';
+    document.getElementById('ovBadge').textContent='—';
+    return;
+  }
+
+  const totalInv=data.reduce((a,s)=>a+s.invest,0);
+
+  // Sort
+  let sorted=[...data];
+  if(_ovSort==='code')     sorted.sort((a,b)=>a.code.localeCompare(b.code));
+  else if(_ovSort==='cmp') sorted.sort((a,b)=>b.cmp-a.cmp);
+  else if(_ovSort==='daypct') sorted.sort((a,b)=>(b.dayPct??-999)-(a.dayPct??-999));
+  else if(_ovSort==='pnlpct') sorted.sort((a,b)=>b.pnlPct-a.pnlPct);
+  else if(_ovSort==='wt')  sorted.sort((a,b)=>b.invest-a.invest);
+
+  const totalCurr=data.reduce((a,s)=>a+s.curr,0);
+  document.getElementById('ovBadge').textContent=data.length+' scripts · ₹'+fmtC(totalCurr);
+
+  document.getElementById('tb-ov-holdings').innerHTML=sorted.map(s=>{
+    const wt=totalInv>0?(s.invest/totalInv*100):0;
+
+    // Today's change cell — colored background like reference
+    let chgHtml;
+    if(s.dayPct===null){
+      chgHtml=`<span class="ov-chg-neu">—</span>`;
+    }else{
+      const sign=s.dayPct>=0?'+':'';
+      chgHtml=s.dayPct>=0
+        ?`<span class="ov-chg-pos">${sign}${s.dayPct.toFixed(2)}%</span>`
+        :`<span class="ov-chg-neg">${s.dayPct.toFixed(2)}%</span>`;
+    }
+
+    // P&L % cell — colored background
+    const pnlSign=s.pnlPct>=0?'+':'';
+    const pnlHtml=s.pnlPct>=0
+      ?`<span class="ov-chg-pos">${pnlSign}${s.pnlPct.toFixed(2)}%</span>`
+      :`<span class="ov-chg-neg">${s.pnlPct.toFixed(2)}%</span>`;
+
+    // CMP color — green if above buy, red if below
+    const cmpCls=s.cmp>=s.buy?'ov-pnl-pos':'ov-pnl-neg';
+
+    return `<tr>
+      <td><span class="ov-code">${s.code}</span></td>
+      <td class="r"><span class="${cmpCls}">${s.cmp.toFixed(2)}</span></td>
+      <td class="r">${chgHtml}</td>
+      <td class="r">${pnlHtml}</td>
+      <td class="r" style="color:var(--text2);font-weight:600">${wt.toFixed(1)}%</td>
+    </tr>`;
+  }).join('');
 }
 
 // UPDATED: Holdings render with sort + sector filter
@@ -2200,68 +2328,43 @@ function fmtIdx(val){
   return val.toFixed(val<10?4:2);
 }
 
+// Render a single index table row
+function idxRow(cfg){
+  const d=liveIndices[cfg.sym];
+  const pct=d?d.pct:null;
+  const chg=d?d.chg:null;
+  const isFb=d?.isFallback;
+  const pctHtml=pct===null?'<td class="r">—</td><td class="r">—</td>'
+    :pct>=0
+      ?`<td class="r"><span class="ov-idx-chg-pos">+${chg>0?'+':''} ${Math.abs(chg)<1?chg.toFixed(4):chg.toFixed(2)}</span></td><td class="r"><span class="ov-idx-pct-pos">+${pct.toFixed(2)}%</span></td>`
+      :`<td class="r"><span class="ov-idx-chg-neg">${chg.toFixed(2)}</span></td><td class="r"><span class="ov-idx-pct-neg">${pct.toFixed(2)}%</span></td>`;
+  const rowCls=pct===null?'':(pct>=0?'ov-idx-pos-row':'ov-idx-neg-row');
+  return `<tr class="${rowCls}">
+    <td><span class="ov-idx-name">${cfg.flag} ${cfg.name}${isFb?' <span style="font-size:9px;color:var(--muted)">(est)</span>':''}</span></td>
+    <td class="r"><span class="ov-idx-val">${d?fmtIdx(d.val):'—'}</span></td>
+    ${pctHtml}
+  </tr>`;
+}
+
 function renderIndices(){
   const mktOpen=typeof isMarketOpen==='function'?isMarketOpen():false;
   const ts=indicesLastUpdated
     ?(mktOpen?'Live · ':'Closed · ')+indicesLastUpdated.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
-    :(mktOpen?'Fetching live…':'Market closed · Last closing prices');
+    :(mktOpen?'Fetching…':'Market closed');
   const el=document.getElementById('marketTS');
   if(el)el.textContent=ts;
 
-  // ── Indian Heatmap — large Bloomberg-style tiles ──
-  const indiaEl=document.getElementById('indiaHeatmap');
-  if(indiaEl){
-    indiaEl.innerHTML=INDIA_INDEX_CFG.map(cfg=>{
-      const d=liveIndices[cfg.sym];
-      const live=!!d;
-      const pct=live?d.pct:0;
-      const cls=!d?'neu':pct>=0?'pos':'neg';
-      const arrow=pct>=0?'▲':'▼';
-      const isFb=d?.isFallback;
-      return `<div class="ih-cell${cfg.big?' big':''} ${cls}">
-        <div class="ih-top">
-          <span class="ih-flag">${cfg.flag}</span>
-          <span class="ih-name">${cfg.name}</span>
-          ${isFb?'<span class="ih-fb">est</span>':''}
-        </div>
-        <div class="ih-val">${d?fmtIdx(d.val):'—'}</div>
-        <div class="ih-chg">${d?arrow+' '+Math.abs(pct).toFixed(2)+'%':'—'}</div>
-      </div>`;
-    }).join('');
-  }
+  // Indian indices table
+  const indiaEl=document.getElementById('tb-india-idx');
+  if(indiaEl) indiaEl.innerHTML=INDIA_INDEX_CFG.map(idxRow).join('');
 
-  // ── Global Markets — card grid ──
-  const globalEl=document.getElementById('globalStrip');
-  if(globalEl){
-    globalEl.innerHTML=GLOBAL_INDEX_CFG.map(cfg=>{
-      const d=liveIndices[cfg.sym];
-      const pct=d?d.pct:0;
-      const cls=!d?'neu':pct>=0?'pos':'neg';
-      return `<div class="gs-card ${cls}">
-        <div class="gs-name"><span class="gs-flag">${cfg.flag}</span>${cfg.name}</div>
-        <div class="gs-val">${d?fmtIdx(d.val):'—'}</div>
-        <div class="gs-chg">${d?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</div>
-      </div>`;
-    }).join('');
-  }
+  // Global indices table
+  const globalEl=document.getElementById('tb-global-idx');
+  if(globalEl) globalEl.innerHTML=GLOBAL_INDEX_CFG.map(idxRow).join('');
 
-  // ── Currencies & Commodities ──
-  const commEl=document.getElementById('commGrid');
-  if(commEl){
-    commEl.innerHTML=COMM_INDEX_CFG.map(cfg=>{
-      const d=liveIndices[cfg.sym];
-      const pct=d?d.pct:0;
-      const cls=!d?'':pct>=0?' pos':' neg';
-      return `<div class="cm-card${cls}">
-        <div class="cm-icon">${cfg.flag}</div>
-        <div class="cm-body">
-          <div class="cm-name">${cfg.name}</div>
-          <div class="cm-val">${d?fmtIdx(d.val):'—'}</div>
-          <div class="cm-chg">${d?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</div>
-        </div>
-      </div>`;
-    }).join('');
-  }
+  // Currencies & Commodities table
+  const commEl=document.getElementById('tb-comm-idx');
+  if(commEl) commEl.innerHTML=COMM_INDEX_CFG.map(idxRow).join('');
 }
 
 async function refreshIndices(){
