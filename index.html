@@ -1089,7 +1089,8 @@ let _refreshing = false;
 
 // NEW: Google Sheet CSV URL
 const SHEET_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTalSshnxDgdG9kqJNMZAgjH2j_Tu2TpjvZ9tjCvMg2G1ECIvervKbM9XlvfPta2svaUI3U7FdcFrdi/pub?gid=1099151370&single=true&output=csv';
-const WORKER_URL  = 'https://autus-prices.autus-securities.workers.dev'; // Cloudflare Worker
+const WORKER_URL   = 'https://autus-prices.autus-securities.workers.dev'; // Sheet sync only
+const YFINANCE_URL = 'https://autus-yfinance.onrender.com'; // yfinance — indices + selected client prices
 const LS_SHEET    = 'pf-sheet-v2';
 const LS_PRICES   = 'pf-prices-v2';
 const LS_THEME    = 'pf-theme';
@@ -1203,16 +1204,16 @@ const INDEX_FALLBACK = {
     if(!liveIndices[sym])liveIndices[sym]={...d,ts:now,isFallback:true};
   }
 })();
-// fetchStooqIndicesBatch — routes through Cloudflare Worker /indices
-// Worker fetches each index symbol individually from Stooq (avoids N/D batch block)
+// fetchStooqIndicesBatch — now uses yfinance Python service
+// yfinance handles Yahoo auth automatically — no IP blocking issues
 async function fetchStooqIndicesBatch(syms){
   try{
-    const url=WORKER_URL+'/indices?s='+encodeURIComponent(syms.join(','));
+    const url=YFINANCE_URL+'/indices?s='+encodeURIComponent(syms.join(','));
     const r=await Promise.race([
       fetch(url,{cache:'no-store'}),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),25000))
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),30000))
     ]);
-    if(!r.ok)throw new Error('Worker HTTP '+r.status);
+    if(!r.ok)throw new Error('HTTP '+r.status);
     const j=await r.json();
     if(!j.ok||!j.data?.length)throw new Error(j.error||'No data');
     let count=0;
@@ -1221,10 +1222,10 @@ async function fetchStooqIndicesBatch(syms){
       liveIndices[d.sym]={val:d.val,chg:d.chg,pct:d.pct,prevClose:d.prevClose,ts:Date.now(),isFallback:false};
       count++;
     }
-    if(count>0){console.log('[INDICES] Worker OK: '+count+' symbols');return count;}
-    throw new Error('0 valid symbols');
+    if(count>0){console.log('[INDICES] yfinance OK: '+count+' symbols');return count;}
+    throw new Error('0 valid symbols in response');
   }catch(e){
-    console.warn('[INDICES] Worker failed:',e.message);
+    console.warn('[INDICES] yfinance failed:',e.message);
     return 0;
   }
 }
@@ -1773,17 +1774,18 @@ function compute(){
 // ══════════════════════════════════════════════════════
 
 async function fetchYahooBatch(symbols){
-  // Worker fetches each symbol individually from Stooq (batch returns N/D from datacenter IPs)
+  // yfinance Python service — handles only selected client batch (10-20 symbols max)
+  // Yahoo does NOT block yfinance because it manages crumb/cookie automatically
   try{
-    const url=WORKER_URL+'/prices?s='+encodeURIComponent(symbols.join(','));
+    const url=YFINANCE_URL+'/prices?s='+encodeURIComponent(symbols.join(','));
     const r=await Promise.race([
       fetch(url,{cache:'no-store'}),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),25000))
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),30000))
     ]);
-    if(!r.ok)throw new Error('Worker HTTP '+r.status);
+    if(!r.ok)throw new Error('yfinance HTTP '+r.status);
     const j=await r.json();
-    if(!j.ok||!j.data?.length)throw new Error('Worker: '+(j.error||'no data'));
-    console.log('[PRICE] Worker OK: '+j.data.length+' quotes ('+j.source+')');
+    if(!j.ok||!j.data?.length)throw new Error('yfinance: '+(j.error||'no data'));
+    console.log('[PRICE] yfinance OK: '+j.data.length+' quotes');
     return j.data.map(q=>({
       symbol:                     q.symbol,
       regularMarketPrice:         q.price,
@@ -1792,17 +1794,14 @@ async function fetchYahooBatch(symbols){
       regularMarketChange:        q.changeAbs,
     }));
   }catch(e){
-    console.warn('[PRICE] Worker failed:',e.message);
+    console.warn('[PRICE] yfinance failed:',e.message);
     return [];
   }
 }
 
-// fetchStooqFallbackBatch — not used directly anymore.
-// All price fetching now goes through the Cloudflare Worker (/prices endpoint)
-// which fetches each symbol individually from Stooq server-side.
-// Third-party CORS proxies are all blocked from autussecuritiesindia.github.io.
+// fetchStooqFallbackBatch — replaced by yfinance service
+// All price fetching now goes through YFINANCE_URL (autus-yfinance.onrender.com)
 async function fetchStooqFallbackBatch(symbols){
-  console.warn('[PRICE] fetchStooqFallbackBatch called — all CORS proxies blocked from github.io');
   return [];
 }
 
