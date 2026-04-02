@@ -670,6 +670,55 @@ html{-webkit-text-size-adjust:100%}
 
 /* ── OVERVIEW LAYOUT ── */
 .ov-panel-layout{display:grid;grid-template-columns:1fr;gap:12px}
+
+/* ══════════════════════════════════════════════════════
+   HOLDINGS — Client Name Header
+══════════════════════════════════════════════════════ */
+.client-name-header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;box-shadow:var(--shadow)}
+.ch-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--indigo));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.ch-name{font-size:15px;font-weight:700;color:var(--text)}
+.ch-code{font-size:10px;font-family:var(--mono);color:var(--muted);margin-top:2px}
+
+/* ══════════════════════════════════════════════════════
+   ANALYTICS — Hover row effect + full table
+══════════════════════════════════════════════════════ */
+.top-clients-table tbody tr:hover td{background:var(--blue-bg);cursor:pointer}
+.top-clients-table tbody tr:hover .pill{filter:brightness(1.05)}
+
+/* ══════════════════════════════════════════════════════
+   HEATMAP — Square tiles grid layout
+══════════════════════════════════════════════════════ */
+.hm-nested-grid{display:flex;flex-direction:column;gap:10px;width:100%}
+.hm-sector-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.hm-sector-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface3);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.hm-sector-hdr:hover{background:var(--surface2)}
+.hm-sector-title{font-size:12px;font-weight:700;color:var(--text)}
+.hm-sector-info{font-size:10px;color:var(--muted);font-family:var(--mono)}
+.hm-sector-meta{display:flex;align-items:center;gap:8px}
+.hm-sector-pct{font-size:12px;font-weight:700;font-family:var(--mono)}
+.hm-sector-body{display:flex;flex-wrap:wrap;gap:4px;padding:10px}
+
+/* Square tiles — key layout */
+.hm-tile-sq{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:6px;cursor:pointer;transition:transform .12s,box-shadow .12s;
+  padding:4px;text-align:center;overflow:hidden;box-sizing:border-box;
+  border:1px solid rgba(255,255,255,0.06);gap:1px;flex-shrink:0;
+}
+.hm-tile-sq:hover{transform:scale(1.08);box-shadow:0 4px 20px rgba(0,0,0,.5);z-index:5;position:relative}
+.hm-tile-code{font-size:10px;font-weight:800;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.2}
+.hm-tile-pct{font-size:11px;font-weight:700;font-family:var(--mono);line-height:1}
+.hm-tile-cmp{font-size:8px;font-family:var(--mono);line-height:1}
+
+/* ══════════════════════════════════════════════════════
+   ANALYTICS — Top clients table improvements
+══════════════════════════════════════════════════════ */
+.top-clients-table{overflow-y:auto;max-height:70vh}
+.top-clients-table table{width:100%;border-collapse:collapse}
+.top-clients-table thead th{position:sticky;top:0;z-index:2;background:var(--surface2);padding:8px 12px;font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap}
+.top-clients-table tbody tr{border-top:1px solid var(--border);transition:background .15s}
+.top-clients-table td{padding:9px 12px;text-align:right;font-size:12px;font-family:var(--mono);color:var(--text)}
+.top-clients-table td:first-child,.top-clients-table td:nth-child(2),.top-clients-table td:nth-child(3){text-align:left}
 </style>
 </head>
 <body>
@@ -922,7 +971,15 @@ html{-webkit-text-size-adjust:100%}
 
   <!-- ═══ HOLDINGS ═══ -->
   <div id="t-hd" style="display:none">
-    <!-- NEW: Sector filter banner -->
+    <!-- Client name header -->
+    <div class="client-name-header" id="holdingClientHeader" style="display:none">
+      <div class="ch-avatar" id="holdingClientAvatar">—</div>
+      <div>
+        <div class="ch-name" id="holdingClientName">—</div>
+        <div class="ch-code" id="holdingClientCode">—</div>
+      </div>
+    </div>
+    <!-- Sector filter banner -->
     <div class="sector-filter-bar" id="sectorFilterBar">
       <span>🏭 Filtered by sector: <strong id="sectorFilterName"></strong></span>
       <button class="clear-btn" onclick="clearSectorFilter()">✕ Clear Filter</button>
@@ -1044,7 +1101,7 @@ html{-webkit-text-size-adjust:100%}
   <div id="t-an" style="display:none">
     <div class="sec">
       <div class="sec-hdr">
-        <span class="sec-title">🏆 Top 10 Clients — Portfolio Analytics</span>
+        <span class="sec-title">🏆 All Clients — Portfolio Analytics</span>
         <div class="sec-actions">
           <span class="sec-badge" id="anBadge">—</span>
         </div>
@@ -2263,8 +2320,25 @@ function filterMW(){
   document.querySelectorAll('.mw-row').forEach(r=>r.style.display=r.dataset.mwq.includes(q)?'':'none');
 }
 
-// UPDATED: Holdings render with sort + sector filter
+// UPDATED: Holdings render — client name header, no repetition per row
 function renderHoldings(data){
+  // Update client name header
+  const clientHeader=document.getElementById('holdingClientHeader');
+  const clientName=document.getElementById('holdingClientName');
+  const clientCode=document.getElementById('holdingClientCode');
+  const clientAvatar=document.getElementById('holdingClientAvatar');
+  if(clientHeader){
+    if(selectedClient&&allClients.length){
+      const ci=allClients.find(x=>x.code===selectedClient);
+      const nm=ci?ci.name:selectedClient;
+      clientHeader.style.display='flex';
+      clientName.textContent=nm;
+      clientCode.textContent=selectedClient;
+      clientAvatar.textContent=nm.charAt(0).toUpperCase();
+    }else{
+      clientHeader.style.display='none';
+    }
+  }
   const totalInv=data.reduce((a,s)=>a+s.invest,0);
   const sk=document.getElementById('sortSelect').value||sortKey;
   sortKey=sk;
@@ -3165,26 +3239,25 @@ function hmChip(s,maxPct){
   if(pct>0){
     const g=Math.round(71+intensity*56);
     bg=`rgb(${Math.round(15-intensity*5)},${g},${Math.round(43-intensity*15)})`;
-    textCol=intensity>0.5?'#a7f3d0':'#6ee7b7';
-    pctCol='#4ade80';
+    textCol=intensity>0.5?'#a7f3d0':'#6ee7b7';pctCol='#4ade80';
   }else if(pct<0){
     const r=Math.round(120+intensity*55);
     bg=`rgb(${r},${Math.round(20-intensity*8)},${Math.round(20-intensity*8)})`;
-    textCol=intensity>0.5?'#fecaca':'#fca5a5';
-    pctCol='#f87171';
+    textCol=intensity>0.5?'#fecaca':'#fca5a5';pctCol='#f87171';
   }else{
     bg='rgba(51,65,85,0.55)';textCol='var(--text2)';pctCol='var(--muted)';
   }
-  // Chip width proportional to weight — min 72, max 130
-  const chipW=Math.max(72,Math.min(130,72+wt*7));
-  const safe=s.code.replace(/'/g,"\\'");
+  // Square tiles — proportional to weight, min 70 max 110px
+  const sz=Math.max(70,Math.min(110,70+wt*5));
+  const safe=s.code.replace(/'/g,"\'");
   const arrow=pct>0?'▲':pct<0?'▼':'';
-  return `<div class="hm-chip" onclick="showHmDrill('${safe}')"
-    style="background:${bg};width:${chipW}px"
+  const cmpStr=s.cmp>0?s.cmp.toFixed(0):'—';
+  return `<div class="hm-tile-sq" onclick="showHmDrill('${safe}')"
+    style="background:${bg};width:${sz}px;height:${sz}px"
     title="${s.name} · ${pct>=0?'+':''}${pct.toFixed(2)}% · Wt ${wt.toFixed(1)}%">
-    <span class="hm-chip-code" style="color:${textCol}">${s.code}</span>
-    <span class="hm-chip-pct" style="color:${pctCol}">${arrow}${Math.abs(pct).toFixed(2)}%</span>
-    <span class="hm-chip-wt" style="color:${textCol}">${s.cmp>0?s.cmp.toFixed(0):''} · ${wt.toFixed(1)}%</span>
+    <span class="hm-tile-code" style="color:${textCol}">${s.code}</span>
+    <span class="hm-tile-pct" style="color:${pctCol}">${arrow}${Math.abs(pct).toFixed(2)}%</span>
+    <span class="hm-tile-cmp" style="color:${textCol};opacity:.8">${cmpStr}</span>
   </div>`;
 }
 
@@ -3288,10 +3361,9 @@ function renderAnalytics(){
     'stocks':(a,b)=>b.stockCount-a.stockCount,
   };
   clients.sort(sortFn[anMetric]||sortFn.aum);
-  const top=clients.slice(0,10);
-  const maxAUM=top.length?top[0].curr:1;
-
-  document.getElementById('anBadge').textContent=`Top ${top.length} of ${clients.length} clients · ${rmFilter||'All RMs'}`;
+  // Show ALL clients — no top-10 limit
+  const maxAUM=clients.length?clients[0].curr:1;
+  document.getElementById('anBadge').textContent=`${clients.length} clients · ${rmFilter||'All RMs'} · sorted by ${anMetric.toUpperCase()}`;
 
   const rankBadge=(i)=>{
     if(i===0)return '<span class="rank-badge rank-1">🥇</span>';
@@ -3300,11 +3372,14 @@ function renderAnalytics(){
     return `<span class="rank-badge rank-n">${i+1}</span>`;
   };
 
-  document.getElementById('tb-analytics').innerHTML=top.map((c,i)=>{
+  document.getElementById('tb-analytics').innerHTML=clients.map((c,i)=>{
     const aumPct=maxAUM>0?(c.curr/maxAUM)*100:0;
     const pnlCls=c.pnl>=0?'pos':'neg';
     const pnlSign=c.pnl>=0?'+':'−';
-    return `<tr>
+    const safeCode=c.clientCode.replace(/'/g,"\'");
+    const safeRM=(c.rm||'DEFAULT').replace(/'/g,"\'");
+    // Clicking navigates to that client's holdings
+    return `<tr style="cursor:pointer" onclick="selectClientFromAnalytics('${safeCode}','${safeRM}')" title="Click to view ${c.clientName}'s holdings">
       <td style="text-align:center">${rankBadge(i)}</td>
       <td><span style="font-weight:700;font-size:12px">${c.clientName}</span></td>
       <td><span style="font-size:10px;color:var(--muted);font-family:var(--mono)">${c.rm==='DEFAULT'?'—':c.rm}</span></td>
@@ -3321,6 +3396,29 @@ function renderAnalytics(){
       </td>
     </tr>`;
   }).join('');
+}
+
+// Analytics click — navigate to client holdings
+function selectClientFromAnalytics(clientCode, rm){
+  // Select client and switch to Holdings tab
+  selectedClient=clientCode;
+  document.getElementById('clientSelect').value=clientCode;
+  updateClientBadge();
+  const ci=allClients.find(c=>c.code===clientCode);
+  document.getElementById('cbRM').textContent=rm==='DEFAULT'?'All':rm;
+  document.getElementById('cbClient').textContent=ci?ci.name:clientCode;
+  document.getElementById('cbCode').textContent=clientCode;
+  document.getElementById('clientBar').style.display='flex';
+  // Switch to Holdings tab
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const hdTab=[...document.querySelectorAll('.tab')].find(t=>t.textContent.includes('Holdings'));
+  if(hdTab)hdTab.classList.add('active');
+  ['ov','hd','sc','st','hm','an'].forEach(id=>{
+    const el=document.getElementById('t-'+id);
+    if(el)el.style.display=id==='hd'?'':'none';
+  });
+  renderAll();
+  toast('Viewing: '+(ci?ci.name:clientCode),'ok');
 }
 </script>
 </body>
