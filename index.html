@@ -203,8 +203,111 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .ic-val{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--text)}
 .ic-chg{font-size:10px;font-family:var(--mono);margin-top:3px;font-weight:600;display:flex;align-items:center;gap:4px}
 .ic-pct{padding:1px 5px;border-radius:4px;font-size:9.5px}
-.two-col{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:680px){.two-col{grid-template-columns:1fr 1fr}}
+/* ── OVERVIEW vertical layout ── */
+.ov-layout{display:flex;flex-direction:column;gap:12px}
+
+/* ── MARKET WATCH TABLE (Overview) ── */
+.mw-wrap{background:var(--surface);border:1px solid var(--border);border-radius:0 0 var(--r) var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.mw-wrap table{width:100%;border-collapse:collapse}
+.mw-wrap thead th{background:var(--surface2);padding:7px 10px;font-size:9px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--border);text-align:right}
+.mw-wrap thead th:first-child{text-align:left}
+.mw-wrap tbody tr{border-top:1px solid var(--border);cursor:default}
+.mw-wrap tbody tr:hover{background:var(--surface2)}
+.mw-wrap td{padding:7px 10px;text-align:right;font-size:11.5px;font-family:var(--mono);white-space:nowrap;color:var(--text)}
+.mw-wrap td:first-child{text-align:left;font-family:var(--sans)}
+.mw-script-name{font-size:11.5px;font-weight:600;color:var(--text);display:block}
+.mw-script-sub{font-size:9.5px;color:var(--muted);display:block;margin-top:1px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── MARKET SECTIONS vertical ── */
+.mkt-vertical{display:flex;flex-direction:column;gap:10px}
+.mkt-section-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.mkt-section-hdr{background:var(--surface2);border-bottom:1px solid var(--border);padding:8px 12px;display:flex;align-items:center;justify-content:space-between}
+.mkt-section-hdr-title{font-size:11px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+.mkt-section-body{padding:10px}
+
+/* Indian indices vertical list */
+.india-list{display:flex;flex-direction:column;gap:6px}
+.india-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2)}
+.india-row.pos{border-left:3px solid var(--green);background:linear-gradient(to right,var(--green-bg),var(--surface2))}
+.india-row.neg{border-left:3px solid var(--red);background:linear-gradient(to right,var(--red-bg),var(--surface2))}
+.india-row.big{border-left-width:4px}
+.ir-left{display:flex;align-items:center;gap:8px;min-width:0}
+.ir-flag{font-size:12px;flex-shrink:0}
+.ir-name{font-size:11px;font-weight:700;color:var(--text)}
+.ir-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ir-val{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.ir-pct{font-size:11px;font-weight:700;font-family:var(--mono)}
+.india-row.pos .ir-pct{color:var(--green)}
+.india-row.neg .ir-pct{color:var(--red)}
+.india-row.neu .ir-pct{color:var(--muted)}
+
+/* Global & Commodities compact rows */
+.global-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(min-width:500px){.global-list{grid-template-columns:repeat(3,1fr)}}
+.gl-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2)}
+.gl-row.pos{border-left:2px solid var(--green)}
+.gl-row.neg{border-left:2px solid var(--red)}
+.gl-left{min-width:0}
+.gl-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gl-val{font-size:12px;font-weight:700;font-family:var(--mono);color:var(--text);display:block}
+.gl-pct{font-size:10px;font-weight:700;font-family:var(--mono);flex-shrink:0}
+.gl-row.pos .gl-pct{color:var(--green)}
+.gl-row.neg .gl-pct{color:var(--red)}
+.gl-row.neu .gl-pct{color:var(--muted)}
+
+.comm-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(min-width:500px){.comm-list{grid-template-columns:repeat(3,1fr)}}
+.cl-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2)}
+.cl-row.pos{border-left:2px solid var(--green)}
+.cl-row.neg{border-left:2px solid var(--red)}
+.cl-icon{font-size:16px;flex-shrink:0}
+.cl-body{flex:1;min-width:0}
+.cl-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);display:block}
+.cl-val{font-size:12px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.cl-pct{font-size:10px;font-weight:700;font-family:var(--mono);flex-shrink:0}
+.cl-row.pos .cl-pct{color:var(--green)}
+.cl-row.neg .cl-pct{color:var(--red)}
+.cl-row.neu .cl-pct{color:var(--muted)}
+
+/* ── ANALYTICS TAB ── */
+.an-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.an-select{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);padding:6px 10px;color:var(--text);font-family:var(--mono);font-size:11px;outline:none;cursor:pointer}
+.an-select:focus{border-color:var(--blue)}
+.an-metric-btns{display:flex;gap:5px}
+.an-metric-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:10px;font-weight:700;cursor:pointer;color:var(--text2);font-family:var(--mono)}
+.an-metric-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.top-clients-table{background:var(--surface);border:1px solid var(--border);border-radius:0 0 var(--r) var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.top-clients-table table{width:100%;border-collapse:collapse}
+.top-clients-table thead th{background:var(--surface2);padding:8px 12px;font-size:9px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--border);text-align:right}
+.top-clients-table thead th:first-child,.top-clients-table thead th:nth-child(2){text-align:left}
+.top-clients-table tbody tr{border-top:1px solid var(--border)}
+.top-clients-table tbody tr:hover{background:var(--surface2)}
+.top-clients-table td{padding:9px 12px;text-align:right;font-size:12px;font-family:var(--mono);color:var(--text)}
+.top-clients-table td:first-child,.top-clients-table td:nth-child(2){text-align:left;font-family:var(--sans)}
+.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:800;font-family:var(--mono);flex-shrink:0}
+.rank-1{background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff}
+.rank-2{background:linear-gradient(135deg,#94A3B8,#64748B);color:#fff}
+.rank-3{background:linear-gradient(135deg,#CD7F32,#B45309);color:#fff}
+.rank-n{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.client-aum-bar{display:flex;align-items:center;gap:6px}
+.aum-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;min-width:40px}
+.aum-fill{height:100%;border-radius:2px;background:var(--blue)}
+
+/* ── NESTED HEATMAP REDESIGN ── */
+.hm-nested-grid{display:flex;flex-direction:column;gap:8px}
+.hm-sector-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.hm-sector-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface2);border-bottom:1px solid var(--border);cursor:pointer}
+.hm-sector-hdr:hover{background:var(--surface3)}
+.hm-sector-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:var(--text)}
+.hm-sector-meta{display:flex;align-items:center;gap:10px}
+.hm-sector-pct{font-size:12px;font-weight:700;font-family:var(--mono)}
+.hm-sector-info{font-size:9px;font-family:var(--mono);color:var(--muted)}
+.hm-sector-body{padding:8px;display:flex;flex-wrap:wrap;gap:5px}
+.hm-chip{border-radius:6px;padding:5px 8px;cursor:pointer;border:1px solid rgba(255,255,255,.06);transition:transform .12s,box-shadow .12s;min-width:70px;display:flex;flex-direction:column;align-items:flex-start}
+.hm-chip:hover{transform:scale(1.06);box-shadow:0 4px 20px rgba(0,0,0,.35);z-index:3}
+.hm-chip-code{font-size:9.5px;font-weight:800;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.hm-chip-pct{font-size:12px;font-weight:700;font-family:var(--mono);margin:2px 0 1px}
+.hm-chip-wt{font-size:8px;font-family:var(--mono);opacity:.7}
 
 /* ── GUIDE ── */
 .steps{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
@@ -567,7 +670,6 @@ html{-webkit-text-size-adjust:100%}
 
 /* ── OVERVIEW LAYOUT ── */
 .ov-panel-layout{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:820px){.ov-panel-layout{grid-template-columns:1fr 360px}}
 </style>
 </head>
 <body>
@@ -753,45 +855,69 @@ html{-webkit-text-size-adjust:100%}
     <div class="tab" onclick="showTab('sc',this)">🏭 Sectors</div>
     <div class="tab" onclick="showTab('st',this)">📊 RM Scripts</div>
     <div class="tab" onclick="showTab('hm',this)">🔥 Heatmap</div>
+    <div class="tab" onclick="showTab('an',this)">🏆 Analytics</div>
   </div>
 
   <!-- ═══ OVERVIEW ═══ -->
   <div id="t-ov">
-    <div class="two-col">
+    <div class="ov-layout">
+
+      <!-- MARKET WATCH: live holdings table -->
       <div class="sec">
-        <div class="sec-hdr"><span class="sec-title">🚀 Top Gainers</span><span class="sec-badge" id="gBadge">—</span></div>
-        <div class="t-wrap scroll">
-          <table><thead><tr><th>Stock</th><th>CMP ⚡</th><th>Day%</th><th>Avg Buy</th><th>P&amp;L%</th><th>P&amp;L ₹</th></tr></thead>
-          <tbody id="tb-gain"></tbody></table>
+        <div class="sec-hdr">
+          <span class="sec-title">📟 Market Watch — Holdings</span>
+          <div class="sec-actions">
+            <span class="sec-badge" id="mwBadge">—</span>
+            <div class="search-wrap" style="margin:0;min-width:160px">
+              <span class="s-icon" style="font-size:12px">🔍</span>
+              <input class="search" id="mwSearch" placeholder="Search script…" oninput="filterMW()" style="padding:5px 10px 5px 28px;font-size:11px;height:30px">
+            </div>
+          </div>
+        </div>
+        <div class="mw-wrap">
+          <table>
+            <thead><tr>
+              <th style="text-align:left">Script</th>
+              <th>CMP ⚡</th>
+              <th>Day %</th>
+              <th>P&amp;L %</th>
+              <th>Curr Val</th>
+              <th>Wt %</th>
+            </tr></thead>
+            <tbody id="tb-mw"></tbody>
+          </table>
         </div>
       </div>
+
+      <!-- MARKET OVERVIEW: vertical sections -->
       <div class="sec">
-        <div class="sec-hdr"><span class="sec-title">📉 Top Losers</span><span class="sec-badge" id="lBadge">—</span></div>
-        <div class="t-wrap scroll">
-          <table><thead><tr><th>Stock</th><th>CMP ⚡</th><th>Day%</th><th>Avg Buy</th><th>P&amp;L%</th><th>P&amp;L ₹</th></tr></thead>
-          <tbody id="tb-lose"></tbody></table>
+        <div class="sec-hdr">
+          <span class="sec-title">🌐 Market Overview</span>
+          <div class="sec-actions">
+            <span class="market-ts" id="marketTS" style="font-size:10px;color:var(--muted);font-family:var(--mono)">—</span>
+            <button class="btn" style="font-size:10px;padding:4px 10px" onclick="refreshIndices()"><span id="mri">↻</span> Refresh</button>
+          </div>
+        </div>
+        <div style="padding:10px;display:flex;flex-direction:column;gap:10px;background:var(--surface);border-radius:0 0 var(--r) var(--r);border:1px solid var(--border);border-top:none;box-shadow:var(--shadow)">
+          <!-- Indian Indices -->
+          <div>
+            <div class="mkt-section-lbl" style="margin-bottom:7px">🇮🇳 Indian Indices</div>
+            <div class="india-list" id="indiaList"></div>
+          </div>
+          <!-- Global Markets -->
+          <div>
+            <div class="mkt-section-lbl" style="margin-bottom:7px">🌍 Global Markets</div>
+            <div class="global-list" id="globalList"></div>
+          </div>
+          <!-- Currencies & Commodities -->
+          <div>
+            <div class="mkt-section-lbl" style="margin-bottom:7px">💱 Currencies &amp; Commodities</div>
+            <div class="comm-list" id="commList"></div>
+          </div>
         </div>
       </div>
+
     </div>
-
-    <!-- MARKET VIEW -->
-    <div class="market-header">
-      <span class="market-title">🌐 Market Overview</span>
-      <span class="market-ts" id="marketTS">—</span>
-      <button class="btn" style="font-size:10px;padding:4px 10px" onclick="refreshIndices()"><span id="mri">↻</span> Refresh</button>
-    </div>
-
-    <!-- Indian Indices Heatmap -->
-    <div class="mkt-section-lbl">🇮🇳 Indian Indices</div>
-    <div class="india-heatmap" id="indiaHeatmap"></div>
-
-    <!-- Global Indices Strip -->
-    <div class="mkt-section-lbl">🌍 Global Markets</div>
-    <div class="global-strip" id="globalStrip"></div>
-
-    <!-- Currencies & Commodities -->
-    <div class="mkt-section-lbl">💱 Currencies &amp; Commodities</div>
-    <div class="comm-grid" id="commGrid"></div>
   </div>
 
   <!-- ═══ HOLDINGS ═══ -->
@@ -832,9 +958,9 @@ html{-webkit-text-size-adjust:100%}
         <table>
           <thead><tr>
             <th style="text-align:left">Script</th>
-            <th style="text-align:left">Industry</th>
             <th>CMP ⚡</th><th>Day %</th><th>Wt%</th><th>Qty</th>
             <th>Avg Buy ₹</th><th>Curr. Value</th><th>P&amp;L ₹</th><th>P&amp;L %</th>
+            <th style="text-align:left">Industry</th>
           </tr></thead>
           <tbody id="tb-hold"></tbody>
         </table>
@@ -915,13 +1041,53 @@ html{-webkit-text-size-adjust:100%}
     <div id="scDrill" style="display:none"></div>
   </div>
 
+  <div id="t-an" style="display:none">
+    <div class="sec">
+      <div class="sec-hdr">
+        <span class="sec-title">🏆 Top 10 Clients — Portfolio Analytics</span>
+        <div class="sec-actions">
+          <span class="sec-badge" id="anBadge">—</span>
+        </div>
+      </div>
+      <div style="padding:10px 0 10px 0;background:var(--surface2);border:1px solid var(--border);border-top:none;display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap">
+        <span style="font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700">FILTER RM:</span>
+        <select class="an-select" id="anRMFilter" onchange="renderAnalytics()">
+          <option value="">All RMs</option>
+        </select>
+        <span style="font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700;margin-left:8px">RANK BY:</span>
+        <div class="an-metric-btns">
+          <button class="an-metric-btn active" onclick="setAnMetric('aum',this)">AUM</button>
+          <button class="an-metric-btn" onclick="setAnMetric('pnl',this)">P&amp;L ₹</button>
+          <button class="an-metric-btn" onclick="setAnMetric('pnlpct',this)">P&amp;L %</button>
+          <button class="an-metric-btn" onclick="setAnMetric('stocks',this)">Stocks</button>
+        </div>
+      </div>
+      <div class="top-clients-table">
+        <table>
+          <thead><tr>
+            <th style="text-align:center;width:40px">#</th>
+            <th style="text-align:left">Client</th>
+            <th style="text-align:left">RM</th>
+            <th>Invested</th>
+            <th>Curr. Value</th>
+            <th>P&amp;L ₹</th>
+            <th>P&amp;L %</th>
+            <th>Stocks</th>
+            <th>AUM Bar</th>
+          </tr></thead>
+          <tbody id="tb-analytics"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <div id="t-hm" style="display:none">
     <div class="hm-toolbar">
       <div class="hm-filters">
-        <button class="hm-filter active" onclick="setHmView('sector',this)">By Industry</button>
-        <button class="hm-filter" onclick="setHmView('all',this)">All Stocks</button>
-        <button class="hm-filter" onclick="setHmView('gainers',this)">Top Gainers</button>
-        <button class="hm-filter" onclick="setHmView('losers',this)">Top Losers</button>
+        <button class="hm-filter active" onclick="setHmView('sector',this)">🏭 By Industry</button>
+        <button class="hm-filter" onclick="setHmView('gainers',this)">📈 Top Gainers</button>
+        <button class="hm-filter" onclick="setHmView('losers',this)">📉 Top Losers</button>
+        <button class="hm-filter" onclick="setHmView('all',this)">📋 All Stocks</button>
       </div>
       <span class="hm-ts" id="hmTS">—</span>
     </div>
@@ -929,7 +1095,8 @@ html{-webkit-text-size-adjust:100%}
       <button class="hm-back-btn" onclick="closeHmDrill()">← Back to Heatmap</button>
       <span id="hmDrillTitle"></span>
     </div>
-    <div id="hmGrid" class="hm-grid"></div>
+    <!-- Nested heatmap grid: sector boxes containing script chips -->
+    <div id="hmGrid" class="hm-nested-grid"></div>
     <div id="hmDrill" style="display:none" class="hm-drill"></div>
   </div>
 
@@ -2071,11 +2238,29 @@ function glRow(s){
 }
 
 function renderOverview(data){
-  const sorted=[...data].sort((a,b)=>b.pnlPct-a.pnlPct);
-  document.getElementById('tb-gain').innerHTML=sorted.slice(0,5).map(glRow).join('');
-  document.getElementById('tb-lose').innerHTML=sorted.slice(-5).reverse().map(glRow).join('');
-  document.getElementById('gBadge').textContent='Top 5 of '+data.length;
-  document.getElementById('lBadge').textContent='Bottom 5';
+  const totalInv=data.reduce((a,s)=>a+s.invest,0);
+  // Sort by current value descending for market watch
+  const sorted=[...data].sort((a,b)=>b.curr-a.curr);
+  document.getElementById('mwBadge').textContent=sorted.length+' scripts · '+liveCount+' live';
+  document.getElementById('tb-mw').innerHTML=sorted.map(s=>{
+    const wt=totalInv>0?(s.invest/totalInv)*100:0;
+    const pctCls=s.dayPct!==null?(s.dayPct>=0?'pos':'neg'):'neu';
+    const pctArrow=s.dayPct!==null?(s.dayPct>=0?'▲':'▼'):'';
+    const pnlCls=clsPill(s.pnlPct);
+    return `<tr class="mw-row" data-mwq="${s.code.toLowerCase()} ${s.name.toLowerCase()}">
+      <td><span class="mw-script-name">${s.code}</span><span class="mw-script-sub">${s.name}</span></td>
+      <td>${cmpPriceOnly(s)}</td>
+      <td><span class="pill ${pctCls}" style="font-size:10px">${s.dayPct!==null?pctArrow+Math.abs(s.dayPct).toFixed(2)+'%':'—'}</span></td>
+      <td><span class="pill ${pnlCls}" style="font-size:10px">${fmtP(s.pnlPct)}</span></td>
+      <td class="neu" style="font-size:11px">${s.hasLive?'₹'+fmtC(s.curr):'—'}</td>
+      <td style="font-size:10px;color:var(--muted)">${wt.toFixed(1)}%</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterMW(){
+  const q=(document.getElementById('mwSearch').value||'').toLowerCase();
+  document.querySelectorAll('.mw-row').forEach(r=>r.style.display=r.dataset.mwq.includes(q)?'':'none');
 }
 
 // UPDATED: Holdings render with sort + sector filter
@@ -2104,7 +2289,6 @@ function renderHoldings(data){
     const wt=totalInv>0?(s.invest/totalInv)*100:0;
     return `<tr class="h-row" data-q="${s.code.toLowerCase()} ${s.name.toLowerCase()} ${s.sector.toLowerCase()} ${(s.clientCode||'').toLowerCase()}">
       <td><span class="sn">${s.code}</span><span class="ss">${s.name}</span></td>
-      <td><span style="font-size:11px;color:var(--muted);white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis;display:block">${s.sector}</span></td>
       <td>${cmpPriceOnly(s)}</td>
       <td>${dayChangePill(s)}</td>
       <td><div class="bar-row"><span style="font-size:11px;font-weight:700;color:var(--text2)">${wt.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(wt*4,100)}%"></div></div></div></td>
@@ -2113,6 +2297,7 @@ function renderHoldings(data){
       <td class="neu">${s.hasLive?'₹'+fmtC(s.curr):'—'}</td>
       <td class="${cls(s.pnl)}">${s.hasLive?(s.pnl>=0?'+':'−')+'₹'+fmtC(Math.abs(s.pnl)):'—'}</td>
       <td><span class="pill ${clsPill(s.pnlPct)}">${fmtP(s.pnlPct)}</span></td>
+      <td style="text-align:left"><span style="font-size:10.5px;color:var(--muted);white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis;display:block">${s.sector}</span></td>
     </tr>`;
   }).join('');
   document.getElementById('hBadge').textContent=sorted.length+(activeSectorFilter?' (filtered ':' stocks · ')+liveCount+(activeSectorFilter?')':' live');
@@ -2259,57 +2444,60 @@ function renderIndices(){
   const el=document.getElementById('marketTS');
   if(el)el.textContent=ts;
 
-  // ── Indian Heatmap — large Bloomberg-style tiles ──
-  const indiaEl=document.getElementById('indiaHeatmap');
+  // ── Indian Indices — vertical list ──
+  const indiaEl=document.getElementById('indiaList');
   if(indiaEl){
     indiaEl.innerHTML=INDIA_INDEX_CFG.map(cfg=>{
       const d=liveIndices[cfg.sym];
       const live=!!d;
       const pct=live?d.pct:0;
-      const cls=!d?'neu':pct>=0?'pos':'neg';
+      const rowCls=!d?'neu':pct>=0?'pos':'neg';
       const arrow=pct>=0?'▲':'▼';
       const isFb=d?.isFallback;
-      return `<div class="ih-cell${cfg.big?' big':''} ${cls}">
-        <div class="ih-top">
-          <span class="ih-flag">${cfg.flag}</span>
-          <span class="ih-name">${cfg.name}</span>
-          ${isFb?'<span class="ih-fb">est</span>':''}
+      return `<div class="india-row ${rowCls}${cfg.big?' big':''}">
+        <div class="ir-left">
+          <span class="ir-flag">${cfg.flag}</span>
+          <span class="ir-name">${cfg.name}${isFb?'<span style="font-size:8px;color:var(--gold);margin-left:4px">est</span>':''}</span>
         </div>
-        <div class="ih-val">${d?fmtIdx(d.val):'—'}</div>
-        <div class="ih-chg">${d?arrow+' '+Math.abs(pct).toFixed(2)+'%':'—'}</div>
+        <div class="ir-right">
+          <span class="ir-val">${d?fmtIdx(d.val):'—'}</span>
+          <span class="ir-pct">${d?arrow+' '+Math.abs(pct).toFixed(2)+'%':'—'}</span>
+        </div>
       </div>`;
     }).join('');
   }
 
-  // ── Global Markets — card grid ──
-  const globalEl=document.getElementById('globalStrip');
+  // ── Global Markets — compact grid ──
+  const globalEl=document.getElementById('globalList');
   if(globalEl){
     globalEl.innerHTML=GLOBAL_INDEX_CFG.map(cfg=>{
       const d=liveIndices[cfg.sym];
       const pct=d?d.pct:0;
-      const cls=!d?'neu':pct>=0?'pos':'neg';
-      return `<div class="gs-card ${cls}">
-        <div class="gs-name"><span class="gs-flag">${cfg.flag}</span>${cfg.name}</div>
-        <div class="gs-val">${d?fmtIdx(d.val):'—'}</div>
-        <div class="gs-chg">${d?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</div>
+      const rowCls=!d?'neu':pct>=0?'pos':'neg';
+      return `<div class="gl-row ${rowCls}">
+        <div class="gl-left">
+          <span class="gl-name"><span style="font-size:11px">${cfg.flag}</span> ${cfg.name}</span>
+          <span class="gl-val">${d?fmtIdx(d.val):'—'}</span>
+        </div>
+        <span class="gl-pct">${d?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</span>
       </div>`;
     }).join('');
   }
 
-  // ── Currencies & Commodities ──
-  const commEl=document.getElementById('commGrid');
+  // ── Currencies & Commodities — compact list ──
+  const commEl=document.getElementById('commList');
   if(commEl){
     commEl.innerHTML=COMM_INDEX_CFG.map(cfg=>{
       const d=liveIndices[cfg.sym];
       const pct=d?d.pct:0;
-      const cls=!d?'':pct>=0?' pos':' neg';
-      return `<div class="cm-card${cls}">
-        <div class="cm-icon">${cfg.flag}</div>
-        <div class="cm-body">
-          <div class="cm-name">${cfg.name}</div>
-          <div class="cm-val">${d?fmtIdx(d.val):'—'}</div>
-          <div class="cm-chg">${d?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</div>
+      const rowCls=!d?'':pct>=0?' pos':' neg';
+      return `<div class="cl-row${rowCls}">
+        <span class="cl-icon">${cfg.flag}</span>
+        <div class="cl-body">
+          <span class="cl-name">${cfg.name}</span>
+          <span class="cl-val">${d?fmtIdx(d.val):'—'}</span>
         </div>
+        <span class="cl-pct">${d?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</span>
       </div>`;
     }).join('');
   }
@@ -2338,11 +2526,12 @@ function renderAll(){
 // ══════════════════════════════════════════════════════
 function showDashboard(){document.getElementById('uploadZone').classList.add('hidden');document.getElementById('selectorScreen').style.display='none';document.getElementById('dashboard').style.display='';}
 function showTab(id,el){
-  ['ov','hd','sc','st','hm'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
+  ['ov','hd','sc','st','hm','an'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   if(id==='hm')renderHeatmap();
   if(id==='st')renderScripts();
+  if(id==='an')renderAnalytics();
 }
 
 // UPDATED: debounced search
@@ -2885,107 +3074,117 @@ function renderHeatmap(){
   const scope=getFilteredData();
   if(!scope.length){document.getElementById('hmGrid').innerHTML='<div style="padding:32px;text-align:center;color:var(--muted)">No data — select a client first</div>';return;}
 
-  // Timestamp display
   const now=livePriceTS&&Object.keys(livePriceTS).length?new Date(Math.max(...Object.values(livePriceTS))):null;
   const mktOpen=typeof isMarketOpen==='function'&&isMarketOpen();
   const tsEl=document.getElementById('hmTS');
   if(tsEl)tsEl.textContent=now?(mktOpen?'Live · ':'Closed · ')+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):(mktOpen?'Tap ↻ Live':'Market closed · Sheet prices');
 
-  // Build stock map — aggregate qty/invest across all clients in scope
   const stockMap=new Map();
   scope.forEach(s=>{
-    if(!stockMap.has(s.code))stockMap.set(s.code,{code:s.code,name:s.name,sector:s.sector,totalQty:0,totalInvest:0,valRate:s.valRate||s.buy,buy:s.buy,clients:[]});
+    if(!stockMap.has(s.code))stockMap.set(s.code,{code:s.code,name:s.name,sector:s.sector||'Other',totalQty:0,totalInvest:0,valRate:s.valRate||s.buy,buy:s.buy,clients:[]});
     const m=stockMap.get(s.code);
-    m.totalQty+=s.qty;
-    m.totalInvest+=s.buy*s.qty;
+    m.totalQty+=s.qty;m.totalInvest+=s.buy*s.qty;
     m.clients.push({clientCode:s.clientCode,clientName:s.clientName,qty:s.qty,invest:s.buy*s.qty});
   });
-
   const totalInvest=([...stockMap.values()]).reduce((a,m)=>a+m.totalInvest,0);
-
   let stocks=[...stockMap.values()].map(m=>{
-    // Use live price if available, else valRate (sheet closing), else buy price
     const cmp=livePrices[m.code]>0?livePrices[m.code]:(m.valRate>0?m.valRate:m.buy);
-    // Day%: live API value → fallback to (cmp-valRate)/valRate → fallback to 0
     let pct=liveChangePct[m.code]??null;
-    if(pct===null&&m.valRate>0&&m.buy>0){
-      // Use sheet valRate vs avg buy as proxy for performance
-      pct=(m.valRate-m.buy)/m.buy*100;
-    }
+    if(pct===null&&m.valRate>0&&m.buy>0)pct=(m.valRate-m.buy)/m.buy*100;
     const wt=totalInvest>0?m.totalInvest/totalInvest*100:0;
     return{...m,cmp,pct:pct??0,hasPct:pct!==null,wt,currVal:cmp*m.totalQty};
   });
 
-  // Filter views
-  if(hmView==='gainers')stocks=stocks.filter(s=>s.pct>0).sort((a,b)=>b.pct-a.pct).slice(0,30);
-  else if(hmView==='losers')stocks=stocks.filter(s=>s.pct<0).sort((a,b)=>a.pct-b.pct).slice(0,30);
+  if(hmView==='gainers')stocks=stocks.filter(s=>s.pct>0).sort((a,b)=>b.pct-a.pct).slice(0,40);
+  else if(hmView==='losers')stocks=stocks.filter(s=>s.pct<0).sort((a,b)=>a.pct-b.pct).slice(0,40);
 
-  // Max pct for color scaling
   const maxPct=Math.max(...stocks.map(s=>Math.abs(s.pct)),1);
-
   const grid=document.getElementById('hmGrid');
 
   if(hmView==='sector'||hmView==='all'){
+    // ── NESTED: Sector box → script chips inside ──
+    grid.className='hm-nested-grid';
     const sectors=new Map();
     stocks.forEach(s=>{
       const sec=s.sector||'Other';
       if(!sectors.has(sec))sectors.set(sec,[]);
       sectors.get(sec).push(s);
     });
-    // Sort sectors by total investment
     const sortedSectors=[...sectors.entries()].sort((a,b)=>{
       const ta=a[1].reduce((x,s)=>x+s.totalInvest,0);
       const tb=b[1].reduce((x,s)=>x+s.totalInvest,0);
       return tb-ta;
     });
-    grid.innerHTML=sortedSectors.map(([sec,ss])=>`
-      <div class="hm-sector">
-        <div class="hm-sec-label">${sec} <span class="hm-sec-count">${ss.length}</span></div>
-        <div class="hm-tiles">${ss.map(s=>hmTile(s,maxPct)).join('')}</div>
-      </div>`).join('');
+    grid.innerHTML=sortedSectors.map(([sec,ss])=>{
+      // Sector-level aggregate P&L
+      const secInvest=ss.reduce((a,s)=>a+s.totalInvest,0);
+      const secCurr=ss.reduce((a,s)=>a+s.currVal,0);
+      const secPnl=secCurr-secInvest;
+      const secPct=secInvest>0?(secPnl/secInvest)*100:0;
+      const secWt=totalInvest>0?(secInvest/totalInvest)*100:0;
+      const secCls=secPct>0?'pos':secPct<0?'neg':'neu';
+      const secArrow=secPct>0?'▲':secPct<0?'▼':'';
+      // Sort scripts inside sector by investment desc
+      const sortedSS=[...ss].sort((a,b)=>b.totalInvest-a.totalInvest);
+      return `<div class="hm-sector-box">
+        <div class="hm-sector-hdr" onclick="this.parentElement.querySelector('.hm-sector-body').style.display=this.parentElement.querySelector('.hm-sector-body').style.display==='none'?'flex':''">
+          <div>
+            <span class="hm-sector-title">${sec}</span>
+            <span class="hm-sector-info" style="margin-left:8px">${ss.length} scripts · ${secWt.toFixed(1)}% of portfolio</span>
+          </div>
+          <div class="hm-sector-meta">
+            <span class="hm-sector-pct" style="color:${secCls==='pos'?'var(--green)':secCls==='neg'?'var(--red)':'var(--muted)'}">${secArrow} ${Math.abs(secPct).toFixed(2)}%</span>
+          </div>
+        </div>
+        <div class="hm-sector-body">
+          ${sortedSS.map(s=>hmChip(s,maxPct)).join('')}
+        </div>
+      </div>`;
+    }).join('');
   }else{
-    grid.innerHTML=`<div class="hm-tiles hm-flat">${stocks.map(s=>hmTile(s,maxPct)).join('')}</div>`;
+    // Gainers / Losers — flat chips in a single box
+    grid.className='hm-nested-grid';
+    const label=hmView==='gainers'?`📈 Top Gainers (${stocks.length})`:`📉 Top Losers (${stocks.length})`;
+    grid.innerHTML=`<div class="hm-sector-box">
+      <div class="hm-sector-hdr" style="cursor:default">
+        <span class="hm-sector-title">${label}</span>
+        <span class="hm-sector-info">Sorted by Day % ${hmView==='gainers'?'descending':'ascending'}</span>
+      </div>
+      <div class="hm-sector-body">
+        ${stocks.map(s=>hmChip(s,maxPct)).join('')}
+      </div>
+    </div>`;
   }
 }
 
-function hmTile(s,maxPct){
+function hmChip(s,maxPct){
   const pct=s.pct||0;
   const wt=s.wt||0;
-  // TradingView: tile size proportional to portfolio weight
-  const sz=Math.max(80,Math.min(160,80+wt*8));
-  // Color intensity: 0→10% of maxPct = light, 100% = deep
   const intensity=maxPct>0?Math.min(Math.abs(pct)/maxPct,1):0;
-  // Color: green spectrum for positive, red spectrum for negative
   let bg,textCol,pctCol;
   if(pct>0){
-    // Green: light (#1a472a at low) to deep (#0a2e1a at high)
-    const g=Math.round(71+intensity*56);  // 71→127
+    const g=Math.round(71+intensity*56);
     bg=`rgb(${Math.round(15-intensity*5)},${g},${Math.round(43-intensity*15)})`;
     textCol=intensity>0.5?'#a7f3d0':'#6ee7b7';
     pctCol='#4ade80';
   }else if(pct<0){
-    // Red: light (#4a1010) to deep (#7f1d1d)
     const r=Math.round(120+intensity*55);
     bg=`rgb(${r},${Math.round(20-intensity*8)},${Math.round(20-intensity*8)})`;
     textCol=intensity>0.5?'#fecaca':'#fca5a5';
     pctCol='#f87171';
   }else{
-    bg='rgba(51,65,85,0.6)';textCol='var(--text2)';pctCol='var(--muted)';
+    bg='rgba(51,65,85,0.55)';textCol='var(--text2)';pctCol='var(--muted)';
   }
-  const safe=s.code.replace(/'/g,"\'");
+  // Chip width proportional to weight — min 72, max 130
+  const chipW=Math.max(72,Math.min(130,72+wt*7));
+  const safe=s.code.replace(/'/g,"\\'");
   const arrow=pct>0?'▲':pct<0?'▼':'';
-  const cmpStr=s.cmp>0?s.cmp.toFixed(2):'—';
-  // Font sizes scale with tile size
-  const codeSz=sz>110?11:9;
-  const pctSz=sz>110?13:11;
-  const cmpSz=sz>110?10:9;
-  return `<div class="hm-tile" onclick="showHmDrill('${safe}')"
-    style="background:${bg};width:${sz}px;height:${sz}px;border:1px solid rgba(255,255,255,0.06)"
-    title="${s.name} · ${pct>=0?'+':''}${pct.toFixed(2)}%">
-    <div style="font-size:${codeSz}px;font-weight:800;font-family:var(--mono);color:${textCol};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.2">${s.code}</div>
-    <div style="font-size:${pctSz}px;font-weight:700;font-family:var(--mono);color:${pctCol};margin:2px 0;line-height:1">${arrow}${Math.abs(pct).toFixed(2)}%</div>
-    <div style="font-size:${cmpSz}px;font-family:var(--mono);color:${textCol};opacity:0.8;line-height:1">${cmpStr}</div>
-    <div style="font-size:8px;font-family:var(--mono);color:${textCol};opacity:0.6;margin-top:2px;line-height:1">${wt.toFixed(1)}%</div>
+  return `<div class="hm-chip" onclick="showHmDrill('${safe}')"
+    style="background:${bg};width:${chipW}px"
+    title="${s.name} · ${pct>=0?'+':''}${pct.toFixed(2)}% · Wt ${wt.toFixed(1)}%">
+    <span class="hm-chip-code" style="color:${textCol}">${s.code}</span>
+    <span class="hm-chip-pct" style="color:${pctCol}">${arrow}${Math.abs(pct).toFixed(2)}%</span>
+    <span class="hm-chip-wt" style="color:${textCol}">${s.cmp>0?s.cmp.toFixed(0):''} · ${wt.toFixed(1)}%</span>
   </div>`;
 }
 
@@ -3008,8 +3207,8 @@ function showHmDrill(code){
     <div class="hm-drill-summary">
       <div class="hm-drill-kpi"><div class="hm-dkpi-l">LTP / CMP</div><div class="hm-dkpi-v">${cmp.toFixed(2)}</div></div>
       <div class="hm-drill-kpi"><div class="hm-dkpi-l">Prev Close</div><div class="hm-dkpi-v">${prevCl.toFixed(2)}</div></div>
-      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Day %</div><div class="hm-dkpi-v ${pct!==null?(pct>=0?'pos':'neg'):''}">\${dayChg}</div></div>
-      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Sector</div><div class="hm-dkpi-v" style="font-size:11px">${s.sector}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Day %</div><div class="hm-dkpi-v ${pct!==null?(pct>=0?'pos':'neg'):''}">${dayChg}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Industry</div><div class="hm-dkpi-v" style="font-size:11px">${s.sector}</div></div>
     </div>
     <div class="hm-drill-table">
       <table><thead><tr><th style="text-align:left">Client</th><th>Code</th><th>Qty</th><th>Avg Buy</th><th>Curr Val</th><th>P&L %</th><th>% Hold</th></tr></thead>
@@ -3033,6 +3232,95 @@ function closeHmDrill(){
   document.getElementById('hmDrillBar').style.display='none';
   document.getElementById('hmGrid').style.display='';
   document.getElementById('hmDrill').style.display='none';
+}
+
+// ══════════════════════════════════════════════════════
+//  ANALYTICS — Top Clients
+// ══════════════════════════════════════════════════════
+let anMetric='aum';
+
+function setAnMetric(m,el){
+  anMetric=m;
+  document.querySelectorAll('.an-metric-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderAnalytics();
+}
+
+function renderAnalytics(){
+  // Populate RM filter on first call
+  const rmSel=document.getElementById('anRMFilter');
+  if(rmSel&&rmSel.options.length<=1){
+    const rms=[...new Set(PORTFOLIO.map(s=>s.subgroup||'DEFAULT'))].filter(Boolean).sort();
+    rms.forEach(rm=>{const o=document.createElement('option');o.value=rm;o.textContent=rm==='DEFAULT'?'All':rm;rmSel.appendChild(o);});
+  }
+
+  const rmFilter=rmSel?rmSel.value:'';
+  // Scope: RM user sees only their clients; admin sees all (filtered by RM dropdown)
+  let scope=currentUser?.role==='rm'
+    ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
+    :PORTFOLIO;
+  if(rmFilter)scope=scope.filter(s=>(s.subgroup||'DEFAULT')===rmFilter);
+
+  // Aggregate per client
+  const clientMap=new Map();
+  scope.forEach(s=>{
+    const key=s.clientCode;
+    if(!clientMap.has(key))clientMap.set(key,{clientCode:key,clientName:s.clientName||key,rm:s.subgroup||'DEFAULT',invest:0,curr:0,stocks:new Set()});
+    const c=clientMap.get(key);
+    const cmp=livePrices[s.code]||s.valRate||s.buy;
+    c.invest+=s.buy*s.qty;
+    c.curr+=cmp*s.qty;
+    c.stocks.add(s.code);
+  });
+
+  let clients=[...clientMap.values()].map(c=>({
+    ...c,
+    pnl:c.curr-c.invest,
+    pnlPct:c.invest>0?(c.curr-c.invest)/c.invest*100:0,
+    stockCount:c.stocks.size
+  }));
+
+  // Sort by selected metric
+  const sortFn={
+    'aum':(a,b)=>b.curr-a.curr,
+    'pnl':(a,b)=>b.pnl-a.pnl,
+    'pnlpct':(a,b)=>b.pnlPct-a.pnlPct,
+    'stocks':(a,b)=>b.stockCount-a.stockCount,
+  };
+  clients.sort(sortFn[anMetric]||sortFn.aum);
+  const top=clients.slice(0,10);
+  const maxAUM=top.length?top[0].curr:1;
+
+  document.getElementById('anBadge').textContent=`Top ${top.length} of ${clients.length} clients · ${rmFilter||'All RMs'}`;
+
+  const rankBadge=(i)=>{
+    if(i===0)return '<span class="rank-badge rank-1">🥇</span>';
+    if(i===1)return '<span class="rank-badge rank-2">🥈</span>';
+    if(i===2)return '<span class="rank-badge rank-3">🥉</span>';
+    return `<span class="rank-badge rank-n">${i+1}</span>`;
+  };
+
+  document.getElementById('tb-analytics').innerHTML=top.map((c,i)=>{
+    const aumPct=maxAUM>0?(c.curr/maxAUM)*100:0;
+    const pnlCls=c.pnl>=0?'pos':'neg';
+    const pnlSign=c.pnl>=0?'+':'−';
+    return `<tr>
+      <td style="text-align:center">${rankBadge(i)}</td>
+      <td><span style="font-weight:700;font-size:12px">${c.clientName}</span></td>
+      <td><span style="font-size:10px;color:var(--muted);font-family:var(--mono)">${c.rm==='DEFAULT'?'—':c.rm}</span></td>
+      <td>₹${fmtC(c.invest)}</td>
+      <td style="font-weight:700">₹${fmtC(c.curr)}</td>
+      <td class="${pnlCls}">${pnlSign}₹${fmtC(Math.abs(c.pnl))}</td>
+      <td><span class="pill ${clsPill(c.pnlPct)}">${fmtP(c.pnlPct)}</span></td>
+      <td class="neu">${c.stockCount}</td>
+      <td>
+        <div class="client-aum-bar">
+          <div class="aum-track"><div class="aum-fill" style="width:${aumPct.toFixed(1)}%"></div></div>
+          <span style="font-size:9px;color:var(--muted);font-family:var(--mono);min-width:32px">${aumPct.toFixed(0)}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
 }
 </script>
 </body>
