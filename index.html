@@ -206,52 +206,6 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .two-col{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:680px){.two-col{grid-template-columns:1fr 1fr}}
 
-/* ══ OVERVIEW PANEL LAYOUT ══ */
-.ov-panel-layout{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:800px){.ov-panel-layout{grid-template-columns:1fr 380px}}
-
-/* Left panel — portfolio table */
-.ov-panel-left{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
-.ov-ph{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface3);border-bottom:1px solid var(--border)}
-.ov-ph-title{font-size:12px;font-weight:700;color:var(--text)}
-.ov-ph-badge{font-size:10px;color:var(--muted);font-family:var(--mono);background:var(--surface);border:1px solid var(--border);padding:2px 8px;border-radius:5px}
-.ov-sort-btn{margin-left:auto;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:4px 10px;border-radius:6px;font-size:10px;font-family:var(--mono);cursor:pointer;font-weight:600}
-.ov-sort-btn:hover{background:var(--surface3)}
-.ov-table-wrap{overflow-y:auto;max-height:calc(100vh - 280px);-webkit-overflow-scrolling:touch}
-.ov-table{width:100%;border-collapse:collapse;font-size:12px}
-.ov-table thead th{position:sticky;top:0;z-index:2;background:var(--surface2);padding:7px 10px;font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap}
-.ov-table thead th.r{text-align:right}
-.ov-table tbody tr{border-top:1px solid var(--border)}
-.ov-table tbody tr:hover{background:var(--surface2)}
-.ov-table td{padding:7px 10px;font-family:var(--mono);font-size:12px;white-space:nowrap}
-.ov-table td.r{text-align:right}
-.ov-code{font-weight:700;font-size:12px;color:var(--text);font-family:var(--mono)}
-/* Colored cells like reference */
-.ov-chg-pos{background:rgba(15,122,75,.12);color:var(--green);font-weight:700;text-align:right;border-radius:3px;padding:3px 8px;display:inline-block;min-width:60px;text-align:center}
-.ov-chg-neg{background:rgba(192,57,43,.12);color:var(--red);font-weight:700;text-align:right;border-radius:3px;padding:3px 8px;display:inline-block;min-width:60px;text-align:center}
-.ov-chg-neu{background:var(--surface2);color:var(--muted);font-weight:600;text-align:right;border-radius:3px;padding:3px 8px;display:inline-block;min-width:60px;text-align:center}
-.ov-pnl-pos{color:var(--green);font-weight:700}
-.ov-pnl-neg{color:var(--red);font-weight:700}
-
-/* Right panel — market indices */
-.ov-panel-right{display:flex;flex-direction:column;gap:8px}
-.ov-mkt-hdr{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface3);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0}
-.ov-idx-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
-.ov-idx-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);padding:7px 12px;background:var(--surface2);border-bottom:1px solid var(--border)}
-.ov-idx-table{width:100%;border-collapse:collapse;font-size:12px}
-.ov-idx-table thead th{background:var(--surface2);padding:6px 10px;font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border)}
-.ov-idx-table thead th.r{text-align:right}
-.ov-idx-table tbody tr{border-top:1px solid var(--border)}
-.ov-idx-table tbody tr:hover{background:var(--surface2)}
-.ov-idx-table td{padding:6px 10px;font-family:var(--mono);font-size:12px;white-space:nowrap}
-.ov-idx-table td.r{text-align:right}
-.ov-idx-name{font-size:11px;font-weight:600;color:var(--text)}
-.ov-idx-val{font-weight:700;color:var(--text)}
-.ov-idx-chg-pos{font-weight:700;color:var(--green)}
-.ov-idx-chg-neg{font-weight:700;color:var(--red)}
-.ov-idx-pct-pos{background:rgba(15,122,75,.12);color:var(--green);font-weight:700;padding:2px 7px;border-radius:3px;display:inline-block;min-width:52px;text-align:center}
-.ov-idx-pct-neg{background:rgba(192,57,43,.12);color:var(--red);font-weight:700;padding:2px 7px;border-radius:3px;display:inline-block;min-width:52px;text-align:center}
-
 /* ── GUIDE ── */
 .steps{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
 .steps-title{font-size:13px;font-weight:700;margin-bottom:14px;color:var(--text);display:flex;align-items:center;gap:8px}
@@ -515,8 +469,9 @@ html{-webkit-text-size-adjust:100%}
 .hm-drill-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--r2);padding:8px 12px}
 .hm-back-btn{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--mono)}
 .hm-drill-bar span{font-size:12px;font-weight:700;color:var(--text)}
-.hm-grid{width:100%}
-.hm-sector{margin-bottom:16px}
+.hm-grid{width:100%;min-height:300px}
+.hm-sector{margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px;overflow:hidden}
+.hm-sector>.hm-sec-label{margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 .hm-sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .hm-sec-count{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0 6px;font-size:9px}
 .hm-tiles{display:flex;flex-wrap:wrap;gap:4px}
@@ -597,12 +552,22 @@ html{-webkit-text-size-adjust:100%}
   justify-content:flex-end;cursor:pointer;transition:transform .12s,box-shadow .12s;
   padding:6px 7px;text-align:left;overflow:hidden;box-sizing:border-box}
 .hm-tile:hover{transform:scale(1.05);box-shadow:0 4px 20px rgba(0,0,0,0.5);z-index:3}
-.hm-tiles{display:flex;flex-wrap:wrap;gap:3px}
+.hm-tiles{display:flex;flex-wrap:wrap;gap:4px;padding:4px}
 .hm-flat{display:flex;flex-wrap:wrap;gap:3px}
 .hm-sector{margin-bottom:14px}
 .hm-sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
   color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .hm-sec-count{background:rgba(255,255,255,0.08);border-radius:4px;padding:0 6px;font-size:9px}
+
+/* ── SECTOR DRILL PANEL ── */
+.sector-drill-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:12px;box-shadow:var(--shadow)}
+.sector-drill-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--surface3);border-bottom:1px solid var(--border);font-size:12px;font-weight:700;color:var(--text)}
+.sector-drill-hdr button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;font-family:var(--mono);font-weight:600;padding:3px 8px;border-radius:4px}
+.sector-drill-hdr button:hover{background:var(--red-bg);color:var(--red)}
+
+/* ── OVERVIEW LAYOUT ── */
+.ov-panel-layout{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:820px){.ov-panel-layout{grid-template-columns:1fr 360px}}
 </style>
 </head>
 <body>
@@ -786,72 +751,47 @@ html{-webkit-text-size-adjust:100%}
     <div class="tab active"  onclick="showTab('ov',this)">📈 Overview</div>
     <div class="tab" onclick="showTab('hd',this)">📋 Holdings</div>
     <div class="tab" onclick="showTab('sc',this)">🏭 Sectors</div>
-    <div class="tab" onclick="showTab('st',this)">📊 Scripts</div>
+    <div class="tab" onclick="showTab('st',this)">📊 RM Scripts</div>
     <div class="tab" onclick="showTab('hm',this)">🔥 Heatmap</div>
   </div>
 
-  <!-- ═══ OVERVIEW — two-panel layout matching reference ═══ -->
+  <!-- ═══ OVERVIEW ═══ -->
   <div id="t-ov">
-    <div class="ov-panel-layout">
-
-      <!-- ── LEFT: Client Portfolio Summary ── -->
-      <div class="ov-panel-left">
-        <div class="ov-ph">
-          <span class="ov-ph-title">Portfolio Summary</span>
-          <span class="ov-ph-badge" id="ovBadge">—</span>
-          <button class="ov-sort-btn" onclick="cycleOvSort()" id="ovSortBtn" title="Sort">↕ Sort</button>
-        </div>
-        <div class="ov-table-wrap">
-          <table class="ov-table">
-            <thead><tr>
-              <th>Scrip Code</th>
-              <th class="r">CMP</th>
-              <th class="r">Today's Change%</th>
-              <th class="r">P&amp;L %</th>
-              <th class="r">Holding %</th>
-            </tr></thead>
-            <tbody id="tb-ov-holdings"></tbody>
-          </table>
+    <div class="two-col">
+      <div class="sec">
+        <div class="sec-hdr"><span class="sec-title">🚀 Top Gainers</span><span class="sec-badge" id="gBadge">—</span></div>
+        <div class="t-wrap scroll">
+          <table><thead><tr><th>Stock</th><th>CMP ⚡</th><th>Day%</th><th>Avg Buy</th><th>P&amp;L%</th><th>P&amp;L ₹</th></tr></thead>
+          <tbody id="tb-gain"></tbody></table>
         </div>
       </div>
-
-      <!-- ── RIGHT: Market View ── -->
-      <div class="ov-panel-right">
-        <div class="ov-mkt-hdr">
-          <span class="ov-ph-title">Market View</span>
-          <span class="market-ts" id="marketTS">—</span>
-          <button class="ov-sort-btn" onclick="refreshIndices()"><span id="mri">↻</span> Refresh</button>
-        </div>
-
-        <!-- Indian Indices — table style like reference -->
-        <div class="ov-idx-section">
-          <div class="ov-idx-lbl">🇮🇳 Indian Indices</div>
-          <table class="ov-idx-table">
-            <thead><tr><th>Index</th><th class="r">CMP</th><th class="r">Change</th><th class="r">%</th></tr></thead>
-            <tbody id="tb-india-idx"></tbody>
-          </table>
-        </div>
-
-        <!-- Global Indices -->
-        <div class="ov-idx-section">
-          <div class="ov-idx-lbl">🌍 Global Markets</div>
-          <table class="ov-idx-table">
-            <thead><tr><th>Index</th><th class="r">CMP</th><th class="r">Change</th><th class="r">%</th></tr></thead>
-            <tbody id="tb-global-idx"></tbody>
-          </table>
-        </div>
-
-        <!-- Currencies & Commodities -->
-        <div class="ov-idx-section">
-          <div class="ov-idx-lbl">💱 Currencies &amp; Commodities</div>
-          <table class="ov-idx-table">
-            <thead><tr><th>Name</th><th class="r">CMP</th><th class="r">Change</th><th class="r">%</th></tr></thead>
-            <tbody id="tb-comm-idx"></tbody>
-          </table>
+      <div class="sec">
+        <div class="sec-hdr"><span class="sec-title">📉 Top Losers</span><span class="sec-badge" id="lBadge">—</span></div>
+        <div class="t-wrap scroll">
+          <table><thead><tr><th>Stock</th><th>CMP ⚡</th><th>Day%</th><th>Avg Buy</th><th>P&amp;L%</th><th>P&amp;L ₹</th></tr></thead>
+          <tbody id="tb-lose"></tbody></table>
         </div>
       </div>
-
     </div>
+
+    <!-- MARKET VIEW -->
+    <div class="market-header">
+      <span class="market-title">🌐 Market Overview</span>
+      <span class="market-ts" id="marketTS">—</span>
+      <button class="btn" style="font-size:10px;padding:4px 10px" onclick="refreshIndices()"><span id="mri">↻</span> Refresh</button>
+    </div>
+
+    <!-- Indian Indices Heatmap -->
+    <div class="mkt-section-lbl">🇮🇳 Indian Indices</div>
+    <div class="india-heatmap" id="indiaHeatmap"></div>
+
+    <!-- Global Indices Strip -->
+    <div class="mkt-section-lbl">🌍 Global Markets</div>
+    <div class="global-strip" id="globalStrip"></div>
+
+    <!-- Currencies & Commodities -->
+    <div class="mkt-section-lbl">💱 Currencies &amp; Commodities</div>
+    <div class="comm-grid" id="commGrid"></div>
   </div>
 
   <!-- ═══ HOLDINGS ═══ -->
@@ -871,6 +811,8 @@ html{-webkit-text-size-adjust:100%}
       <span class="sort-label">Sort by:</span>
       <select class="sort-select" id="sortSelect" onchange="renderHoldingsFromCurrent()">
         <option value="curr">Current Value</option>
+        <option value="script">Script A–Z</option>
+        <option value="sector">Sector</option>
         <option value="pnlpct">P&amp;L %</option>
         <option value="pnlabs">P&amp;L ₹</option>
         <option value="wt">Weight %</option>
@@ -890,7 +832,8 @@ html{-webkit-text-size-adjust:100%}
         <table>
           <thead><tr>
             <th style="text-align:left">Script</th>
-            <th>CMP ⚡</th><th>Day / %</th><th>Wt%</th><th>Qty</th>
+            <th style="text-align:left">Industry</th>
+            <th>CMP ⚡</th><th>Day %</th><th>Wt%</th><th>Qty</th>
             <th>Avg Buy ₹</th><th>Curr. Value</th><th>P&amp;L ₹</th><th>P&amp;L %</th>
           </tr></thead>
           <tbody id="tb-hold"></tbody>
@@ -902,15 +845,31 @@ html{-webkit-text-size-adjust:100%}
   <!-- ═══ SECTORS ═══ -->
   <div id="t-sc" style="display:none">
     <div class="sec">
-      <!-- UPDATED: hint about clickable drilldown -->
-      <div class="sec-hdr"><span class="sec-title">🏭 Sector Heatmap</span><span class="sec-badge">Click sector to drill down →</span></div>
+      <div class="sec-hdr"><span class="sec-title">🏭 Sector Heatmap</span><span class="sec-badge">Click sector → see scripts below</span></div>
       <div class="heatmap" id="heatmap"></div>
     </div>
     <div class="sec">
-      <div class="sec-hdr"><span class="sec-title">📊 Sector Detail</span><span class="sec-badge">Click row to filter holdings</span></div>
+      <div class="sec-hdr"><span class="sec-title">📊 Sector Summary</span><span class="sec-badge">Click row to drill down</span></div>
       <div class="t-wrap scroll">
         <table><thead><tr><th>Sector</th><th>Stocks</th><th>Invested</th><th>Curr. Value</th><th>P&amp;L ₹</th><th>P&amp;L %</th><th>Weight</th></tr></thead>
         <tbody id="tb-sec"></tbody></table>
+      </div>
+    </div>
+    <!-- Sector drilldown panel — stays in this tab -->
+    <div id="sectorDrill" class="sector-drill-panel" style="display:none">
+      <div class="sector-drill-hdr">
+        <span id="sectorDrillTitle">—</span>
+        <button onclick="clearSectorFilter()" title="Close">✕ Close</button>
+      </div>
+      <div class="t-wrap scroll">
+        <table>
+          <thead><tr>
+            <th style="text-align:left">Script</th>
+            <th>Qty</th><th>CMP ⚡</th><th>Day %</th>
+            <th>Avg Buy</th><th>Curr. Val</th><th>P&amp;L %</th><th>Weight</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -928,7 +887,7 @@ html{-webkit-text-size-adjust:100%}
     </div>
     <div class="sec" style="margin-top:10px">
       <div class="sec-hdr">
-        <span class="sec-title">📊 Script Summary — RM Portfolio</span>
+        <span class="sec-title">📊 RM Scripts — Full Portfolio</span>
         <span class="sec-badge" id="scBadge">—</span>
       </div>
       <div class="t-wrap scroll">
@@ -959,7 +918,7 @@ html{-webkit-text-size-adjust:100%}
   <div id="t-hm" style="display:none">
     <div class="hm-toolbar">
       <div class="hm-filters">
-        <button class="hm-filter active" onclick="setHmView('sector',this)">By Sector</button>
+        <button class="hm-filter active" onclick="setHmView('sector',this)">By Industry</button>
         <button class="hm-filter" onclick="setHmView('all',this)">All Stocks</button>
         <button class="hm-filter" onclick="setHmView('gainers',this)">Top Gainers</button>
         <button class="hm-filter" onclick="setHmView('losers',this)">Top Losers</button>
@@ -1052,9 +1011,10 @@ function checkPin(){
   const cred=CREDS[pinUser];
   if(pinBuffer===cred.pin){
     currentUser={username:pinUser,...cred};
-    if(document.getElementById('rememberMe')?.checked){
-      try{localStorage.setItem(LS_SESSION,JSON.stringify({...currentUser,expiry:Date.now()+7*24*3600*1000}));}catch(e){}
-    }
+    // Always save session — prevents pull-to-refresh logout
+    // rememberMe = 7 days, default = 8 hours
+    const rememberDays=document.getElementById('rememberMe')?.checked?7:0.33;
+    try{localStorage.setItem(LS_SESSION,JSON.stringify({...currentUser,expiry:Date.now()+rememberDays*24*3600*1000}));}catch(e){}
     completeLogin();
   }else{
     pinBuffer='';
@@ -1204,16 +1164,18 @@ let liveIndices = {};        // keyed by stooq symbol
 let indicesLastUpdated = null;
 
 const INDIA_INDEX_CFG = [
-  {sym:'^nsei',     name:'NIFTY 50',     flag:'🇮🇳', big:true},
-  {sym:'^bsesn',    name:'SENSEX',       flag:'📈',  big:true},
-  {sym:'^nsebank',  name:'BANK NIFTY',   flag:'🏦'},
-  {sym:'^cnxit',    name:'NIFTY IT',     flag:'💻'},
-  {sym:'^cnxpharma',name:'NIFTY PHARMA', flag:'💊'},
-  {sym:'^cnxauto',  name:'NIFTY AUTO',   flag:'🚗'},
-  {sym:'^cnxfmcg',  name:'NIFTY FMCG',  flag:'🛒'},
-  {sym:'^cnxmetal', name:'NIFTY METAL',  flag:'⚙️'},
-  {sym:'^cnxpsubn', name:'NIFTY PSU BK', flag:'🏛️'},
-  {sym:'^indiavix', name:'INDIA VIX',    flag:'⚡'},
+  {sym:'^nsei',      name:'NIFTY 50',       flag:'🇮🇳', big:true},
+  {sym:'^bsesn',     name:'SENSEX',         flag:'📈',  big:true},
+  {sym:'^nsebank',   name:'BANK NIFTY',     flag:'🏦'},
+  {sym:'^cnxit',     name:'NIFTY IT',       flag:'💻'},
+  {sym:'^cnxpharma', name:'NIFTY PHARMA',   flag:'💊'},
+  {sym:'^cnxauto',   name:'NIFTY AUTO',     flag:'🚗'},
+  {sym:'^cnxfmcg',   name:'NIFTY FMCG',    flag:'🛒'},
+  {sym:'^cnxmetal',  name:'NIFTY METAL',    flag:'⚙️'},
+  {sym:'^cnxpsubn',  name:'NIFTY PSU BK',   flag:'🏛️'},
+  {sym:'^cnxsc',     name:'NIFTY SMALL CAP',flag:'🔹'},
+  {sym:'^cnxmidcap', name:'NIFTY MID CAP',  flag:'🔷'},
+  {sym:'^indiavix',  name:'INDIA VIX',      flag:'⚡'},
 ];
 const GLOBAL_INDEX_CFG = [
   {sym:'^spx',  name:'S&P 500',    flag:'🇺🇸'},
@@ -1250,6 +1212,8 @@ const INDEX_FALLBACK = {
   '^cnxmetal':{val:8943.75,  pct:-0.62, chg:-55.90},
   '^cnxpsubn':{val:6234.50,  pct:-0.45, chg:-28.20},
   '^indiavix':{val:13.82,    pct:-3.21, chg:-0.46},
+  '^cnxsc':   {val:8124.50,  pct:-0.18, chg:-14.60},
+  '^cnxmidcap':{val:11832.40,pct:-0.22, chg:-26.20},
   '^spx':     {val:5611.85,  pct:-0.65, chg:-36.60},
   '^ndx':     {val:19567.40, pct:-0.72, chg:-141.80},
   '^dji':     {val:41985.35, pct:-0.51, chg:-214.20},
@@ -1847,8 +1811,12 @@ function compute(){
 async function fetchYahooBatch(symbols){
   // yfinance Python service — handles only selected client batch (10-20 symbols max)
   // Yahoo does NOT block yfinance because it manages crumb/cookie automatically
+  const cleaned=symbols.map(s=>{
+    if(s==='GVT&D.NS'||s==='GET&D.NS'||s==='GVT&D'||s==='GET&D')return 'GETD.NS';
+    return s;
+  });
   try{
-    const url=YFINANCE_URL+'/prices?s='+encodeURIComponent(symbols.join(','));
+    const url=YFINANCE_URL+'/prices?s='+encodeURIComponent(cleaned.join(','));
     const r=await Promise.race([
       fetch(url,{cache:'no-store'}),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),30000))
@@ -1953,39 +1921,25 @@ async function refreshPrices(){
   PORTFOLIO.forEach(s=>{if(s.valRate>0)livePrices[s.code]=s.valRate;});
   renderAll();
   setLiveStatus('loading',0,PORTFOLIO.length);
+  showPriceFetchIndicator(true);
 
-  // TIER 2: Yahoo Finance v7 (primary) → Stooq (fallback)
-  //  Yahoo gives: LTP, previousClose, dayChangePct (accurate)
-  //  Stooq gives: LTP, prevClose (via f=sd2ohlcvp format)
-  const codes=[...new Set(PORTFOLIO.map(s=>s.code))];
-  const nsSymbols=codes.map(c=>YF[c]||c+'.NS');
-  const BSIZE=15,DELAY=400;
-
-  console.log(`[PRICE] Fetching ${nsSymbols.length} symbols (Yahoo v7 + Stooq fallback)`);
-
-  for(let i=0;i<nsSymbols.length;i+=BSIZE){
-    const batch=nsSymbols.slice(i,i+BSIZE);
-    const quotes=await fetchYahooBatch(batch);
-    if(quotes.length>0){
-      // Yahoo returns objects with regularMarketPrice etc
-      if(quotes[0].regularMarketPrice!==undefined){
-        processYahooQuotes(quotes);
-      }else{
-        // Stooq fallback returned {symbol,price,dayPct,...} format
-        processStooqQuotes(quotes);
-      }
-    }else{
-      // .BO BSE fallback
-      const boBatch=batch.map(s=>s.replace('.NS','.BO'));
-      const boQ=await fetchYahooBatch(boBatch);
-      if(boQ.length>0){
-        if(boQ[0].regularMarketPrice!==undefined) processYahooQuotes(boQ);
-        else processStooqQuotes(boQ);
-      }
-    }
-    setLiveStatus('loading',liveCount,codes.length);
-    if(i+BSIZE<nsSymbols.length)await sleep(DELAY);
+  // Fetch ONLY selected client's scripts — not all 500+
+  // This prevents rate-limiting and keeps response fast
+  const scopeData=getFilteredData();
+  if(!scopeData.length){
+    toast('Select a client to load live prices','warn');
+    btn.disabled=false;icon.className='';_refreshing=false;return;
   }
+  const codes=[...new Set(scopeData.map(s=>s.code))];
+  const nsSymbols=codes.map(c=>YF[c]||c+'.NS');
+
+  console.log('[PRICE] Fetching '+codes.length+' symbols for selected client via yfinance');
+
+  const quotes=await fetchYahooBatch(nsSymbols);
+  if(quotes.length>0){
+    processYahooQuotes(quotes);
+  }
+  setLiveStatus('loading',liveCount,codes.length);
 
   // Cache live prices
   try{localStorage.setItem(LS_PRICES,JSON.stringify(livePrices));}catch(e){}
@@ -2006,6 +1960,7 @@ async function refreshPrices(){
     toast(`✅ ${liveCount}/${total} live prices loaded`,'ok');
   }
 
+  showPriceFetchIndicator(false);
   renderAll();
   btn.disabled=false;icon.className='';
   _refreshing=false;
@@ -2115,69 +2070,12 @@ function glRow(s){
   </tr>`;
 }
 
-// Overview sort state
-let _ovSort='code'; // 'code' | 'cmp' | 'daypct' | 'pnlpct' | 'wt'
-const _ovSortCycles=['code','daypct','pnlpct','cmp','wt'];
-
-function cycleOvSort(){
-  const idx=(_ovSortCycles.indexOf(_ovSort)+1)%_ovSortCycles.length;
-  _ovSort=_ovSortCycles[idx];
-  const labels={code:'A–Z',daypct:'Day %',pnlpct:'P&L %',cmp:'CMP',wt:'Weight'};
-  document.getElementById('ovSortBtn').textContent='↕ '+labels[_ovSort];
-  renderOverview(_lastComputedData||[]);
-}
-
 function renderOverview(data){
-  if(!data||!data.length){
-    document.getElementById('tb-ov-holdings').innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Select a client to view portfolio</td></tr>';
-    document.getElementById('ovBadge').textContent='—';
-    return;
-  }
-
-  const totalInv=data.reduce((a,s)=>a+s.invest,0);
-
-  // Sort
-  let sorted=[...data];
-  if(_ovSort==='code')     sorted.sort((a,b)=>a.code.localeCompare(b.code));
-  else if(_ovSort==='cmp') sorted.sort((a,b)=>b.cmp-a.cmp);
-  else if(_ovSort==='daypct') sorted.sort((a,b)=>(b.dayPct??-999)-(a.dayPct??-999));
-  else if(_ovSort==='pnlpct') sorted.sort((a,b)=>b.pnlPct-a.pnlPct);
-  else if(_ovSort==='wt')  sorted.sort((a,b)=>b.invest-a.invest);
-
-  const totalCurr=data.reduce((a,s)=>a+s.curr,0);
-  document.getElementById('ovBadge').textContent=data.length+' scripts · ₹'+fmtC(totalCurr);
-
-  document.getElementById('tb-ov-holdings').innerHTML=sorted.map(s=>{
-    const wt=totalInv>0?(s.invest/totalInv*100):0;
-
-    // Today's change cell — colored background like reference
-    let chgHtml;
-    if(s.dayPct===null){
-      chgHtml=`<span class="ov-chg-neu">—</span>`;
-    }else{
-      const sign=s.dayPct>=0?'+':'';
-      chgHtml=s.dayPct>=0
-        ?`<span class="ov-chg-pos">${sign}${s.dayPct.toFixed(2)}%</span>`
-        :`<span class="ov-chg-neg">${s.dayPct.toFixed(2)}%</span>`;
-    }
-
-    // P&L % cell — colored background
-    const pnlSign=s.pnlPct>=0?'+':'';
-    const pnlHtml=s.pnlPct>=0
-      ?`<span class="ov-chg-pos">${pnlSign}${s.pnlPct.toFixed(2)}%</span>`
-      :`<span class="ov-chg-neg">${s.pnlPct.toFixed(2)}%</span>`;
-
-    // CMP color — green if above buy, red if below
-    const cmpCls=s.cmp>=s.buy?'ov-pnl-pos':'ov-pnl-neg';
-
-    return `<tr>
-      <td><span class="ov-code">${s.code}</span></td>
-      <td class="r"><span class="${cmpCls}">${s.cmp.toFixed(2)}</span></td>
-      <td class="r">${chgHtml}</td>
-      <td class="r">${pnlHtml}</td>
-      <td class="r" style="color:var(--text2);font-weight:600">${wt.toFixed(1)}%</td>
-    </tr>`;
-  }).join('');
+  const sorted=[...data].sort((a,b)=>b.pnlPct-a.pnlPct);
+  document.getElementById('tb-gain').innerHTML=sorted.slice(0,5).map(glRow).join('');
+  document.getElementById('tb-lose').innerHTML=sorted.slice(-5).reverse().map(glRow).join('');
+  document.getElementById('gBadge').textContent='Top 5 of '+data.length;
+  document.getElementById('lBadge').textContent='Bottom 5';
 }
 
 // UPDATED: Holdings render with sort + sector filter
@@ -2187,10 +2085,12 @@ function renderHoldings(data){
   sortKey=sk;
 
   const sortFns={
-    'curr':(a,b)=>b.curr-a.curr,
+    'curr':  (a,b)=>b.curr-a.curr,
+    'script':(a,b)=>a.code.localeCompare(b.code),
+    'sector':(a,b)=>a.sector.localeCompare(b.sector),
     'pnlpct':(a,b)=>b.pnlPct-a.pnlPct,
     'pnlabs':(a,b)=>b.pnl-a.pnl,
-    'wt':(a,b)=>(b.invest-a.invest),
+    'wt':    (a,b)=>(b.invest-a.invest),
     'daypct':(a,b)=>(b.dayPct??-999)-(a.dayPct??-999),
   };
   let sorted=[...data].sort(sortFns[sk]||sortFns['curr']);
@@ -2203,7 +2103,8 @@ function renderHoldings(data){
   document.getElementById('tb-hold').innerHTML=sorted.map(s=>{
     const wt=totalInv>0?(s.invest/totalInv)*100:0;
     return `<tr class="h-row" data-q="${s.code.toLowerCase()} ${s.name.toLowerCase()} ${s.sector.toLowerCase()} ${(s.clientCode||'').toLowerCase()}">
-      <td><span class="sn">${s.code}</span><span class="ss">${s.sector}</span></td>
+      <td><span class="sn">${s.code}</span><span class="ss">${s.name}</span></td>
+      <td><span style="font-size:11px;color:var(--muted);white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis;display:block">${s.sector}</span></td>
       <td>${cmpPriceOnly(s)}</td>
       <td>${dayChangePill(s)}</td>
       <td><div class="bar-row"><span style="font-size:11px;font-weight:700;color:var(--text2)">${wt.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(wt*4,100)}%"></div></div></div></td>
@@ -2270,24 +2171,46 @@ function renderSectors(data){
   }).join('');
 }
 
-// NEW: Sector drilldown — switch to Holdings tab + apply sector filter
+// UPDATED: Sector drilldown stays within Sector tab — no redirect
 function drillSector(sectorName){
   activeSectorFilter=sectorName;
   document.getElementById('sectorFilterName').textContent=sectorName;
   document.getElementById('sectorFilterBar').classList.add('visible');
-  // Switch to Holdings tab
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  const hdTab=document.querySelectorAll('.tab')[1];
-  if(hdTab)hdTab.classList.add('active');
-  ['ov','hd','sc','gu'].forEach(t=>document.getElementById('t-'+t).style.display=t==='hd'?'':'none');
-  renderHoldingsFromCurrent();
+  // Stay in sector tab — show filtered scripts below
+  renderSectorDrilldown(sectorName);
 }
 
-// NEW: Clear sector filter
+function renderSectorDrilldown(sectorName){
+  const data=_lastComputedData||compute();
+  const filtered=data.filter(s=>s.sector===sectorName);
+  const totalInv=filtered.reduce((a,s)=>a+s.invest,0);
+  const drill=document.getElementById('sectorDrill');
+  if(!drill)return;
+  drill.style.display='';
+  document.getElementById('sectorDrillTitle').textContent=sectorName+' — '+filtered.length+' scripts';
+  drill.querySelector('tbody').innerHTML=filtered
+    .sort((a,b)=>b.curr-a.curr)
+    .map(s=>{
+      const wt=totalInv>0?(s.invest/totalInv*100):0;
+      return `<tr>
+        <td><span class="sn">${s.code}</span></td>
+        <td class="neu">${s.qty.toLocaleString('en-IN')}</td>
+        <td>${cmpPriceOnly(s)}</td>
+        <td>${dayChangePill(s)}</td>
+        <td class="neu">${s.buy.toFixed(2)}</td>
+        <td class="neu">${s.hasLive?'₹'+fmtC(s.curr):'—'}</td>
+        <td><span class="pill ${clsPill(s.pnlPct)}">${fmtP(s.pnlPct)}</span></td>
+        <td class="neu">${wt.toFixed(1)}%</td>
+      </tr>`;
+    }).join('');
+}
+
+// UPDATED: Clear sector filter — hides drill panel, stays in sector tab
 function clearSectorFilter(){
   activeSectorFilter='';
   document.getElementById('sectorFilterBar').classList.remove('visible');
-  renderHoldingsFromCurrent();
+  const drill=document.getElementById('sectorDrill');
+  if(drill)drill.style.display='none';
 }
 
 
@@ -2328,43 +2251,68 @@ function fmtIdx(val){
   return val.toFixed(val<10?4:2);
 }
 
-// Render a single index table row
-function idxRow(cfg){
-  const d=liveIndices[cfg.sym];
-  const pct=d?d.pct:null;
-  const chg=d?d.chg:null;
-  const isFb=d?.isFallback;
-  const pctHtml=pct===null?'<td class="r">—</td><td class="r">—</td>'
-    :pct>=0
-      ?`<td class="r"><span class="ov-idx-chg-pos">+${chg>0?'+':''} ${Math.abs(chg)<1?chg.toFixed(4):chg.toFixed(2)}</span></td><td class="r"><span class="ov-idx-pct-pos">+${pct.toFixed(2)}%</span></td>`
-      :`<td class="r"><span class="ov-idx-chg-neg">${chg.toFixed(2)}</span></td><td class="r"><span class="ov-idx-pct-neg">${pct.toFixed(2)}%</span></td>`;
-  const rowCls=pct===null?'':(pct>=0?'ov-idx-pos-row':'ov-idx-neg-row');
-  return `<tr class="${rowCls}">
-    <td><span class="ov-idx-name">${cfg.flag} ${cfg.name}${isFb?' <span style="font-size:9px;color:var(--muted)">(est)</span>':''}</span></td>
-    <td class="r"><span class="ov-idx-val">${d?fmtIdx(d.val):'—'}</span></td>
-    ${pctHtml}
-  </tr>`;
-}
-
 function renderIndices(){
   const mktOpen=typeof isMarketOpen==='function'?isMarketOpen():false;
   const ts=indicesLastUpdated
     ?(mktOpen?'Live · ':'Closed · ')+indicesLastUpdated.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
-    :(mktOpen?'Fetching…':'Market closed');
+    :(mktOpen?'Fetching live…':'Market closed · Last closing prices');
   const el=document.getElementById('marketTS');
   if(el)el.textContent=ts;
 
-  // Indian indices table
-  const indiaEl=document.getElementById('tb-india-idx');
-  if(indiaEl) indiaEl.innerHTML=INDIA_INDEX_CFG.map(idxRow).join('');
+  // ── Indian Heatmap — large Bloomberg-style tiles ──
+  const indiaEl=document.getElementById('indiaHeatmap');
+  if(indiaEl){
+    indiaEl.innerHTML=INDIA_INDEX_CFG.map(cfg=>{
+      const d=liveIndices[cfg.sym];
+      const live=!!d;
+      const pct=live?d.pct:0;
+      const cls=!d?'neu':pct>=0?'pos':'neg';
+      const arrow=pct>=0?'▲':'▼';
+      const isFb=d?.isFallback;
+      return `<div class="ih-cell${cfg.big?' big':''} ${cls}">
+        <div class="ih-top">
+          <span class="ih-flag">${cfg.flag}</span>
+          <span class="ih-name">${cfg.name}</span>
+          ${isFb?'<span class="ih-fb">est</span>':''}
+        </div>
+        <div class="ih-val">${d?fmtIdx(d.val):'—'}</div>
+        <div class="ih-chg">${d?arrow+' '+Math.abs(pct).toFixed(2)+'%':'—'}</div>
+      </div>`;
+    }).join('');
+  }
 
-  // Global indices table
-  const globalEl=document.getElementById('tb-global-idx');
-  if(globalEl) globalEl.innerHTML=GLOBAL_INDEX_CFG.map(idxRow).join('');
+  // ── Global Markets — card grid ──
+  const globalEl=document.getElementById('globalStrip');
+  if(globalEl){
+    globalEl.innerHTML=GLOBAL_INDEX_CFG.map(cfg=>{
+      const d=liveIndices[cfg.sym];
+      const pct=d?d.pct:0;
+      const cls=!d?'neu':pct>=0?'pos':'neg';
+      return `<div class="gs-card ${cls}">
+        <div class="gs-name"><span class="gs-flag">${cfg.flag}</span>${cfg.name}</div>
+        <div class="gs-val">${d?fmtIdx(d.val):'—'}</div>
+        <div class="gs-chg">${d?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</div>
+      </div>`;
+    }).join('');
+  }
 
-  // Currencies & Commodities table
-  const commEl=document.getElementById('tb-comm-idx');
-  if(commEl) commEl.innerHTML=COMM_INDEX_CFG.map(idxRow).join('');
+  // ── Currencies & Commodities ──
+  const commEl=document.getElementById('commGrid');
+  if(commEl){
+    commEl.innerHTML=COMM_INDEX_CFG.map(cfg=>{
+      const d=liveIndices[cfg.sym];
+      const pct=d?d.pct:0;
+      const cls=!d?'':pct>=0?' pos':' neg';
+      return `<div class="cm-card${cls}">
+        <div class="cm-icon">${cfg.flag}</div>
+        <div class="cm-body">
+          <div class="cm-name">${cfg.name}</div>
+          <div class="cm-val">${d?fmtIdx(d.val):'—'}</div>
+          <div class="cm-chg">${d?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—'}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
 }
 
 async function refreshIndices(){
@@ -2411,6 +2359,30 @@ function toast(msg,type='ok'){const el=document.getElementById('toast');el.textC
 // NEW: Loading overlay
 function showLoading(msg='Loading…'){document.getElementById('loadingTxt').textContent=msg;document.getElementById('loadingOverlay').classList.add('visible');}
 function hideLoading(){document.getElementById('loadingOverlay').classList.remove('visible');}
+
+// Live price fetch indicator — animated bar under topbar
+function showPriceFetchIndicator(active){
+  let bar=document.getElementById('priceFetchBar');
+  if(!bar){
+    bar=document.createElement('div');
+    bar.id='priceFetchBar';
+    bar.style.cssText='position:fixed;top:54px;left:0;right:0;height:3px;z-index:299;background:var(--blue);opacity:0;transition:opacity .3s;display:block';
+    document.body.appendChild(bar);
+    if(!document.getElementById('pf-kf')){
+      const s=document.createElement('style');s.id='pf-kf';
+      s.textContent='@keyframes pfSlide{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}';
+      document.head.appendChild(s);
+    }
+  }
+  if(active){
+    bar.style.opacity='1';
+    bar.style.background='linear-gradient(90deg,transparent,var(--blue),transparent)';
+    bar.style.animation='pfSlide 1.2s linear infinite';
+  }else{
+    bar.style.opacity='0';
+    bar.style.animation='none';
+  }
+}
 
 // ══════════════════════════════════════════════════════
 //  LAST SYNCED BAR
@@ -2707,17 +2679,19 @@ function getRefreshInterval(){return isMarketOpen()?60*1000:15*60*1000;}
 async function initDashboard(){
   await loadSheetData(true);
   await fetchLiveIndices();renderIndices();
-  await refreshPrices();
-  // Smart adaptive interval — 60s open, 15min closed
+  if(selectedClient)await refreshPrices();
+  // Auto-refresh: indices always, prices only when client selected
   let _iv=setInterval(async()=>{
-    await refreshPrices();
     await fetchLiveIndices();renderIndices();
+    if(selectedClient)await refreshPrices();
   },getRefreshInterval());
-  // Re-check interval every minute in case market opens/closes
   setInterval(()=>{
     const newIv=getRefreshInterval();
     clearInterval(_iv);
-    _iv=setInterval(async()=>{await refreshPrices();await fetchLiveIndices();renderIndices();},newIv);
+    _iv=setInterval(async()=>{
+      await fetchLiveIndices();renderIndices();
+      if(selectedClient)await refreshPrices();
+    },newIv);
   },60*1000);
 }
 
@@ -2978,7 +2952,7 @@ function hmTile(s,maxPct){
   const pct=s.pct||0;
   const wt=s.wt||0;
   // TradingView: tile size proportional to portfolio weight
-  const sz=Math.max(72,Math.min(160,72+wt*10));
+  const sz=Math.max(80,Math.min(160,80+wt*8));
   // Color intensity: 0→10% of maxPct = light, 100% = deep
   const intensity=maxPct>0?Math.min(Math.abs(pct)/maxPct,1):0;
   // Color: green spectrum for positive, red spectrum for negative
