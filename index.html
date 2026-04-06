@@ -206,9 +206,9 @@ td:first-child{text-align:left;font-family:var(--sans)}
 /* ── OVERVIEW dual-panel layout ── */
 .ov-layout{display:flex;flex-direction:column;gap:12px}
 @media(min-width:820px){
-  .ov-layout{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
-  .ov-layout .sec:first-child{grid-column:1}
-  .ov-layout .sec:last-child{grid-column:2;position:sticky;top:108px}
+  .ov-layout{display:grid;grid-template-columns:55% 1fr;gap:12px;align-items:start}
+  .ov-layout>.sec:first-child{grid-column:1}
+  .ov-layout>.sec:last-child{grid-column:2;position:sticky;top:108px;max-height:calc(100vh - 140px);overflow-y:auto}
 }
 
 /* ── MARKET WATCH TABLE (Overview) ── */
@@ -2342,7 +2342,7 @@ function renderOverview(data){
     const pctArrow=s.dayPct!==null?(s.dayPct>=0?'▲':'▼'):'';
     const pnlCls=clsPill(s.pnlPct);
     return `<tr class="mw-row" data-mwq="${s.code.toLowerCase()} ${s.name.toLowerCase()}">
-      <td><span class="mw-script-name">${s.code}</span><span class="mw-script-sub">${s.name}</span></td>
+      <td><span class="mw-script-name">${s.code}</span></td>
       <td>${cmpPriceOnly(s)}</td>
       <td><span class="pill ${pctCls}" style="font-size:10px">${s.dayPct!==null?pctArrow+Math.abs(s.dayPct).toFixed(2)+'%':'—'}</span></td>
       <td><span class="pill ${pnlCls}" style="font-size:10px">${fmtP(s.pnlPct)}</span></td>
@@ -2431,7 +2431,7 @@ function renderHoldings(data){
   document.getElementById('tb-hold').innerHTML=sorted.map(s=>{
     const wt=totalInv>0?(s.invest/totalInv)*100:0;
     return `<tr class="h-row" data-q="${s.code.toLowerCase()} ${s.name.toLowerCase()} ${s.sector.toLowerCase()} ${(s.clientCode||'').toLowerCase()}">
-      <td><span class="sn">${s.code}</span><span class="ss">${s.name}</span></td>
+      <td><span class="sn">${s.code}</span></td>
       <td>${cmpPriceOnly(s)}</td>
       <td>${dayChangePill(s)}</td>
       <td><div class="bar-row"><span style="font-size:11px;font-weight:700;color:var(--text2)">${wt.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(wt*4,100)}%"></div></div></div></td>
@@ -2878,7 +2878,6 @@ function renderScripts(){
     return `<tr onclick="showScDrill('${safe}')" data-q="${sc.code.toLowerCase()} ${sc.name.toLowerCase()} ${sc.sector.toLowerCase()}">
       <td>
         <span class="sn">${sc.code}</span>
-        <span class="ss" style="max-width:130px">${sc.name}</span>
       </td>
       <td class="neu" style="font-size:10px;text-align:left">${sc.sector}</td>
       <td class="neu">${sc.clientCount}</td>
