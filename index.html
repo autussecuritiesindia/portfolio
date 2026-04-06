@@ -203,8 +203,13 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .ic-val{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--text)}
 .ic-chg{font-size:10px;font-family:var(--mono);margin-top:3px;font-weight:600;display:flex;align-items:center;gap:4px}
 .ic-pct{padding:1px 5px;border-radius:4px;font-size:9.5px}
-/* ── OVERVIEW vertical layout ── */
+/* ── OVERVIEW dual-panel layout ── */
 .ov-layout{display:flex;flex-direction:column;gap:12px}
+@media(min-width:820px){
+  .ov-layout{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  .ov-layout .sec:first-child{grid-column:1}
+  .ov-layout .sec:last-child{grid-column:2;position:sticky;top:108px}
+}
 
 /* ── MARKET WATCH TABLE (Overview) ── */
 .mw-wrap{background:var(--surface);border:1px solid var(--border);border-radius:0 0 var(--r) var(--r);overflow:hidden;box-shadow:var(--shadow)}
@@ -624,8 +629,9 @@ html{-webkit-text-size-adjust:100%}
 /* ── SCRIPTS TAB ── */
 .sc-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
 .sc-ts{font-size:10px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
-#scriptTable tbody tr{cursor:pointer}
-#scriptTable tbody tr:hover td{background:var(--blue-bg)}
+#scriptTable tbody tr{cursor:pointer;transition:background .1s}
+#scriptTable tbody tr:hover td{background:var(--blue-bg) !important;color:var(--text)}
+#scriptTable tbody tr:hover td:first-child .sn{color:var(--blue)}
 .sc-drill-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;
   background:var(--surface);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;
   border-bottom:1px solid var(--border);margin-top:8px}
@@ -672,40 +678,65 @@ html{-webkit-text-size-adjust:100%}
 .ov-panel-layout{display:grid;grid-template-columns:1fr;gap:12px}
 
 /* ══════════════════════════════════════════════════════
-   HOLDINGS — Client Name Header
+   HOLDINGS — Client Name Header — prominent
 ══════════════════════════════════════════════════════ */
-.client-name-header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;box-shadow:var(--shadow)}
-.ch-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--indigo));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
-.ch-name{font-size:15px;font-weight:700;color:var(--text)}
-.ch-code{font-size:10px;font-family:var(--mono);color:var(--muted);margin-top:2px}
-
-/* ══════════════════════════════════════════════════════
-   ANALYTICS — Hover row effect + full table
-══════════════════════════════════════════════════════ */
-.top-clients-table tbody tr:hover td{background:var(--blue-bg);cursor:pointer}
-.top-clients-table tbody tr:hover .pill{filter:brightness(1.05)}
-
-/* ══════════════════════════════════════════════════════
-   HEATMAP — Square tiles grid layout
-══════════════════════════════════════════════════════ */
-.hm-nested-grid{display:flex;flex-direction:column;gap:10px;width:100%}
-.hm-sector-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
-.hm-sector-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface3);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
-.hm-sector-hdr:hover{background:var(--surface2)}
-.hm-sector-title{font-size:12px;font-weight:700;color:var(--text)}
-.hm-sector-info{font-size:10px;color:var(--muted);font-family:var(--mono)}
-.hm-sector-meta{display:flex;align-items:center;gap:8px}
-.hm-sector-pct{font-size:12px;font-weight:700;font-family:var(--mono)}
-.hm-sector-body{display:flex;flex-wrap:wrap;gap:4px;padding:10px}
-
-/* Square tiles — key layout */
-.hm-tile-sq{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  border-radius:6px;cursor:pointer;transition:transform .12s,box-shadow .12s;
-  padding:4px;text-align:center;overflow:hidden;box-sizing:border-box;
-  border:1px solid rgba(255,255,255,0.06);gap:1px;flex-shrink:0;
+.client-name-header{
+  display:flex;align-items:center;gap:14px;padding:14px 18px;
+  background:linear-gradient(135deg,var(--blue-bg),var(--surface));
+  border:1px solid var(--blue-border);border-radius:var(--r);
+  margin-bottom:12px;box-shadow:var(--shadow);
+  position:relative;overflow:hidden;
 }
-.hm-tile-sq:hover{transform:scale(1.08);box-shadow:0 4px 20px rgba(0,0,0,.5);z-index:5;position:relative}
+.client-name-header::before{
+  content:'';position:absolute;right:-20px;top:-20px;
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--indigo));
+  opacity:.08;
+}
+.ch-avatar{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--indigo));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:800;color:#fff;flex-shrink:0;
+  box-shadow:0 2px 10px rgba(29,78,216,.3);
+}
+.ch-name{font-size:16px;font-weight:800;color:var(--text);letter-spacing:.2px}
+.ch-code{font-size:10px;font-family:var(--mono);color:var(--blue);margin-top:3px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:4px;display:inline-block;padding:1px 8px}
+
+/* ══════════════════════════════════════════════════════
+   ANALYTICS — Band rows + hover row effect
+══════════════════════════════════════════════════════ */
+.top-clients-table tbody tr.an-client-row:hover td{background:var(--blue-bg);cursor:pointer}
+.an-band-row td{padding:4px 12px !important;background:var(--surface3) !important;border-top:2px solid var(--border) !important}
+.an-band-label{font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;font-family:var(--mono);padding:2px 8px;border-radius:4px}
+.an-band-top{color:var(--green);background:var(--green-bg)}
+.an-band-mid{color:var(--text2);background:var(--surface2);border:1px solid var(--border)}
+.an-band-bot{color:var(--red);background:var(--red-bg)}
+
+/* ══════════════════════════════════════════════════════
+   HEATMAP — Full-screen treemap-style nested grid
+══════════════════════════════════════════════════════ */
+.hm-nested-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;width:100%}
+@media(min-width:600px){.hm-nested-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.hm-nested-grid{grid-template-columns:repeat(4,1fr)}}
+.hm-nested-grid.flat-view{display:block}
+.hm-sector-box{border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.06)}
+.hm-sector-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(0,0,0,0.25);border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;user-select:none}
+.hm-sector-hdr:hover{background:rgba(255,255,255,0.06)}
+.hm-sector-title{font-size:10px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%}
+.hm-sector-info{font-size:9px;color:rgba(255,255,255,0.5);font-family:var(--mono)}
+.hm-sector-meta{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.hm-sector-pct{font-size:11px;font-weight:800;font-family:var(--mono)}
+.hm-sector-body{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;padding:6px;min-height:80px}
+
+/* Square tiles — treemap style */
+.hm-tile-sq{
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;
+  border-radius:4px;cursor:pointer;transition:transform .12s,box-shadow .12s,filter .12s;
+  padding:5px 6px;text-align:left;overflow:hidden;box-sizing:border-box;
+  aspect-ratio:1;width:100%;border:1px solid rgba(255,255,255,0.06);
+}
+.hm-tile-sq:hover{transform:scale(1.06);box-shadow:0 4px 24px rgba(0,0,0,.6);z-index:5;position:relative;filter:brightness(1.18)}
 .hm-tile-code{font-size:10px;font-weight:800;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.2}
 .hm-tile-pct{font-size:11px;font-weight:700;font-family:var(--mono);line-height:1}
 .hm-tile-cmp{font-size:8px;font-family:var(--mono);line-height:1}
@@ -1063,7 +1094,7 @@ html{-webkit-text-size-adjust:100%}
     <div class="sc-toolbar">
       <div class="search-wrap" style="flex:1;margin-bottom:0">
         <span class="s-icon">🔍</span>
-        <input class="search" id="scriptSearch" placeholder="Search script name or code…"
+        <input class="search" id="scriptSearch" placeholder="Search script name, code or sector…"
           oninput="filterScriptRows(this.value)">
       </div>
       <span class="sc-ts" id="scTS">—</span>
@@ -1071,7 +1102,10 @@ html{-webkit-text-size-adjust:100%}
     <div class="sec" style="margin-top:10px">
       <div class="sec-hdr">
         <span class="sec-title">📊 RM Scripts — Full Portfolio</span>
-        <span class="sec-badge" id="scBadge">—</span>
+        <div class="sec-actions">
+          <span class="sec-badge" id="scBadge">—</span>
+          <span style="font-size:9px;color:var(--muted);font-family:var(--mono)">Click row → holders sorted by qty</span>
+        </div>
       </div>
       <div class="t-wrap scroll">
         <table id="scriptTable">
@@ -1101,36 +1135,37 @@ html{-webkit-text-size-adjust:100%}
   <div id="t-an" style="display:none">
     <div class="sec">
       <div class="sec-hdr">
-        <span class="sec-title">🏆 All Clients — Portfolio Analytics</span>
+        <span class="sec-title">🏆 Portfolio Analytics — Full Ranking</span>
         <div class="sec-actions">
           <span class="sec-badge" id="anBadge">—</span>
         </div>
       </div>
-      <div style="padding:10px 0 10px 0;background:var(--surface2);border:1px solid var(--border);border-top:none;display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap">
-        <span style="font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700">FILTER RM:</span>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-top:none;display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap">
+        <span style="font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700">RM:</span>
         <select class="an-select" id="anRMFilter" onchange="renderAnalytics()">
           <option value="">All RMs</option>
         </select>
         <span style="font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700;margin-left:8px">RANK BY:</span>
         <div class="an-metric-btns">
-          <button class="an-metric-btn active" onclick="setAnMetric('aum',this)">AUM</button>
-          <button class="an-metric-btn" onclick="setAnMetric('pnl',this)">P&amp;L ₹</button>
-          <button class="an-metric-btn" onclick="setAnMetric('pnlpct',this)">P&amp;L %</button>
-          <button class="an-metric-btn" onclick="setAnMetric('stocks',this)">Stocks</button>
+          <button class="an-metric-btn active" onclick="setAnMetric('aum',this)">AUM ↕</button>
+          <button class="an-metric-btn" onclick="setAnMetric('pnl',this)">P&amp;L ₹ ↕</button>
+          <button class="an-metric-btn" onclick="setAnMetric('pnlpct',this)">P&amp;L % ↕</button>
+          <button class="an-metric-btn" onclick="setAnMetric('stocks',this)">Scripts ↕</button>
         </div>
+        <span style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-left:auto">Click any row → view holdings</span>
       </div>
       <div class="top-clients-table">
         <table>
           <thead><tr>
-            <th style="text-align:center;width:40px">#</th>
+            <th style="text-align:center;width:36px">#</th>
             <th style="text-align:left">Client</th>
             <th style="text-align:left">RM</th>
             <th>Invested</th>
             <th>Curr. Value</th>
             <th>P&amp;L ₹</th>
             <th>P&amp;L %</th>
-            <th>Stocks</th>
-            <th>AUM Bar</th>
+            <th>Scripts</th>
+            <th>AUM Share</th>
           </tr></thead>
           <tbody id="tb-analytics"></tbody>
         </table>
@@ -1141,19 +1176,21 @@ html{-webkit-text-size-adjust:100%}
   <div id="t-hm" style="display:none">
     <div class="hm-toolbar">
       <div class="hm-filters">
-        <button class="hm-filter active" onclick="setHmView('sector',this)">🏭 By Industry</button>
-        <button class="hm-filter" onclick="setHmView('gainers',this)">📈 Top Gainers</button>
-        <button class="hm-filter" onclick="setHmView('losers',this)">📉 Top Losers</button>
-        <button class="hm-filter" onclick="setHmView('all',this)">📋 All Stocks</button>
+        <button class="hm-filter active" onclick="setHmView('sector',this)">🏭 By Sector</button>
+        <button class="hm-filter" onclick="setHmView('gainers',this)">📈 Gainers</button>
+        <button class="hm-filter" onclick="setHmView('losers',this)">📉 Losers</button>
+        <button class="hm-filter" onclick="setHmView('all',this)">📋 All</button>
       </div>
       <span class="hm-ts" id="hmTS">—</span>
     </div>
     <div id="hmDrillBar" style="display:none" class="hm-drill-bar">
-      <button class="hm-back-btn" onclick="closeHmDrill()">← Back to Heatmap</button>
+      <button class="hm-back-btn" onclick="closeHmDrill()">← Back</button>
       <span id="hmDrillTitle"></span>
     </div>
-    <!-- Nested heatmap grid: sector boxes containing script chips -->
-    <div id="hmGrid" class="hm-nested-grid"></div>
+    <!-- Dark container with nested treemap grid -->
+    <div id="hmContainer" style="background:#0d1117;border-radius:var(--r);padding:8px;border:1px solid #2a3248;margin-bottom:8px">
+      <div id="hmGrid" class="hm-nested-grid"></div>
+    </div>
     <div id="hmDrill" style="display:none" class="hm-drill"></div>
   </div>
 
@@ -2320,9 +2357,9 @@ function filterMW(){
   document.querySelectorAll('.mw-row').forEach(r=>r.style.display=r.dataset.mwq.includes(q)?'':'none');
 }
 
-// UPDATED: Holdings render — client name header, no repetition per row
+// UPDATED: Holdings render — client name header with stats, no repetition per row
 function renderHoldings(data){
-  // Update client name header
+  // Update client name header with stats
   const clientHeader=document.getElementById('holdingClientHeader');
   const clientName=document.getElementById('holdingClientName');
   const clientCode=document.getElementById('holdingClientCode');
@@ -2335,8 +2372,40 @@ function renderHoldings(data){
       clientName.textContent=nm;
       clientCode.textContent=selectedClient;
       clientAvatar.textContent=nm.charAt(0).toUpperCase();
+      // Add stats to header
+      const totalInvH=data.reduce((a,s)=>a+s.invest,0);
+      const totalCurrH=data.reduce((a,s)=>a+s.curr,0);
+      const pnlH=totalCurrH-totalInvH;
+      const pnlPctH=totalInvH>0?(pnlH/totalInvH)*100:0;
+      let statsEl=document.getElementById('chStats');
+      if(!statsEl){
+        statsEl=document.createElement('div');statsEl.id='chStats';
+        statsEl.style.cssText='display:flex;gap:16px;margin-left:auto;flex-wrap:wrap';
+        clientHeader.appendChild(statsEl);
+      }
+      statsEl.innerHTML=`
+        <div style="text-align:right">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:2px">Invested</div>
+          <div style="font-size:13px;font-weight:700;font-family:var(--mono)">₹${fmtC(totalInvH)}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:2px">Current</div>
+          <div style="font-size:13px;font-weight:700;font-family:var(--mono)">₹${fmtC(totalCurrH)}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:2px">P&L</div>
+          <div style="font-size:13px;font-weight:800;font-family:var(--mono);color:${pnlH>=0?'var(--green)':'var(--red)'}">
+            ${pnlH>=0?'▲ +':'▼ −'}₹${fmtC(Math.abs(pnlH))} <span style="font-size:11px">(${fmtP(pnlPctH)})</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:2px">Scripts</div>
+          <div style="font-size:13px;font-weight:700;font-family:var(--mono)">${data.length}</div>
+        </div>`;
     }else{
       clientHeader.style.display='none';
+      const statsEl=document.getElementById('chStats');
+      if(statsEl)statsEl.remove();
     }
   }
   const totalInv=data.reduce((a,s)=>a+s.invest,0);
@@ -3146,12 +3215,12 @@ function setHmView(v,el){
 
 function renderHeatmap(){
   const scope=getFilteredData();
-  if(!scope.length){document.getElementById('hmGrid').innerHTML='<div style="padding:32px;text-align:center;color:var(--muted)">No data — select a client first</div>';return;}
+  if(!scope.length){document.getElementById('hmGrid').innerHTML='<div style="padding:32px;text-align:center;color:rgba(255,255,255,0.3);font-family:var(--mono)">No data — select a client first</div>';return;}
 
   const now=livePriceTS&&Object.keys(livePriceTS).length?new Date(Math.max(...Object.values(livePriceTS))):null;
   const mktOpen=typeof isMarketOpen==='function'&&isMarketOpen();
   const tsEl=document.getElementById('hmTS');
-  if(tsEl)tsEl.textContent=now?(mktOpen?'Live · ':'Closed · ')+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):(mktOpen?'Tap ↻ Live':'Market closed · Sheet prices');
+  if(tsEl)tsEl.textContent=now?(mktOpen?'🟢 Live · ':'🔴 Closed · ')+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):(mktOpen?'Tap ↻ Live':'Market closed');
 
   const stockMap=new Map();
   scope.forEach(s=>{
@@ -3176,7 +3245,6 @@ function renderHeatmap(){
   const grid=document.getElementById('hmGrid');
 
   if(hmView==='sector'||hmView==='all'){
-    // ── NESTED: Sector box → script chips inside ──
     grid.className='hm-nested-grid';
     const sectors=new Map();
     stocks.forEach(s=>{
@@ -3190,41 +3258,40 @@ function renderHeatmap(){
       return tb-ta;
     });
     grid.innerHTML=sortedSectors.map(([sec,ss])=>{
-      // Sector-level aggregate P&L
       const secInvest=ss.reduce((a,s)=>a+s.totalInvest,0);
       const secCurr=ss.reduce((a,s)=>a+s.currVal,0);
       const secPnl=secCurr-secInvest;
       const secPct=secInvest>0?(secPnl/secInvest)*100:0;
       const secWt=totalInvest>0?(secInvest/totalInvest)*100:0;
       const secCls=secPct>0?'pos':secPct<0?'neg':'neu';
-      const secArrow=secPct>0?'▲':secPct<0?'▼':'';
-      // Sort scripts inside sector by investment desc
+      const secColor=secPct>0?'#4ade80':secPct<0?'#f87171':'rgba(255,255,255,0.4)';
+      const secBg=secPct>0?`rgba(15,80,50,0.8)`:secPct<0?`rgba(100,20,20,0.8)`:'rgba(30,40,60,0.8)';
       const sortedSS=[...ss].sort((a,b)=>b.totalInvest-a.totalInvest);
-      return `<div class="hm-sector-box">
-        <div class="hm-sector-hdr" onclick="this.parentElement.querySelector('.hm-sector-body').style.display=this.parentElement.querySelector('.hm-sector-body').style.display==='none'?'flex':''">
-          <div>
-            <span class="hm-sector-title">${sec}</span>
-            <span class="hm-sector-info" style="margin-left:8px">${ss.length} scripts · ${secWt.toFixed(1)}% of portfolio</span>
-          </div>
+      // Grid cols: 2 for ≤3 stocks, 3 for ≤6, else 3
+      const cols=sortedSS.length<=2?2:3;
+      return `<div class="hm-sector-box" style="background:${secBg}">
+        <div class="hm-sector-hdr" onclick="hmSectorDrill('${sec.replace(/'/g,"\\'")}')">
+          <span class="hm-sector-title">${sec}</span>
           <div class="hm-sector-meta">
-            <span class="hm-sector-pct" style="color:${secCls==='pos'?'var(--green)':secCls==='neg'?'var(--red)':'var(--muted)'}">${secArrow} ${Math.abs(secPct).toFixed(2)}%</span>
+            <span class="hm-sector-info">${ss.length} stocks · ${secWt.toFixed(0)}%</span>
+            <span class="hm-sector-pct" style="color:${secColor}">${secPct>=0?'▲':' ▼'}${Math.abs(secPct).toFixed(2)}%</span>
           </div>
         </div>
-        <div class="hm-sector-body">
+        <div class="hm-sector-body" style="grid-template-columns:repeat(${cols},1fr)">
           ${sortedSS.map(s=>hmChip(s,maxPct)).join('')}
         </div>
       </div>`;
     }).join('');
   }else{
-    // Gainers / Losers — flat chips in a single box
-    grid.className='hm-nested-grid';
-    const label=hmView==='gainers'?`📈 Top Gainers (${stocks.length})`:`📉 Top Losers (${stocks.length})`;
-    grid.innerHTML=`<div class="hm-sector-box">
+    grid.className='hm-nested-grid flat-view';
+    const label=hmView==='gainers'?`📈 Gainers (${stocks.length})`:`📉 Losers (${stocks.length})`;
+    const cols=Math.min(6,Math.ceil(Math.sqrt(stocks.length)));
+    grid.innerHTML=`<div class="hm-sector-box" style="background:#111827">
       <div class="hm-sector-hdr" style="cursor:default">
         <span class="hm-sector-title">${label}</span>
-        <span class="hm-sector-info">Sorted by Day % ${hmView==='gainers'?'descending':'ascending'}</span>
+        <span class="hm-sector-info">Day % ${hmView==='gainers'?'desc':'asc'}</span>
       </div>
-      <div class="hm-sector-body">
+      <div class="hm-sector-body" style="grid-template-columns:repeat(${cols},1fr)">
         ${stocks.map(s=>hmChip(s,maxPct)).join('')}
       </div>
     </div>`;
@@ -3237,27 +3304,25 @@ function hmChip(s,maxPct){
   const intensity=maxPct>0?Math.min(Math.abs(pct)/maxPct,1):0;
   let bg,textCol,pctCol;
   if(pct>0){
-    const g=Math.round(71+intensity*56);
-    bg=`rgb(${Math.round(15-intensity*5)},${g},${Math.round(43-intensity*15)})`;
-    textCol=intensity>0.5?'#a7f3d0':'#6ee7b7';pctCol='#4ade80';
+    const g=Math.round(80+intensity*80);
+    bg=`rgb(${Math.round(5+intensity*10)},${g},${Math.round(30+intensity*20)})`;
+    textCol='#fff';pctCol='#4ade80';
   }else if(pct<0){
-    const r=Math.round(120+intensity*55);
-    bg=`rgb(${r},${Math.round(20-intensity*8)},${Math.round(20-intensity*8)})`;
-    textCol=intensity>0.5?'#fecaca':'#fca5a5';pctCol='#f87171';
+    const r=Math.round(130+intensity*80);
+    bg=`rgb(${r},${Math.round(15+intensity*5)},${Math.round(15+intensity*5)})`;
+    textCol='#fff';pctCol='#f87171';
   }else{
-    bg='rgba(51,65,85,0.55)';textCol='var(--text2)';pctCol='var(--muted)';
+    bg='rgba(40,55,80,0.9)';textCol='rgba(255,255,255,0.6)';pctCol='rgba(255,255,255,0.4)';
   }
-  // Square tiles — proportional to weight, min 70 max 110px
-  const sz=Math.max(70,Math.min(110,70+wt*5));
   const safe=s.code.replace(/'/g,"\'");
   const arrow=pct>0?'▲':pct<0?'▼':'';
   const cmpStr=s.cmp>0?s.cmp.toFixed(0):'—';
   return `<div class="hm-tile-sq" onclick="showHmDrill('${safe}')"
-    style="background:${bg};width:${sz}px;height:${sz}px"
+    style="background:${bg}"
     title="${s.name} · ${pct>=0?'+':''}${pct.toFixed(2)}% · Wt ${wt.toFixed(1)}%">
-    <span class="hm-tile-code" style="color:${textCol}">${s.code}</span>
+    <span class="hm-tile-code" style="color:${textCol};opacity:.85">${s.code}</span>
     <span class="hm-tile-pct" style="color:${pctCol}">${arrow}${Math.abs(pct).toFixed(2)}%</span>
-    <span class="hm-tile-cmp" style="color:${textCol};opacity:.8">${cmpStr}</span>
+    <span class="hm-tile-cmp" style="color:${textCol};opacity:.6">${cmpStr}</span>
   </div>`;
 }
 
@@ -3270,7 +3335,7 @@ function showHmDrill(code){
   const pct=liveChangePct[code]??null;
   document.getElementById('hmDrillTitle').textContent=`${code} — ${s.name}`;
   document.getElementById('hmDrillBar').style.display='flex';
-  document.getElementById('hmGrid').style.display='none';
+  document.getElementById('hmContainer').style.display='none';
   const drill=document.getElementById('hmDrill');
   drill.style.display='';
   const totalQty=rows.reduce((a,r)=>a+r.qty,0);
@@ -3301,8 +3366,57 @@ function showHmDrill(code){
     </div>`;
 }
 
+function hmSectorDrill(sectorName){
+  // Show sector-level drill: all stocks in that sector with holdings detail
+  const scope=getFilteredData();
+  const stocks=scope.filter(s=>s.sector===sectorName);
+  if(!stocks.length)return;
+
+  // Aggregate by code
+  const stockMap=new Map();
+  stocks.forEach(s=>{
+    if(!stockMap.has(s.code))stockMap.set(s.code,{code:s.code,name:s.name,totalQty:0,totalInvest:0,clients:[]});
+    const m=stockMap.get(s.code);
+    m.totalQty+=s.qty;m.totalInvest+=s.buy*s.qty;
+    m.clients.push(s);
+  });
+  const agg=[...stockMap.values()].map(m=>{
+    const cmp=livePrices[m.code]||m.totalInvest/m.totalQty;
+    const pct=liveChangePct[m.code]??null;
+    return{...m,cmp,pct,currVal:cmp*m.totalQty};
+  }).sort((a,b)=>b.totalQty-a.totalQty);
+
+  document.getElementById('hmDrillTitle').textContent=`🏭 ${sectorName} — ${agg.length} stocks`;
+  document.getElementById('hmDrillBar').style.display='flex';
+  document.getElementById('hmContainer').style.display='none';
+  const drill=document.getElementById('hmDrill');
+  drill.style.display='';
+  drill.innerHTML=`
+    <div class="hm-drill-summary" style="grid-template-columns:repeat(3,1fr)">
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Sector</div><div class="hm-dkpi-v" style="font-size:12px">${sectorName}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Unique Scripts</div><div class="hm-dkpi-v">${agg.length}</div></div>
+      <div class="hm-drill-kpi"><div class="hm-dkpi-l">Total Holdings</div><div class="hm-dkpi-v">${stocks.length}</div></div>
+    </div>
+    <div class="hm-drill-table">
+      <table><thead><tr><th style="text-align:left">Script</th><th>Total Qty ▼</th><th>CMP</th><th>Day %</th><th>Curr Val</th><th>Clients</th></tr></thead>
+      <tbody>${agg.map(s=>{
+        const pctHtml=s.pct!==null?`<span class="pill ${s.pct>=0?'pos':'neg'}">${s.pct>=0?'▲':'▼'}${Math.abs(s.pct).toFixed(2)}%</span>`:'<span class="pill neu">—</span>';
+        const safe=s.code.replace(/'/g,"\'");
+        return`<tr style="cursor:pointer" onclick="showHmDrill('${safe}')">
+          <td><span style="font-weight:700">${s.code}</span><br><span style="font-size:9px;color:var(--muted)">${s.name}</span></td>
+          <td class="neu">${s.totalQty.toLocaleString('en-IN')}</td>
+          <td class="neu">${s.cmp.toFixed(2)}</td>
+          <td>${pctHtml}</td>
+          <td class="neu">₹${fmtC(s.currVal)}</td>
+          <td class="neu">${s.clients.length}</td>
+        </tr>`;}).join('')}
+      </tbody></table>
+    </div>`;
+}
+
 function closeHmDrill(){
   document.getElementById('hmDrillBar').style.display='none';
+  document.getElementById('hmContainer').style.display='';
   document.getElementById('hmGrid').style.display='';
   document.getElementById('hmDrill').style.display='none';
 }
@@ -3328,7 +3442,6 @@ function renderAnalytics(){
   }
 
   const rmFilter=rmSel?rmSel.value:'';
-  // Scope: RM user sees only their clients; admin sees all (filtered by RM dropdown)
   let scope=currentUser?.role==='rm'
     ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
     :PORTFOLIO;
@@ -3353,7 +3466,6 @@ function renderAnalytics(){
     stockCount:c.stocks.size
   }));
 
-  // Sort by selected metric
   const sortFn={
     'aum':(a,b)=>b.curr-a.curr,
     'pnl':(a,b)=>b.pnl-a.pnl,
@@ -3361,9 +3473,9 @@ function renderAnalytics(){
     'stocks':(a,b)=>b.stockCount-a.stockCount,
   };
   clients.sort(sortFn[anMetric]||sortFn.aum);
-  // Show ALL clients — no top-10 limit
+  const total=clients.length;
   const maxAUM=clients.length?clients[0].curr:1;
-  document.getElementById('anBadge').textContent=`${clients.length} clients · ${rmFilter||'All RMs'} · sorted by ${anMetric.toUpperCase()}`;
+  document.getElementById('anBadge').textContent=`${total} clients · ${rmFilter||'All RMs'} · High → Low by ${anMetric.toUpperCase()}`;
 
   const rankBadge=(i)=>{
     if(i===0)return '<span class="rank-badge rank-1">🥇</span>';
@@ -3372,14 +3484,26 @@ function renderAnalytics(){
     return `<span class="rank-badge rank-n">${i+1}</span>`;
   };
 
-  document.getElementById('tb-analytics').innerHTML=clients.map((c,i)=>{
+  // Band separators: Top 10%, Mid, Bottom 10%
+  const top10=Math.max(1,Math.floor(total*0.1));
+  const bot10=Math.max(1,Math.floor(total*0.1));
+
+  const rows=[];
+  clients.forEach((c,i)=>{
+    // Insert band labels
+    if(i===0){
+      rows.push(`<tr class="an-band-row"><td colspan="9"><span class="an-band-label an-band-top">▲ TOP PERFORMERS</span></td></tr>`);
+    }else if(i===top10){
+      rows.push(`<tr class="an-band-row"><td colspan="9"><span class="an-band-label an-band-mid">MIDDLE RANGE</span></td></tr>`);
+    }else if(i===total-bot10){
+      rows.push(`<tr class="an-band-row"><td colspan="9"><span class="an-band-label an-band-bot">▼ LOWER PERFORMERS</span></td></tr>`);
+    }
     const aumPct=maxAUM>0?(c.curr/maxAUM)*100:0;
     const pnlCls=c.pnl>=0?'pos':'neg';
     const pnlSign=c.pnl>=0?'+':'−';
     const safeCode=c.clientCode.replace(/'/g,"\'");
     const safeRM=(c.rm||'DEFAULT').replace(/'/g,"\'");
-    // Clicking navigates to that client's holdings
-    return `<tr style="cursor:pointer" onclick="selectClientFromAnalytics('${safeCode}','${safeRM}')" title="Click to view ${c.clientName}'s holdings">
+    rows.push(`<tr style="cursor:pointer" onclick="selectClientFromAnalytics('${safeCode}','${safeRM}')" title="Click to view ${c.clientName}'s holdings" class="an-client-row">
       <td style="text-align:center">${rankBadge(i)}</td>
       <td><span style="font-weight:700;font-size:12px">${c.clientName}</span></td>
       <td><span style="font-size:10px;color:var(--muted);font-family:var(--mono)">${c.rm==='DEFAULT'?'—':c.rm}</span></td>
@@ -3391,11 +3515,13 @@ function renderAnalytics(){
       <td>
         <div class="client-aum-bar">
           <div class="aum-track"><div class="aum-fill" style="width:${aumPct.toFixed(1)}%"></div></div>
-          <span style="font-size:9px;color:var(--muted);font-family:var(--mono);min-width:32px">${aumPct.toFixed(0)}%</span>
+          <span style="font-size:9px;color:var(--muted);font-family:var(--mono);min-width:28px">${aumPct.toFixed(0)}%</span>
         </div>
       </td>
-    </tr>`;
-  }).join('');
+    </tr>`);
+  });
+
+  document.getElementById('tb-analytics').innerHTML=rows.join('');
 }
 
 // Analytics click — navigate to client holdings
