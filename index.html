@@ -60,7 +60,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;
   transition:background-color .22s ease,border-color .22s ease,color .15s ease;}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;min-height:100vh;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;min-height:100vh;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 main{padding:12px 14px;max-width:1024px;margin:0 auto;animation:fadeInUp .3s ease both}
 
@@ -924,7 +924,8 @@ html{-webkit-text-size-adjust:100%}
     <div class="tab" onclick="showTab('hd',this)">📋 Holdings</div>
     <div class="tab" onclick="showTab('sc',this)">🏭 Sectors</div>
     <div class="tab" onclick="showTab('st',this)">📊 RM Scripts</div>
-    <div class="tab" onclick="showTab('hm',this)">🔥 Heatmap</div>
+    <div class="tab" onclick="showTab('hm',this)">🔥 Portfolio HM</div>
+    <div class="tab" onclick="showTab('mh',this)">🌍 Mkt HeatMap</div>
     <div class="tab" onclick="showTab('an',this)">🏆 Analytics</div>
   </div>
 
@@ -964,6 +965,7 @@ html{-webkit-text-size-adjust:100%}
         <div class="sec-hdr">
           <span class="sec-title">🌐 Market Overview</span>
           <div class="sec-actions">
+            <span id="mktCountdown" style="font-size:9px;color:var(--muted);font-family:var(--mono);background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;display:none">↻ —</span>
             <span class="market-ts" id="marketTS" style="font-size:10px;color:var(--muted);font-family:var(--mono)">—</span>
             <button class="btn" style="font-size:10px;padding:4px 10px" onclick="refreshIndices()"><span id="mri">↻</span> Refresh</button>
           </div>
@@ -1010,20 +1012,7 @@ html{-webkit-text-size-adjust:100%}
       <!-- UPDATED: debounced -->
       <input class="search" id="srch" placeholder="Search script, sector, client..." oninput="debouncedFilter()">
     </div>
-    <!-- NEW: Sort controls row -->
-    <div class="controls-row sort-wrap">
-      <span class="sort-label">Sort by:</span>
-      <select class="sort-select" id="sortSelect" onchange="renderHoldingsFromCurrent()">
-        <option value="curr">Current Value</option>
-        <option value="script">Script A–Z</option>
-        <option value="sector">Sector</option>
-        <option value="pnlpct">P&amp;L %</option>
-        <option value="pnlabs">P&amp;L ₹</option>
-        <option value="wt">Weight %</option>
-        <option value="daypct">Day %</option>
-      </select>
-      <button class="btn sort-dir" id="sortDirBtn" onclick="toggleSortDir()" title="Toggle direction">▼</button>
-    </div>
+    <!-- Holdings sort is now via column header clicks — no dropdown needed -->
     <div class="sec">
       <div class="sec-hdr">
         <span class="sec-title">📋 All Holdings — Live CMP</span>
@@ -1034,11 +1023,17 @@ html{-webkit-text-size-adjust:100%}
       </div>
       <div class="t-wrap scroll">
         <table>
-          <thead><tr>
-            <th style="text-align:left">Script</th>
-            <th>CMP ⚡</th><th>Day %</th><th>Wt%</th><th>Qty</th>
-            <th>Avg Buy ₹</th><th>Curr. Value</th><th>P&amp;L ₹</th><th>P&amp;L %</th>
-            <th style="text-align:left">Industry</th>
+          <thead><tr id="holdThead">
+            <th style="text-align:left;cursor:pointer" onclick="setSortKey('script')">Script <span class="mw-arr" id="ha-script"></span></th>
+            <th style="cursor:pointer" onclick="setSortKey('cmp')">CMP ⚡ <span class="mw-arr" id="ha-cmp"></span></th>
+            <th style="cursor:pointer" onclick="setSortKey('daypct')">Day % <span class="mw-arr" id="ha-daypct"></span></th>
+            <th style="cursor:pointer" onclick="setSortKey('wt')">Wt% <span class="mw-arr" id="ha-wt"></span></th>
+            <th style="cursor:pointer" onclick="setSortKey('qty')">Qty <span class="mw-arr" id="ha-qty"></span></th>
+            <th>Avg Buy ₹</th>
+            <th style="cursor:pointer" onclick="setSortKey('curr')">Curr. Value <span class="mw-arr" id="ha-curr"></span></th>
+            <th style="cursor:pointer" onclick="setSortKey('pnlabs')">P&amp;L ₹ <span class="mw-arr" id="ha-pnlabs"></span></th>
+            <th style="cursor:pointer" onclick="setSortKey('pnlpct')">P&amp;L % <span class="mw-arr" id="ha-pnlpct"></span></th>
+            <th style="text-align:left;cursor:pointer" onclick="setSortKey('sector')">Industry <span class="mw-arr" id="ha-sector"></span></th>
           </tr></thead>
           <tbody id="tb-hold"></tbody>
         </table>
@@ -1048,18 +1043,7 @@ html{-webkit-text-size-adjust:100%}
 
   <!-- ═══ SECTORS ═══ -->
   <div id="t-sc" style="display:none">
-    <div class="sec">
-      <div class="sec-hdr"><span class="sec-title">🏭 Sector Heatmap</span><span class="sec-badge">Click sector → see scripts below</span></div>
-      <div class="heatmap" id="heatmap"></div>
-    </div>
-    <div class="sec">
-      <div class="sec-hdr"><span class="sec-title">📊 Sector Summary</span><span class="sec-badge">Click row to drill down</span></div>
-      <div class="t-wrap scroll">
-        <table><thead><tr><th>Sector</th><th>Stocks</th><th>Invested</th><th>Curr. Value</th><th>P&amp;L ₹</th><th>P&amp;L %</th><th>Weight</th></tr></thead>
-        <tbody id="tb-sec"></tbody></table>
-      </div>
-    </div>
-    <!-- Sector drilldown panel — stays in this tab -->
+    <!-- Sector drilldown panel — appears ABOVE heatmap when active -->
     <div id="sectorDrill" class="sector-drill-panel" style="display:none">
       <div class="sector-drill-hdr">
         <span id="sectorDrillTitle">—</span>
@@ -1074,6 +1058,17 @@ html{-webkit-text-size-adjust:100%}
           </tr></thead>
           <tbody></tbody>
         </table>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-hdr"><span class="sec-title">🏭 Sector Heatmap</span><span class="sec-badge">Click sector → drill down</span></div>
+      <div class="heatmap" id="heatmap"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-hdr"><span class="sec-title">📊 Sector Summary</span><span class="sec-badge">Click row to drill down</span></div>
+      <div class="t-wrap scroll">
+        <table><thead><tr><th>Sector</th><th>Stocks</th><th>Invested</th><th>Curr. Value</th><th>P&amp;L ₹</th><th>P&amp;L %</th><th>Weight</th></tr></thead>
+        <tbody id="tb-sec"></tbody></table>
       </div>
     </div>
   </div>
@@ -1119,6 +1114,21 @@ html{-webkit-text-size-adjust:100%}
     <div id="scDrill" style="display:none"></div>
   </div>
 
+  <div id="t-mh" style="display:none">
+    <div class="sec">
+      <div class="sec-hdr">
+        <span class="sec-title">🌍 NSE Market Heatmap — Live</span>
+        <span class="sec-badge">Powered by TradingView</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);overflow:hidden;box-shadow:var(--shadow)">
+        <!-- TradingView Stock Market Heatmap Widget -->
+        <div class="tradingview-widget-container" id="tvMktHeatmap">
+          <div class="tradingview-widget-container__widget"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="t-an" style="display:none">
     <div class="sec">
       <div class="sec-hdr">
@@ -1127,7 +1137,7 @@ html{-webkit-text-size-adjust:100%}
           <span class="sec-badge" id="anBadge">—</span>
         </div>
       </div>
-      <div style="padding:10px 0 10px 0;background:var(--surface2);border:1px solid var(--border);border-top:none;display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap">
+      <div id="anFilterRow" style="padding:10px 0 10px 0;background:var(--surface2);border:1px solid var(--border);border-top:none;display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap">
         <span style="font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700">FILTER RM:</span>
         <select class="an-select" id="anRMFilter" onchange="renderAnalytics()">
           <option value="">All RMs</option>
@@ -1571,10 +1581,15 @@ function parseSheetCSV(text){
   const iBuy  = col('BUYPRICE','BUY PRICE','BUYRATE','BUY RATE','AVGBUYPRICE','AVGRATE','AVG RATE');
   const iSec  = col('SECTOR');
   const iVal  = col('VALRATE','VAL RATE','CLOSINGVALUATION','CLOSING VALUATION');
-  // AR column (index 43, 0-based) — header TOTALCREDITAMT → displayed as "Ledger Balance"
-  const iLedger=(()=>{
+  // AQ col (index 42) = TOTALDEBITAMT, AR col (index 43) = TOTALCREDITAMT
+  // Net ledger = CREDIT - DEBIT (positive = credit balance, negative = debit balance)
+  const iCredit=(()=>{
     const byName=col('TOTALCREDITAMT','TOTAL CREDIT AMT','TOTALCREDIT','LEDGERBALANCE','LEDGER BALANCE','LEDGER');
     return byName>=0?byName:(hdrs.length>43?43:-1);
+  })();
+  const iDebit=(()=>{
+    const byName=col('TOTALDEBITAMT','TOTAL DEBIT AMT','TOTALDEBIT');
+    return byName>=0?byName:(hdrs.length>42?42:-1);
   })();
 
   console.log('[SHEET] Col indices:',{iSub,iCC,iName,iSym,iQty,iBuy,iSec,iVal});
@@ -1592,7 +1607,10 @@ function parseSheetCSV(text){
     if(!qty&&!buy)continue;
     const sector=iSec>=0&&c[iSec]?c[iSec]:guessSector(symbol);
     const val   =iVal>=0?parseFloat(c[iVal]||0)||buy:buy;
-    const ledger=iLedger>=0?parseFloat((c[iLedger]||'').replace(/[₹,\s]/g,''))||null:null;
+    const creditAmt=iCredit>=0?parseFloat((c[iCredit]||'').replace(/[₹,\s]/g,''))||0:0;
+    const debitAmt =iDebit>=0 ?parseFloat((c[iDebit ]||'').replace(/[₹,\s]/g,''))||0:0;
+    // Net: positive = credit (client has cash), negative = debit (client owes)
+    const ledger=(creditAmt===0&&debitAmt===0)?null:(creditAmt-debitAmt);
     rows.push({subgroup:iSub>=0?c[iSub]:'',clientCode,clientName:iName>=0?(c[iName]||clientCode):clientCode,
                code:symbol,name:iName>=0?(c[iName]||symbol):symbol,sector,qty,buy,valRate:val,ledger});
   }
@@ -2432,8 +2450,9 @@ function renderHoldings(data){
   const totalCurr=data.reduce((a,s)=>a+s.curr,0);
   const _lb=(window._ledgerMap||{})[selectedClient]||0;
   const _wtDenom=totalCurr+_lb;
-  const sk=document.getElementById('sortSelect').value||sortKey;
-  sortKey=sk;
+  const sk=sortKey;
+  // Update header arrows to match current sort
+  updateHoldingSortArrows();
 
   const sortFns={
     'curr':  (a,b)=>b.curr-a.curr,
@@ -2441,8 +2460,10 @@ function renderHoldings(data){
     'sector':(a,b)=>a.sector.localeCompare(b.sector),
     'pnlpct':(a,b)=>b.pnlPct-a.pnlPct,
     'pnlabs':(a,b)=>b.pnl-a.pnl,
-    'wt':    (a,b)=>(b.invest-a.invest),
+    'wt':    (a,b)=>b.curr-a.curr,
     'daypct':(a,b)=>(b.dayPct??-999)-(a.dayPct??-999),
+    'qty':   (a,b)=>b.qty-a.qty,
+    'cmp':   (a,b)=>b.cmp-a.cmp,
   };
   let sorted=[...data].sort(sortFns[sk]||sortFns['curr']);
   if(sortAsc)sorted=sorted.reverse();
@@ -2475,9 +2496,22 @@ function renderHoldingsFromCurrent(){
 }
 
 // NEW: Sort direction toggle
+function setSortKey(key){
+  if(sortKey===key){sortAsc=!sortAsc;}else{sortKey=key;sortAsc=false;}
+  updateHoldingSortArrows();
+  renderHoldingsFromCurrent();
+}
+
+function updateHoldingSortArrows(){
+  ['script','cmp','daypct','wt','qty','curr','pnlabs','pnlpct','sector'].forEach(k=>{
+    const el=document.getElementById('ha-'+k);
+    if(el)el.textContent=k===sortKey?(sortAsc?'▲':'▼'):'';
+  });
+}
+
 function toggleSortDir(){
   sortAsc=!sortAsc;
-  document.getElementById('sortDirBtn').textContent=sortAsc?'▲':'▼';
+  updateHoldingSortArrows();
   renderHoldingsFromCurrent();
 }
 
@@ -2529,8 +2563,10 @@ function drillSector(sectorName){
   activeSectorFilter=sectorName;
   document.getElementById('sectorFilterName').textContent=sectorName;
   document.getElementById('sectorFilterBar').classList.add('visible');
-  // Stay in sector tab — show filtered scripts below
   renderSectorDrilldown(sectorName);
+  // Scroll drill panel into view immediately
+  const drill=document.getElementById('sectorDrill');
+  if(drill)setTimeout(()=>drill.scrollIntoView({behavior:'smooth',block:'start'}),50);
 }
 
 function renderSectorDrilldown(sectorName){
@@ -2705,12 +2741,13 @@ function renderAll(){
 // ══════════════════════════════════════════════════════
 function showDashboard(){document.getElementById('uploadZone').classList.add('hidden');document.getElementById('selectorScreen').style.display='none';document.getElementById('dashboard').style.display='';}
 function showTab(id,el){
-  ['ov','hd','sc','st','hm','an'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
+  ['ov','hd','sc','st','hm','mh','an'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  if(id==='hm')renderHeatmap();
   if(id==='st')renderScripts();
   if(id==='an')renderAnalytics();
+  if(id==='mh')initTVMarketHeatmap();
+  if(id==='hm')renderHeatmap();
 }
 
 // UPDATED: debounced search
@@ -2799,24 +2836,26 @@ function renderSnapshot(){
 (function initPTR(){
   let startY=0,pulling=false,moved=false;
   const ind=document.getElementById('ptrIndicator');
-  // Prevent iOS Safari from treating pull-down as a page reload
   document.addEventListener('touchstart',e=>{
     if(window.scrollY===0&&e.touches.length===1){
-      startY=e.touches[0].clientY;moved=false;
+      startY=e.touches[0].clientY;moved=false;pulling=false;
     }
   },{passive:true});
   document.addEventListener('touchmove',e=>{
     if(!startY)return;
     const dy=e.touches[0].clientY-startY;
-    if(dy>8)moved=true;
-    if(dy>60&&window.scrollY===0){
-      pulling=true;
-      if(ind)ind.classList.add('visible');
+    // Only block when actively pulling down from top — prevents iOS native reload
+    if(dy>0&&window.scrollY===0){
+      try{e.preventDefault();}catch(ex){}
+      if(dy>8)moved=true;
+      if(dy>60){
+        pulling=true;
+        if(ind)ind.classList.add('visible');
+      }
     }
-  },{passive:true});
+  },{passive:false});
   document.addEventListener('touchend',()=>{
     if(pulling&&moved){
-      // ONLY refresh prices + indices — never navigate, never logout
       if(typeof refreshPrices==='function')refreshPrices();
       if(typeof refreshIndices==='function')refreshIndices();
     }
@@ -2826,8 +2865,40 @@ function renderSnapshot(){
 })();
 
 // ══════════════════════════════════════════════════════
-//  CLIENT SEARCH
+//  TRADINGVIEW MARKET HEATMAP
 // ══════════════════════════════════════════════════════
+let _tvMHInited=false;
+function initTVMarketHeatmap(){
+  if(_tvMHInited)return;
+  _tvMHInited=true;
+  const container=document.querySelector('#tvMktHeatmap .tradingview-widget-container__widget');
+  if(!container)return;
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
+  const cfg={
+    exchanges:[],
+    dataSource:'NSE',
+    grouping:'sector',
+    blockSize:'market_cap_basic',
+    blockColor:'change',
+    locale:'en',
+    symbolUrl:'',
+    colorTheme:isDark?'dark':'light',
+    hasTopBar:true,
+    isDataSetEnabled:false,
+    isZoomEnabled:true,
+    hasSymbolTooltip:true,
+    isMonoSize:false,
+    width:'100%',
+    height:600
+  };
+  const s=document.createElement('script');
+  s.src='https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
+  s.async=true;
+  s.innerHTML=JSON.stringify(cfg);
+  container.appendChild(s);
+}
+
+
 function filterClientCards(){
   const q=document.getElementById('clientSearch').value.toLowerCase();
   document.querySelectorAll('#clientGrid .client-card').forEach(card=>{
@@ -2988,8 +3059,8 @@ function showScDrill(code){
     <div class="sc-client-table">
       <table>
         <thead><tr>
-          <th style="text-align:left">Client Name</th>
-          <th>Code</th>
+          <th style="text-align:left">${currentUser?.role==='rm'?'Client Code':'Client Name'}</th>
+          ${currentUser?.role==='rm'?'':'<th>Code</th>'}
           <th>Qty</th>
           <th>Avg Buy ₹</th>
           <th>Curr Val</th>
@@ -3002,9 +3073,10 @@ function showScDrill(code){
             const pp=inv>0?(pnl/inv)*100:0;
             const holdPct=totalQty>0?(r.qty/totalQty)*100:0;
             const safe=r.clientCode.replace(/'/g,"\'");
+            const isRM=currentUser?.role==='rm';
             return `<tr onclick="selectClientFromSelector('${safe}','${(r.subgroup||'DEFAULT').replace(/'/g,"\'")}')">
-              <td>${r.clientName||r.clientCode}</td>
-              <td>${r.clientCode}</td>
+              <td><span style="font-weight:600">${isRM?r.clientCode:(r.clientName||r.clientCode)}</span></td>
+              ${isRM?'':'<td class="neu">'+r.clientCode+'</td>'}
               <td>${r.qty.toLocaleString('en-IN')}</td>
               <td>${r.buy.toFixed(2)}</td>
               <td>₹${fmtC(cv)}</td>
@@ -3048,17 +3120,40 @@ async function initDashboard(){
   await loadSheetData(true);
   await fetchLiveIndices();renderIndices();
   if(selectedClient)await refreshPrices();
+
+  // Countdown badge for Market Overview auto-refresh
+  function startMktCountdown(intervalMs){
+    const badge=document.getElementById('mktCountdown');
+    if(!badge)return;
+    badge.style.display='';
+    let remaining=Math.round(intervalMs/1000);
+    badge.textContent='↻ '+remaining+'s';
+    const tick=setInterval(()=>{
+      remaining--;
+      if(remaining<=0){clearInterval(tick);}
+      else{badge.textContent='↻ '+remaining+'s';}
+    },1000);
+    return tick;
+  }
+
   // Auto-refresh: indices always, prices only when client selected
+  let _cTick=null;
   let _iv=setInterval(async()=>{
     await fetchLiveIndices();renderIndices();
     if(selectedClient)await refreshPrices();
+    if(_cTick)clearInterval(_cTick);
+    _cTick=startMktCountdown(getRefreshInterval());
   },getRefreshInterval());
+  _cTick=startMktCountdown(getRefreshInterval());
+
   setInterval(()=>{
     const newIv=getRefreshInterval();
     clearInterval(_iv);
     _iv=setInterval(async()=>{
       await fetchLiveIndices();renderIndices();
       if(selectedClient)await refreshPrices();
+      if(_cTick)clearInterval(_cTick);
+      _cTick=startMktCountdown(newIv);
     },newIv);
   },60*1000);
 }
@@ -3423,14 +3518,18 @@ function setAnMetric(m,el){
 }
 
 function renderAnalytics(){
-  // Populate RM filter on first call
+  // Hide RM filter for RM users — they only see their own clients
+  const filterRow=document.getElementById('anFilterRow');
+  if(filterRow)filterRow.style.display=currentUser?.role==='rm'?'none':'flex';
+
+  // Populate RM filter on first call (admin only)
   const rmSel=document.getElementById('anRMFilter');
-  if(rmSel&&rmSel.options.length<=1){
+  if(currentUser?.role!=='rm'&&rmSel&&rmSel.options.length<=1){
     const rms=[...new Set(PORTFOLIO.map(s=>s.subgroup||'DEFAULT'))].filter(Boolean).sort();
     rms.forEach(rm=>{const o=document.createElement('option');o.value=rm;o.textContent=rm==='DEFAULT'?'All':rm;rmSel.appendChild(o);});
   }
 
-  const rmFilter=rmSel?rmSel.value:'';
+  const rmFilter=currentUser?.role==='rm'?'':(rmSel?rmSel.value:'');
   // Scope: RM user sees only their clients; admin sees all (filtered by RM dropdown)
   let scope=currentUser?.role==='rm'
     ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
