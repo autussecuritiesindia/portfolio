@@ -2089,13 +2089,14 @@ function selectClientFromSelector(clientCode, rm){
   document.getElementById('cbRM').textContent=rm==='DEFAULT'?'All':rm;
   document.getElementById('cbClient').textContent=clientInfo?clientInfo.name:clientCode;
   document.getElementById('cbCode').textContent=clientCode;
-  // Hide back arrow for RM — only admin navigates back to selector
   const cbBackEl=document.getElementById('cbBackBtn');
   if(cbBackEl)cbBackEl.style.display=currentUser?.role==='rm'?'none':'';
   document.getElementById('clientBar').style.display='flex';
   document.getElementById('selectorScreen').style.display='none';
   document.getElementById('dashboard').style.display='';
   renderAll();
+  // Immediately fetch live prices for this client
+  refreshPrices();
 }
 
 function backToSelector(){
@@ -2121,6 +2122,10 @@ function onClientChange(){
   selectedClient=document.getElementById('clientSelect').value;
   updateClientBadge();
   renderAll();
+  // Immediately fetch live prices for newly selected client
+  if(selectedClient&&typeof refreshPrices==='function'){
+    refreshPrices();
+  }
 }
 
 function updateClientBadge(){
@@ -2285,7 +2290,7 @@ async function refreshPrices(){
 
   const scopeData=getFilteredData();
   if(!scopeData.length){
-    setLiveStatus('cached');
+    // No client selected — nothing to fetch, don't show error
     showPriceFetchIndicator(false);
     _refreshing=false;return;
   }
@@ -3330,35 +3335,106 @@ function closeScDrill(){
 }
 
 // ── Market hours helper (IST) ──
-function isMarketOpen(){
-  const now=new Date();
-  const ist=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));
-  const day=ist.getDay(); // 0=Sun,6=Sat
-  if(day===0||day===6)return false;
-  const h=ist.getHours(),m=ist.getMinutes();
-  const mins=h*60+m;
-  return mins>=555&&mins<=930; // 9:15 to 15:30
+// ══════════════════════════════════════════════════════
+//  MARKET STATE HELPERS
+// ══════════════════════════════════════════════════════
+function getISTNow(){
+  // Returns a Date object representing current IST time
+  return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));
 }
 
-function isAnyMajorMarketOpen(){
-  const now=new Date();
-  const utcH=now.getUTCHours();
-  const utcM=now.getUTCMinutes();
-  const utcMins=utcH*60+utcM;
-  const day=now.getUTCDay();
-  if(day===0||day===6)return false; // weekend — crypto only
-  // NSE: 03:45–10:00 UTC (9:15–15:30 IST)
-  if(utcMins>=225&&utcMins<=600)return true;
-  // US markets: 13:30–20:00 UTC (NYSE/NASDAQ)
-  if(utcMins>=810&&utcMins<=1200)return true;
-  // EU markets: 07:00–15:30 UTC
-  if(utcMins>=420&&utcMins<=930)return true;
-  return false;
+function getMarketState(){
+  // Returns: 'pre' | 'open' | 'post' | 'closed'
+  const ist=getISTNow();
+  const day=ist.getDay(); // 0=Sun, 6=Sat
+  if(day===0||day===6)return 'closed';
+  const mins=ist.getHours()*60+ist.getMinutes();
+  if(mins<540)return 'pre';          // before 9:00
+  if(mins<555)return 'pre';          // 9:00–9:15 pre-open
+  if(mins<=930)return 'open';        // 9:15–15:30
+  if(mins<=960)return 'post';        // 15:30–16:00 closing session
+  return 'closed';
 }
+function isMarketOpen(){return getMarketState()==='open';}
+
+function minsUntilMarketOpen(){
+  const ist=getISTNow();
+  const day=ist.getDay();
+  if(day===0||day===6)return null;
+  const totalSecs=ist.getHours()*3600+ist.getMinutes()*60+ist.getSeconds();
+  const openSecs=555*60; // 9:15 AM
+  if(totalSecs<openSecs)return (openSecs-totalSecs)/60;
+  return null;
+}
+
+function minsUntilMarketClose(){
+  const state=getMarketState();
+  if(state!=='open')return null;
+  const ist=getISTNow();
+  const totalSecs=ist.getHours()*3600+ist.getMinutes()*60+ist.getSeconds();
+  const closeSecs=930*60; // 3:30 PM
+  return Math.max(0,(closeSecs-totalSecs)/60);
+}
+
 function getRefreshInterval(){
-  if(isMarketOpen())return 15*1000;       // NSE open → 15s
-  if(isAnyMajorMarketOpen())return 30*1000; // world market open → 30s
-  return 5*60*1000;                        // all closed → 5min
+  const state=getMarketState();
+  if(state==='open')return 15*1000;
+  if(state==='pre'||state==='post')return 30*1000;
+  if(isAnyMajorMarketOpen())return 30*1000;
+  return 5*60*1000;
+}
+
+// ── Pre/Close market banner ──
+let _bannerTick=null;
+function updateMarketBanner(){
+  let banner=document.getElementById('mktBanner');
+  if(!banner){
+    banner=document.createElement('div');
+    banner.id='mktBanner';
+    banner.style.cssText='display:none;background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:var(--r2);padding:8px 14px;margin-bottom:10px;font-size:12px;font-family:var(--mono);color:var(--gold);font-weight:700;text-align:center;letter-spacing:.3px';
+    const liveBar=document.getElementById('liveBar');
+    if(liveBar)liveBar.insertAdjacentElement('afterend',banner);
+  }
+
+  const minsOpen=minsUntilMarketOpen();
+  const minsClose=minsUntilMarketClose();
+  const state=getMarketState();
+
+  if(minsOpen!==null&&minsOpen<=15&&minsOpen>0){
+    // Pre-market within 15 min
+    const mm=Math.floor(minsOpen);
+    const ss=Math.round((minsOpen-mm)*60);
+    banner.style.display='';
+    banner.textContent=`🔔 NSE opens in ${mm}m ${ss}s — Pre-market`;
+  }else if(minsClose!==null&&minsClose<=15&&minsClose>0){
+    // Closing within 15 min
+    const mm=Math.floor(minsClose);
+    const ss=Math.round((minsClose-mm)*60);
+    banner.style.display='';
+    banner.style.background='var(--red-bg)';
+    banner.style.borderColor='var(--red-border)';
+    banner.style.color='var(--red)';
+    banner.textContent=`⚠️ NSE closes in ${mm}m ${ss}s`;
+  }else{
+    banner.style.display='none';
+  }
+}
+
+function startBannerClock(){
+  if(_bannerTick)clearInterval(_bannerTick);
+  updateMarketBanner();
+  // Tick every second when near open/close, every 10s otherwise
+  _bannerTick=setInterval(()=>{
+    const minsOpen=minsUntilMarketOpen();
+    const minsClose=minsUntilMarketClose();
+    const nearEvent=(minsOpen!==null&&minsOpen<=15)||(minsClose!==null&&minsClose<=15);
+    updateMarketBanner();
+    if(!nearEvent){
+      // Switch to slower tick
+      clearInterval(_bannerTick);
+      _bannerTick=setInterval(updateMarketBanner,10000);
+    }
+  },1000);
 }
 
 // ── Countdown ticker ──
@@ -3387,10 +3463,11 @@ async function liveRefreshAll(){
   if(mri)mri.className='spin';
   startCountdown(getRefreshInterval());
   try{
-    await Promise.all([
-      fetchLiveIndices().then(()=>renderIndices()),
-      refreshPrices()
-    ]);
+    // Always fetch indices (global markets run 24/5)
+    // Only fetch portfolio prices if a client is selected
+    const tasks=[fetchLiveIndices().then(()=>renderIndices())];
+    if(selectedClient)tasks.push(refreshPrices());
+    await Promise.all(tasks);
   }catch(e){console.warn('[LIVE] refresh error',e);}
   if(btn)btn.disabled=false;
   if(icon)icon.className='';
@@ -3408,28 +3485,33 @@ function scheduleAutoRefresh(){
   const iv=getRefreshInterval();
   startCountdown(iv);
   _autoIv=setInterval(async()=>{
-    // Re-check interval in case market open/close changed
     const newIv=getRefreshInterval();
-    await Promise.all([
-      fetchLiveIndices().then(()=>renderIndices()),
-      selectedClient?refreshPrices():Promise.resolve()
-    ]);
+    // Always refresh indices; refresh prices only if client selected
+    const tasks=[fetchLiveIndices().then(()=>renderIndices())];
+    if(selectedClient)tasks.push(refreshPrices());
+    await Promise.all(tasks);
     updateLiveTimestamp();
-    // Reschedule if interval changed
-    if(newIv!==iv)scheduleAutoRefresh();
-    else startCountdown(newIv);
+    updateMarketBanner();
+    // Reschedule whenever interval changes (market open/close transition)
+    if(newIv!==iv){
+      scheduleAutoRefresh();
+    }else{
+      startCountdown(newIv);
+    }
   },iv);
 }
 
 async function initDashboard(){
   await loadSheetData(true);
-  // Fetch indices and prices in parallel on startup
-  await Promise.all([
-    fetchLiveIndices().then(()=>renderIndices()),
-    selectedClient?refreshPrices():Promise.resolve()
-  ]);
+  // Always fetch indices on startup regardless of market state
+  await fetchLiveIndices();
+  renderIndices();
+  // Only fetch portfolio prices if a client is already selected
+  if(selectedClient)await refreshPrices();
+  else setLiveStatus('cached'); // show proper status when no client yet
   updateLiveTimestamp();
   scheduleAutoRefresh();
+  startBannerClock();
 }
 
 // ── Canvas login animation ──
