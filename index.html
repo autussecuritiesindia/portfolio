@@ -153,10 +153,6 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .pill.pos{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
 .pill.neg{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
 .pill.neu{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
-@keyframes flashUp{0%{background:rgba(15,122,75,.35)}100%{background:transparent}}
-@keyframes flashDn{0%{background:rgba(192,57,43,.35)}100%{background:transparent}}
-.flash-up{animation:flashUp .8s ease-out}
-.flash-dn{animation:flashDn .8s ease-out}
 .cmp-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 .cmp-badge{font-size:9.5px;font-weight:700;font-family:var(--mono);padding:2px 6px;border-radius:20px;display:inline-flex;align-items:center;gap:2px}
 .cmp-badge.pos{background:var(--green-bg);color:var(--green)}
@@ -591,8 +587,8 @@ html{-webkit-text-size-adjust:100%}
 /* ── HEATMAP TAB ── */
 .hm-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
 .hm-filters{display:flex;gap:6px;flex-wrap:wrap}
-.hm-filter{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;color:rgba(255,255,255,0.6);font-family:var(--mono)}
-.hm-filter.active{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.25);color:#fff}
+.hm-filter{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);font-family:var(--mono)}
+.hm-filter.active{background:var(--blue);border-color:var(--blue);color:#fff}
 .hm-ts{font-size:10px;color:var(--muted);font-family:var(--mono);margin-left:auto}
 .hm-drill-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--r2);padding:8px 12px}
 .hm-back-btn{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--mono)}
@@ -713,29 +709,27 @@ html{-webkit-text-size-adjust:100%}
 /* ══════════════════════════════════════════════════════
    HEATMAP — Square tiles grid layout
 ══════════════════════════════════════════════════════ */
-/* ══ PORTFOLIO HEATMAP — TradingView exact style ══ */
-#hmContainer{background:#131722;border-radius:4px;padding:4px;border:none}
-.hm-nested-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:2px;width:100%}
-.hm-sector-box{border-radius:3px;overflow:hidden;border:1px solid rgba(255,255,255,0.05)}
-.hm-sector-hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;user-select:none}
-.hm-sector-hdr:hover{background:rgba(255,255,255,0.09)}
-.hm-sector-title{font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.9);text-transform:uppercase;letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hm-sector-info{font-size:8px;color:rgba(255,255,255,0.38);font-family:var(--mono)}
-.hm-sector-meta{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.hm-sector-pct{font-size:10px;font-weight:700;font-family:var(--mono)}
-.hm-sector-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:2px;padding:3px;background:#131722}
+.hm-nested-grid{display:flex;flex-direction:column;gap:10px;width:100%}
+.hm-sector-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.hm-sector-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface3);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.hm-sector-hdr:hover{background:var(--surface2)}
+.hm-sector-title{font-size:12px;font-weight:700;color:var(--text)}
+.hm-sector-info{font-size:10px;color:var(--muted);font-family:var(--mono)}
+.hm-sector-meta{display:flex;align-items:center;gap:8px}
+.hm-sector-pct{font-size:12px;font-weight:700;font-family:var(--mono)}
+.hm-sector-body{display:flex;flex-wrap:wrap;gap:4px;padding:10px}
 
-/* TradingView-style square tiles */
+/* Square tiles — key layout */
 .hm-tile-sq{
-  display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;
-  border-radius:2px;cursor:pointer;transition:filter .1s;
-  padding:5px 6px;overflow:hidden;box-sizing:border-box;
-  aspect-ratio:1.1;width:100%;border:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:6px;cursor:pointer;transition:transform .12s,box-shadow .12s;
+  padding:4px;text-align:center;overflow:hidden;box-sizing:border-box;
+  border:1px solid rgba(255,255,255,0.06);gap:1px;flex-shrink:0;
 }
-.hm-tile-sq:hover{filter:brightness(1.28);z-index:5;position:relative;outline:1px solid rgba(255,255,255,0.3)}
-.hm-tile-code{font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:#fff;line-height:1.3}
-.hm-tile-pct{font-size:11px;font-weight:700;font-family:var(--mono);line-height:1.2;color:#fff}
-.hm-tile-cmp{font-size:7.5px;font-family:var(--mono);line-height:1.1;color:rgba(255,255,255,0.65)}
+.hm-tile-sq:hover{transform:scale(1.08);box-shadow:0 4px 20px rgba(0,0,0,.5);z-index:5;position:relative}
+.hm-tile-code{font-size:10px;font-weight:800;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.2}
+.hm-tile-pct{font-size:11px;font-weight:700;font-family:var(--mono);line-height:1}
+.hm-tile-cmp{font-size:8px;font-family:var(--mono);line-height:1}
 
 /* ══════════════════════════════════════════════════════
    ANALYTICS — Top clients table improvements
@@ -746,16 +740,6 @@ html{-webkit-text-size-adjust:100%}
 .top-clients-table tbody tr{border-top:1px solid var(--border);transition:background .15s}
 .top-clients-table td{padding:9px 12px;text-align:right;font-size:12px;font-family:var(--mono);color:var(--text)}
 .top-clients-table td:first-child,.top-clients-table td:nth-child(2),.top-clients-table td:nth-child(3){text-align:left}
-/* ── SWIPE SLIDE ANIMATION ── */
-#tabPanels{position:relative;overflow:hidden}
-@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
-@keyframes slideInLeft{from{transform:translateX(-100%)}to{transform:translateX(0)}}
-@keyframes slideOutLeft{from{transform:translateX(0)}to{transform:translateX(-100%)}}
-@keyframes slideOutRight{from{transform:translateX(0)}to{transform:translateX(100%)}}
-.slide-in-right{animation:slideInRight 200ms ease-out forwards}
-.slide-in-left{animation:slideInLeft 200ms ease-out forwards}
-.slide-out-left{animation:slideOutLeft 200ms ease-out forwards;pointer-events:none}
-.slide-out-right{animation:slideOutRight 200ms ease-out forwards;pointer-events:none}
 </style>
 </head>
 <body>
@@ -775,7 +759,7 @@ html{-webkit-text-size-adjust:100%}
     <button class="btn sync-btn" onclick="syncSheet()" id="syncBtn" title="Sync from Google Sheet"><span id="si">🔄</span> Sync Sheet</button>
     <label class="btn upload-btn" for="fileInput" title="Upload daily CSV">📂 <span>Update CSV</span></label>
     <input type="file" id="fileInput" accept=".csv,.CSV" onchange="handleCSV(this)">
-    <button class="btn live-btn" onclick="liveRefreshAll()" id="rfBtn"><span id="ri">↻</span> Live</button>
+    <button class="btn live-btn" onclick="refreshPrices()" id="rfBtn"><span id="ri">↻</span> Live</button>
     <button class="btn" onclick="logOut()" title="Logout" style="padding:7px 10px;font-size:13px">🔒</button>
   </div>
 </div>
@@ -810,10 +794,6 @@ html{-webkit-text-size-adjust:100%}
         <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
         <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
       </div>
-      <!-- Hidden input captures physical keyboard -->
-      <input id="pinKeyboardInput" type="password" inputmode="numeric" maxlength="4"
-        style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none"
-        autocomplete="one-time-code">
       <div class="login-err" id="loginErr"></div>
       <div class="pin-pad">
         <div class="pin-key" onclick="pinKey('1')">1</div><div class="pin-key" onclick="pinKey('2')">2</div><div class="pin-key" onclick="pinKey('3')">3</div>
@@ -832,10 +812,6 @@ html{-webkit-text-size-adjust:100%}
         <div class="pin-dot" id="pd30"></div><div class="pin-dot" id="pd31"></div>
         <div class="pin-dot" id="pd32"></div><div class="pin-dot" id="pd33"></div>
       </div>
-      <!-- Hidden input captures physical keyboard -->
-      <input id="pinKeyboardInput3" type="password" inputmode="numeric" maxlength="4"
-        style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none"
-        autocomplete="one-time-code">
       <div class="login-err" id="loginErr3"></div>
       <div class="pin-pad">
         <div class="pin-key" onclick="pinKey3('1')">1</div><div class="pin-key" onclick="pinKey3('2')">2</div><div class="pin-key" onclick="pinKey3('3')">3</div>
@@ -920,17 +896,10 @@ html{-webkit-text-size-adjust:100%}
 </div>
 <main>
 
-  <!-- LIVE STATUS — terminal ticker -->
-  <div class="live-bar" id="liveBar">
-    <div class="live-label">
-      <div class="live-dot" id="liveDot"></div>
-      <span id="liveLabel">Loading…</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <span class="live-meta" id="liveMeta"></span>
-      <span id="liveLastTs" style="font-size:10px;color:var(--muted);font-family:var(--mono)"></span>
-      <span id="liveCountdown" style="font-size:10px;font-family:var(--mono);color:var(--blue);font-weight:700;min-width:42px;text-align:right"></span>
-    </div>
+  <!-- LIVE STATUS -->
+  <div class="live-bar">
+    <div class="live-label"><div class="live-dot" id="liveDot"></div><span id="liveLabel">Loading…</span></div>
+    <div class="live-meta" id="liveMeta"></div>
   </div>
 
   <!-- NEW: Client Selector row (hidden when single client) -->
@@ -959,9 +928,6 @@ html{-webkit-text-size-adjust:100%}
     <div class="tab" onclick="showTab('mh',this)">🌍 Mkt HeatMap</div>
     <div class="tab" onclick="showTab('an',this)">🏆 Analytics</div>
   </div>
-
-  <!-- ═══ TAB PANELS ═══ -->
-  <div id="tabPanels">
 
   <!-- ═══ OVERVIEW ═══ -->
   <div id="t-ov">
@@ -999,8 +965,9 @@ html{-webkit-text-size-adjust:100%}
         <div class="sec-hdr">
           <span class="sec-title">🌐 Market Overview</span>
           <div class="sec-actions">
+            <span id="mktCountdown" style="font-size:9px;color:var(--muted);font-family:var(--mono);background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;display:none">↻ —</span>
             <span class="market-ts" id="marketTS" style="font-size:10px;color:var(--muted);font-family:var(--mono)">—</span>
-            <button class="btn" style="font-size:10px;padding:4px 10px" onclick="liveRefreshAll()"><span id="mri">↻</span> Refresh</button>
+            <button class="btn" style="font-size:10px;padding:4px 10px" onclick="refreshIndices()"><span id="mri">↻</span> Refresh</button>
           </div>
         </div>
         <div style="padding:10px;display:flex;flex-direction:column;gap:10px;background:var(--surface);border-radius:0 0 var(--r) var(--r);border:1px solid var(--border);border-top:none;box-shadow:var(--shadow)">
@@ -1148,24 +1115,18 @@ html{-webkit-text-size-adjust:100%}
   </div>
 
   <div id="t-mh" style="display:none">
-    <!-- Tab switcher -->
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <button class="hm-filter active" id="tvTabNSE" onclick="switchTVTab('nse',this)">🇮🇳 NSE India</button>
-      <button class="hm-filter" id="tvTabUSA" onclick="switchTVTab('usa',this)">🇺🇸 USA Markets</button>
-    </div>
-    <!-- NSE Heatmap -->
-    <div id="tvNSEWrap" style="border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)">
-      <div class="tradingview-widget-container" id="tvMktHeatmap" style="min-height:580px">
-        <div class="tradingview-widget-container__widget"></div>
+    <div class="sec">
+      <div class="sec-hdr">
+        <span class="sec-title">🌍 NSE Market Heatmap — Live</span>
+        <span class="sec-badge">Powered by TradingView</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);overflow:hidden;box-shadow:var(--shadow)">
+        <!-- TradingView Stock Market Heatmap Widget -->
+        <div class="tradingview-widget-container" id="tvMktHeatmap">
+          <div class="tradingview-widget-container__widget"></div>
+        </div>
       </div>
     </div>
-    <!-- USA Heatmap (hidden until tab click) -->
-    <div id="tvUSAWrap" style="display:none;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)">
-      <div class="tradingview-widget-container" id="tvUSAHeatmap" style="min-height:580px">
-        <div class="tradingview-widget-container__widget"></div>
-      </div>
-    </div>
-    <div style="text-align:center;padding:6px 0;font-size:9px;color:var(--muted);font-family:var(--mono)">Powered by TradingView</div>
   </div>
 
   <div id="t-an" style="display:none">
@@ -1209,29 +1170,23 @@ html{-webkit-text-size-adjust:100%}
   </div>
 
   <div id="t-hm" style="display:none">
-    <div style="background:#131722;border-radius:6px;overflow:hidden;border:1px solid #2a2e39">
-      <!-- TV-style top bar -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#1e222d;border-bottom:1px solid #2a2e39">
-        <div class="hm-filters" style="gap:4px">
-          <button class="hm-filter active" onclick="setHmView('sector',this)" style="font-size:11px;padding:4px 10px">By Sector</button>
-          <button class="hm-filter" onclick="setHmView('gainers',this)" style="font-size:11px;padding:4px 10px">▲ Gainers</button>
-          <button class="hm-filter" onclick="setHmView('losers',this)" style="font-size:11px;padding:4px 10px">▼ Losers</button>
-          <button class="hm-filter" onclick="setHmView('all',this)" style="font-size:11px;padding:4px 10px">All</button>
-        </div>
-        <span class="hm-ts" id="hmTS" style="color:rgba(255,255,255,0.4);font-size:10px">—</span>
+    <div class="hm-toolbar">
+      <div class="hm-filters">
+        <button class="hm-filter active" onclick="setHmView('sector',this)">🏭 By Industry</button>
+        <button class="hm-filter" onclick="setHmView('gainers',this)">📈 Top Gainers</button>
+        <button class="hm-filter" onclick="setHmView('losers',this)">📉 Top Losers</button>
+        <button class="hm-filter" onclick="setHmView('all',this)">📋 All Stocks</button>
       </div>
-      <div id="hmDrillBar" style="display:none" class="hm-drill-bar">
-        <button class="hm-back-btn" onclick="closeHmDrill()">← Back</button>
-        <span id="hmDrillTitle" style="color:rgba(255,255,255,0.85);font-size:12px;font-weight:700"></span>
-      </div>
-      <!-- Dark grid container -->
-      <div id="hmContainer" style="padding:4px">
-        <div id="hmGrid" class="hm-nested-grid"></div>
-      </div>
+      <span class="hm-ts" id="hmTS">—</span>
     </div>
+    <div id="hmDrillBar" style="display:none" class="hm-drill-bar">
+      <button class="hm-back-btn" onclick="closeHmDrill()">← Back to Heatmap</button>
+      <span id="hmDrillTitle"></span>
+    </div>
+    <!-- Nested heatmap grid: sector boxes containing script chips -->
+    <div id="hmGrid" class="hm-nested-grid"></div>
     <div id="hmDrill" style="display:none" class="hm-drill"></div>
   </div>
-  </div><!-- /#tabPanels -->
 
 </main>
 <div class="footer"><span class="dot"></span><span id="lastUp">—</span></div>
@@ -1275,8 +1230,6 @@ function proceedToPin(){
   document.getElementById('pinLabel').textContent='Welcome, '+CREDS[uid].display+' — Enter PIN';
   document.getElementById('loginErr').textContent='';
   updatePinDots();
-  // Focus hidden input so physical keyboard works immediately
-  setTimeout(()=>{const ki=document.getElementById('pinKeyboardInput');if(ki){ki.value='';ki.focus();}},80);
 }
 
 // Back to User ID step
@@ -1288,7 +1241,6 @@ function backToUserId(){
   document.getElementById('loginStep2').style.display='none';
   document.getElementById('loginStep1').style.display='';
   updatePinDots();
-  setTimeout(()=>document.getElementById('userIdInput')?.focus(),80);
 }
 
 function pinKey(k){
@@ -1300,19 +1252,6 @@ function pinKey(k){
 }
 
 function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updatePinDots();}
-
-// Global keydown listener for PIN entry via physical keyboard
-document.addEventListener('keydown',function(e){
-  const step2=document.getElementById('loginStep2');
-  const step3=document.getElementById('loginStep3');
-  if(step2&&step2.style.display!=='none'){
-    if(e.key>='0'&&e.key<='9'){e.preventDefault();pinKey(e.key);}
-    else if(e.key==='Backspace'){e.preventDefault();pinDel();}
-  }else if(step3&&step3.style.display!=='none'){
-    if(e.key>='0'&&e.key<='9'){e.preventDefault();pinKey3(e.key);}
-    else if(e.key==='Backspace'){e.preventDefault();pinDel3();}
-  }
-});
 
 function updatePinDots(){
   for(let i=0;i<4;i++){
@@ -1367,8 +1306,6 @@ function checkSession(){
 function completeLogin(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('selWelcome').textContent=currentUser.role==='admin'?'Select RM':`Welcome, ${currentUser.display}`;
-  // Proactively wake the Render.com server — fires in background, doesn't block UI
-  warmupServer();
   initDashboard();
 }
 
@@ -1381,7 +1318,6 @@ function showPinReturn(){
   const rn=document.getElementById('pinReturnName');
   if(rn)rn.textContent='👋 Welcome back, '+d;
   pinBuffer3='';updatePinDots3();
-  setTimeout(()=>{const ki=document.getElementById('pinKeyboardInput3');if(ki){ki.value='';ki.focus();}},80);
 }
 function pinKey3(k){if(pinBuffer3.length>=4)return;pinBuffer3+=k;updatePinDots3();if(pinBuffer3.length===4)setTimeout(checkPin3,80);}
 function pinDel3(){pinBuffer3=pinBuffer3.slice(0,-1);updatePinDots3();}
@@ -1444,7 +1380,6 @@ const WORKER_URL   = 'https://autus-prices.autus-securities.workers.dev'; // She
 const YFINANCE_URL = 'https://autus-yfinance.onrender.com'; // yfinance — indices + selected client prices
 const LS_SHEET    = 'pf-sheet-v2';
 const LS_PRICES   = 'pf-prices-v2';
-const LS_INDICES  = 'pf-indices-v2';
 const LS_THEME    = 'pf-theme';
 
 // SEED — used only when sheet AND cache both fail
@@ -1554,22 +1489,8 @@ const INDEX_FALLBACK = {
 };
 
 // Pre-populate liveIndices with fallback so UI never shows "—"
-// Priority: 1) cached closing prices from localStorage, 2) static fallback
 (function seedIndices(){
   const now=Date.now();
-  // Try restoring last-known closing prices from cache (survives market close)
-  try{
-    const raw=localStorage.getItem(LS_INDICES);
-    if(raw){
-      const cached=JSON.parse(raw);
-      for(const [sym,d] of Object.entries(cached)){
-        liveIndices[sym]={...d,isFallback:false,isClosing:true};
-      }
-      console.log('[INDICES] Restored',Object.keys(cached).length,'cached closing prices');
-      return;
-    }
-  }catch(e){}
-  // Static fallback
   for(const [sym,d] of Object.entries(INDEX_FALLBACK)){
     if(!liveIndices[sym])liveIndices[sym]={...d,ts:now,isFallback:true};
   }
@@ -1577,31 +1498,27 @@ const INDEX_FALLBACK = {
 // fetchStooqIndicesBatch — now uses yfinance Python service
 // yfinance handles Yahoo auth automatically — no IP blocking issues
 async function fetchStooqIndicesBatch(syms){
-  for(let attempt=1;attempt<=2;attempt++){
-    try{
-      const url=YFINANCE_URL+'/indices?s='+encodeURIComponent(syms.join(','));
-      const timeoutMs=attempt===1?60000:30000;
-      const r=await Promise.race([
-        fetch(url,{cache:'no-store'}),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),timeoutMs))
-      ]);
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      const j=await r.json();
-      if(!j.ok||!j.data?.length)throw new Error(j.error||'No data');
-      let count=0;
-      for(const d of j.data){
-        if(!d.sym||!d.val)continue;
-        liveIndices[d.sym]={val:d.val,chg:d.chg,pct:d.pct,prevClose:d.prevClose,ts:Date.now(),isFallback:false};
-        count++;
-      }
-      if(count>0){console.log('[INDICES] yfinance OK: '+count+' symbols (attempt '+attempt+')');_serverWarm=true;return count;}
-      throw new Error('0 valid symbols');
-    }catch(e){
-      console.warn('[INDICES] yfinance attempt '+attempt+' failed:',e.message);
-      if(attempt<2)await sleep(3000);
+  try{
+    const url=YFINANCE_URL+'/indices?s='+encodeURIComponent(syms.join(','));
+    const r=await Promise.race([
+      fetch(url,{cache:'no-store'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),30000))
+    ]);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    if(!j.ok||!j.data?.length)throw new Error(j.error||'No data');
+    let count=0;
+    for(const d of j.data){
+      if(!d.sym||!d.val)continue;
+      liveIndices[d.sym]={val:d.val,chg:d.chg,pct:d.pct,prevClose:d.prevClose,ts:Date.now(),isFallback:false};
+      count++;
     }
+    if(count>0){console.log('[INDICES] yfinance OK: '+count+' symbols');return count;}
+    throw new Error('0 valid symbols in response');
+  }catch(e){
+    console.warn('[INDICES] yfinance failed:',e.message);
+    return 0;
   }
-  return 0;
 }
 async function fetchLiveIndices(){
   const allCfg=[...INDIA_INDEX_CFG,...GLOBAL_INDEX_CFG,...COMM_INDEX_CFG];
@@ -1617,14 +1534,6 @@ async function fetchLiveIndices(){
   if(total>0){
     indicesLastUpdated=new Date();
     console.log('[INDICES] Fetched '+total+' live indices');
-    // Persist closing prices — used after market close instead of stale fallback
-    try{
-      const toCache={};
-      for(const [sym,d] of Object.entries(liveIndices)){
-        if(!d.isFallback)toCache[sym]={val:d.val,chg:d.chg,pct:d.pct,prevClose:d.prevClose,ts:d.ts};
-      }
-      localStorage.setItem(LS_INDICES,JSON.stringify(toCache));
-    }catch(e){}
   }else{
     console.warn('[INDICES] No data returned from any batch');
   }
@@ -1672,10 +1581,6 @@ function parseSheetCSV(text){
   const iBuy  = col('BUYPRICE','BUY PRICE','BUYRATE','BUY RATE','AVGBUYPRICE','AVGRATE','AVG RATE');
   const iSec  = col('SECTOR');
   const iVal  = col('VALRATE','VAL RATE','CLOSINGVALUATION','CLOSING VALUATION');
-  // Column D (index 3) = CLIENTCATEGORYCODE — skip rows where value is "FI"
-  const iCat  = col('CLIENTCATEGORYCODE','CLIENT CATEGORY CODE','CLIENTCATEGORY','CATEGORY CODE') >= 0
-    ? col('CLIENTCATEGORYCODE','CLIENT CATEGORY CODE','CLIENTCATEGORY','CATEGORY CODE')
-    : 3; // fallback to column D
   // AQ col (index 42) = TOTALDEBITAMT, AR col (index 43) = TOTALCREDITAMT
   // Net ledger = CREDIT - DEBIT (positive = credit balance, negative = debit balance)
   const iCredit=(()=>{
@@ -1695,10 +1600,8 @@ function parseSheetCSV(text){
     if(c.length<2)continue;
     const clientCode=iCC>=0?c[iCC]:'';
     const symbol    =iSym>=0?c[iSym]:'';
-    // Skip if CLIENTCODE or SYMBOL missing
+    // UPDATED: skip if CLIENTCODE or SYMBOL missing
     if(!clientCode||!symbol||symbol.startsWith('*')){skip++;continue;}
-    // Skip FI (Foreign Institutional) clients — column D / CLIENTCATEGORYCODE
-    if(iCat>=0&&(c[iCat]||'').trim().toUpperCase()==='FI'){skip++;continue;}
     const qty =parseFloat(c[iQty]||0)||0;
     const buy =parseFloat(c[iBuy]||0)||0;
     if(!qty&&!buy)continue;
@@ -2095,14 +1998,13 @@ function selectClientFromSelector(clientCode, rm){
   document.getElementById('cbRM').textContent=rm==='DEFAULT'?'All':rm;
   document.getElementById('cbClient').textContent=clientInfo?clientInfo.name:clientCode;
   document.getElementById('cbCode').textContent=clientCode;
+  // Hide back arrow for RM — only admin navigates back to selector
   const cbBackEl=document.getElementById('cbBackBtn');
   if(cbBackEl)cbBackEl.style.display=currentUser?.role==='rm'?'none':'';
   document.getElementById('clientBar').style.display='flex';
   document.getElementById('selectorScreen').style.display='none';
   document.getElementById('dashboard').style.display='';
   renderAll();
-  // Immediately fetch live prices for this client
-  refreshPrices();
 }
 
 function backToSelector(){
@@ -2128,10 +2030,6 @@ function onClientChange(){
   selectedClient=document.getElementById('clientSelect').value;
   updateClientBadge();
   renderAll();
-  // Immediately fetch live prices for newly selected client
-  if(selectedClient&&typeof refreshPrices==='function'){
-    refreshPrices();
-  }
 }
 
 function updateClientBadge(){
@@ -2183,91 +2081,40 @@ function compute(){
 //    Stooq col[7] with 'p' fmt  = same previous close
 // ══════════════════════════════════════════════════════
 
-// ── Warm-up ping — fires immediately on login to wake Render.com server ──
-let _serverWarm=false;
-async function warmupServer(){
-  if(_serverWarm)return;
-  try{
-    const r=await Promise.race([
-      fetch(YFINANCE_URL+'/',{cache:'no-store',mode:'cors'}),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),65000))
-    ]);
-    _serverWarm=r.ok||r.status===404; // any HTTP response = server is alive
-    console.log('[WARMUP] yfinance server ready, status:',r.status);
-  }catch(e){
-    console.warn('[WARMUP] yfinance server did not respond:',e.message);
-  }
-}
-
 async function fetchYahooBatch(symbols){
+  // yfinance Python service — handles only selected client batch (10-20 symbols max)
+  // Yahoo does NOT block yfinance because it manages crumb/cookie automatically
   const cleaned=symbols.map(s=>{
     if(s==='GVT&D.NS'||s==='GET&D.NS'||s==='GVT&D'||s==='GET&D')return 'GETD.NS';
     return s;
   });
-
-  // Try up to 2 attempts — handles cold-start where first response is empty/slow
-  for(let attempt=1;attempt<=2;attempt++){
-    try{
-      const url=YFINANCE_URL+'/prices?s='+encodeURIComponent(cleaned.join(','));
-      // 60s timeout on first attempt (cold start), 30s on retry
-      const timeoutMs=attempt===1?60000:30000;
-      const r=await Promise.race([
-        fetch(url,{cache:'no-store'}),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout '+timeoutMs+'ms')),timeoutMs))
-      ]);
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      const j=await r.json();
-      if(!j.ok||!j.data?.length)throw new Error(j.error||'no data');
-      console.log('[PRICE] yfinance OK: '+j.data.length+' quotes (attempt '+attempt+')');
-      _serverWarm=true;
-      return j.data.map(q=>({
-        symbol:                     q.symbol,
-        regularMarketPrice:         q.price,
-        regularMarketPreviousClose: q.prevClose,
-        regularMarketChangePercent: q.changePct,
-        regularMarketChange:        q.changeAbs,
-      }));
-    }catch(e){
-      console.warn('[PRICE] yfinance attempt '+attempt+' failed:',e.message);
-      if(attempt<2){
-        // Brief pause before retry
-        setLiveStatus('loading',0,symbols.length);
-        await sleep(4000);
-      }
-    }
-  }
-
-  // Both attempts failed — try Stooq as direct fallback
-  console.warn('[PRICE] Falling back to Stooq direct CSV…');
-  return fetchStooqFallbackBatch(cleaned);
-}
-
-// Stooq direct fallback — fetches live price CSV when yfinance is down
-async function fetchStooqFallbackBatch(symbols){
-  const nsyms=symbols.map(s=>s.replace(/\.(NS|BO)$/i,'').toLowerCase());
-  const url='https://stooq.com/q/l/?s='+nsyms.map(s=>s+'.ns').join(',')+'&f=sd2t2ohlcvp&e=csv';
   try{
+    const url=YFINANCE_URL+'/prices?s='+encodeURIComponent(cleaned.join(','));
     const r=await Promise.race([
-      fetch(url,{cache:'no-store',mode:'cors'}),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Stooq timeout')),15000))
+      fetch(url,{cache:'no-store'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),30000))
     ]);
-    if(!r.ok)throw new Error('Stooq HTTP '+r.status);
-    const text=await r.text();
-    const parsed=parseStooqWithPrevClose(text);
-    if(!parsed.length)throw new Error('Stooq: no rows parsed');
-    console.log('[PRICE] Stooq fallback OK: '+parsed.length+' symbols');
-    // Convert to Yahoo format for processYahooQuotes compatibility
-    return parsed.map(q=>({
+    if(!r.ok)throw new Error('yfinance HTTP '+r.status);
+    const j=await r.json();
+    if(!j.ok||!j.data?.length)throw new Error('yfinance: '+(j.error||'no data'));
+    console.log('[PRICE] yfinance OK: '+j.data.length+' quotes');
+    return j.data.map(q=>({
       symbol:                     q.symbol,
       regularMarketPrice:         q.price,
       regularMarketPreviousClose: q.prevClose,
-      regularMarketChangePercent: q.dayPct,
-      regularMarketChange:        q.dayAbs,
+      regularMarketChangePercent: q.changePct,
+      regularMarketChange:        q.changeAbs,
     }));
   }catch(e){
-    console.warn('[PRICE] Stooq fallback failed:',e.message);
+    console.warn('[PRICE] yfinance failed:',e.message);
     return [];
   }
+}
+
+// fetchStooqFallbackBatch — replaced by yfinance service
+// All price fetching now goes through YFINANCE_URL (autus-yfinance.onrender.com)
+async function fetchStooqFallbackBatch(symbols){
+  return [];
 }
 
 // Stooq CSV parser — handles f=sd2ohlcvp (with prev close col[7])
@@ -2338,69 +2185,57 @@ async function refreshPrices(){
   if(!PORTFOLIO.length){toast('Load data first','warn');return;}
   if(_refreshing)return;
   _refreshing=true;
-
+  const btn=document.getElementById('rfBtn');
+  const icon=document.getElementById('ri');
+  btn.disabled=true;icon.className='spin';
   liveCount=0;liveChangePct={};liveChangeAbs={};livePriceTS={};livePrevClose={};
-  // Apply sheet VALRATE as baseline
+
+  // TIER 1: Apply VALRATE from sheet immediately — dashboard always shows data
   PORTFOLIO.forEach(s=>{if(s.valRate>0)livePrices[s.code]=s.valRate;});
+  renderAll();
   setLiveStatus('loading',0,PORTFOLIO.length);
   showPriceFetchIndicator(true);
 
+  // Fetch ONLY selected client's scripts — not all 500+
+  // This prevents rate-limiting and keeps response fast
   const scopeData=getFilteredData();
   if(!scopeData.length){
-    // No client selected — nothing to fetch, don't show error
-    showPriceFetchIndicator(false);
-    _refreshing=false;return;
+    toast('Select a client to load live prices','warn');
+    btn.disabled=false;icon.className='';_refreshing=false;return;
   }
   const codes=[...new Set(scopeData.map(s=>s.code))];
   const nsSymbols=codes.map(c=>YF[c]||c+'.NS');
 
-  // Capture previous prices for flash comparison
-  const prevPrices={};
-  codes.forEach(c=>{prevPrices[c]=livePrices[c]||0;});
+  console.log('[PRICE] Fetching '+codes.length+' symbols for selected client via yfinance');
 
-  console.log('[PRICE] Fetching '+codes.length+' symbols via yfinance');
-  // Show "waking" status if server not yet confirmed warm
-  if(!_serverWarm){
-    const dot=document.getElementById('liveDot');
-    const lbl=document.getElementById('liveLabel');
-    if(dot)dot.className='live-dot amber';
-    if(lbl)lbl.textContent='⏳ Waking price server… (first load may take ~30s)';
-  }
   const quotes=await fetchYahooBatch(nsSymbols);
-  if(quotes.length>0)processYahooQuotes(quotes);
+  if(quotes.length>0){
+    processYahooQuotes(quotes);
+  }
+  setLiveStatus('loading',liveCount,codes.length);
 
-  setLiveStatus(liveCount===0?'cached':liveCount<codes.length?'partial':'live',liveCount,codes.length);
+  // Cache live prices
   try{localStorage.setItem(LS_PRICES,JSON.stringify(livePrices));}catch(e){}
+
+  // Update price timestamp in synced bar
   updateSyncedBar();
 
   const total=codes.length;
   if(liveCount===0){
+    setLiveStatus('cached');
     const now=Date.now();
-    if(now-_lastErrToastTs>30000){toast('⚠️ Using sheet prices — live unavailable','warn');_lastErrToastTs=now;}
+    if(now-_lastErrToastTs>30000){toast('⚠️ Using sheet prices — live fetch unavailable','warn');_lastErrToastTs=now;}
   }else if(liveCount<total){
-    toast(`⚡ ${liveCount}/${total} live prices`,'ok');
+    setLiveStatus('partial',liveCount,total);
+    toast(`⚡ ${liveCount}/${total} live · rest from sheet`,'ok');
   }else{
-    toast(`✅ ${liveCount} live prices`,'ok');
+    setLiveStatus('live',liveCount,total);
+    toast(`✅ ${liveCount}/${total} live prices loaded`,'ok');
   }
 
   showPriceFetchIndicator(false);
   renderAll();
-
-  // Flash updated rows in market watch
-  requestAnimationFrame(()=>{
-    document.querySelectorAll('.mw-row').forEach(row=>{
-      const code=row.querySelector('.mw-script-name')?.textContent?.trim();
-      if(!code||!livePrices[code])return;
-      const prev=prevPrices[code]||0;
-      const curr=livePrices[code];
-      if(prev&&curr!==prev){
-        row.classList.remove('flash-up','flash-dn');
-        void row.offsetWidth; // reflow
-        row.classList.add(curr>prev?'flash-up':'flash-dn');
-      }
-    });
-  });
-
+  btn.disabled=false;icon.className='';
   _refreshing=false;
 }
 
@@ -2775,29 +2610,25 @@ function setLiveStatus(state,count,total){
   const dot=document.getElementById('liveDot');
   const lbl=document.getElementById('liveLabel');
   const meta=document.getElementById('liveMeta');
-  const mktOpen=isMarketOpen();
-  const worldOpen=typeof isAnyMajorMarketOpen==='function'?isAnyMajorMarketOpen():false;
-  const ivLabel=mktOpen?'15s':worldOpen?'30s':'5min';
   if(state==='loading'){
-    dot.className='live-dot amber';
-    lbl.textContent='Fetching live data…';
-    meta.textContent=(count||0)+'/'+(total||'?')+' updated';
+    dot.className='live-dot amber';lbl.textContent='Fetching live prices…';meta.textContent=(count||0)+'/'+(total||'?')+' updated';
   }else if(state==='live'){
     dot.className='live-dot green';
-    lbl.textContent=mktOpen?'🟢 Live — NSE Open':worldOpen?'🌍 Live — World Markets':'🟡 Last Close Prices';
-    meta.textContent=count+' scripts · auto '+ivLabel;
+    lbl.textContent='Live Data · '+count+' stocks updated';  // FIXED label
+    meta.textContent='Auto-refresh every 5 min · Last: '+new Date().toLocaleTimeString('en-IN');
   }else if(state==='partial'){
     dot.className='live-dot amber';
-    lbl.textContent='⚡ Partial — '+count+'/'+(total||'?')+' live';
-    meta.textContent=(mktOpen?'NSE Open':worldOpen?'World Open':'Closed')+' · auto '+ivLabel;
+    lbl.textContent='Partial Live Data · '+count+'/'+(total||'?');  // FIXED label
+    meta.textContent='Last: '+new Date().toLocaleTimeString('en-IN');
   }else if(state==='cached'){
     dot.className='live-dot';
-    lbl.textContent=mktOpen?'⚠️ Sheet Prices — Live Unavailable':worldOpen?'🌍 World Markets Open':'🔴 All Markets Closed';
-    meta.textContent=mktOpen?'Tap ↻ to retry':worldOpen?'Global/FX updating · NSE closed':'Showing last session close';
+    const mktOpen=isMarketOpen();
+    lbl.textContent=mktOpen?'Using Sheet Prices':'Market Closed · Last Closing Prices';
+    meta.textContent=mktOpen?'Live fetch failed · Tap ↻ to retry':'NSE closed · Showing previous session close';
   }else{
     dot.className='live-dot';
-    lbl.textContent=mktOpen?'⏳ Sheet prices — tap ↻ Live':worldOpen?'🌍 World Markets Open — NSE Closed':'🔴 All Markets Closed';
-    meta.textContent='auto '+ivLabel+' · tap ↻ for instant refresh';
+    lbl.textContent=isMarketOpen()?'Sheet prices — tap ↻ Live':'Market closed · Sheet closing prices';
+    meta.textContent='Tap ↻ Live to fetch real-time data';
   }
 }
 
@@ -2813,18 +2644,11 @@ function fmtIdx(val){
 
 function renderIndices(){
   const mktOpen=typeof isMarketOpen==='function'?isMarketOpen():false;
+  const ts=indicesLastUpdated
+    ?(mktOpen?'Live · ':'Closed · ')+indicesLastUpdated.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
+    :(mktOpen?'Fetching live…':'Market closed · Last closing prices');
   const el=document.getElementById('marketTS');
-  if(el){
-    if(mktOpen){
-      el.textContent=indicesLastUpdated?'🟢 Live · '+indicesLastUpdated.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'🟢 NSE Open';
-    }else{
-      // Show "Market Closed at 3:30 PM on 08 Apr 2026" style
-      const closeRef=indicesLastUpdated||new Date();
-      const timeStr=closeRef.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
-      const dateStr=closeRef.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-      el.textContent=`🔴 NSE Closed · ${timeStr} on ${dateStr}`;
-    }
-  }
+  if(el)el.textContent=ts;
 
   // ── Indian Indices — vertical list ──
   const indiaEl=document.getElementById('indiaList');
@@ -2837,12 +2661,11 @@ function renderIndices(){
       const rowCls=!d?'neu':pct>=0?'pos':'neg';
       const arrow=pct>=0?'▲':'▼';
       const isFb=d?.isFallback;
-      const isClose=d?.isClosing&&!mktOpen;
       const chgStr=d&&chg!=null?(arrow+' '+Math.abs(chg).toFixed(2)+' <span style="opacity:.65">('+Math.abs(pct).toFixed(2)+'%)</span>'):'—';
       return `<div class="india-row ${rowCls}${cfg.big?' big':''}">
         <div class="ir-left">
           <span class="ir-flag">${cfg.flag}</span>
-          <span class="ir-name">${cfg.name}${isFb?'<span style="font-size:8px;color:var(--gold);margin-left:4px">est</span>':isClose?'<span style="font-size:8px;color:var(--muted);margin-left:4px">close</span>':''}</span>
+          <span class="ir-name">${cfg.name}${isFb?'<span style="font-size:8px;color:var(--gold);margin-left:4px">est</span>':''}</span>
         </div>
         <div class="ir-right">
           <span class="ir-val">${d?fmtIdx(d.val):'—'}</span>
@@ -3042,85 +2865,37 @@ function renderSnapshot(){
 })();
 
 // ══════════════════════════════════════════════════════
-//  TRADINGVIEW MARKET HEATMAP — NSE + USA
+//  TRADINGVIEW MARKET HEATMAP
 // ══════════════════════════════════════════════════════
-let _tvNSEInited=false;
-let _tvUSAInited=false;
-
+let _tvMHInited=false;
 function initTVMarketHeatmap(){
-  initTVNSE();
-}
-
-function _tvColorTheme(){
-  return document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
-}
-
-function _injectTVWidget(containerId,cfg){
-  const container=document.querySelector('#'+containerId+' .tradingview-widget-container__widget');
+  if(_tvMHInited)return;
+  _tvMHInited=true;
+  const container=document.querySelector('#tvMktHeatmap .tradingview-widget-container__widget');
   if(!container)return;
-  // Clear any old widget
-  container.innerHTML='';
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
+  const cfg={
+    exchanges:[],
+    dataSource:'NSE',
+    grouping:'sector',
+    blockSize:'market_cap_basic',
+    blockColor:'change',
+    locale:'en',
+    symbolUrl:'',
+    colorTheme:isDark?'dark':'light',
+    hasTopBar:true,
+    isDataSetEnabled:false,
+    isZoomEnabled:true,
+    hasSymbolTooltip:true,
+    isMonoSize:false,
+    width:'100%',
+    height:600
+  };
   const s=document.createElement('script');
   s.src='https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
   s.async=true;
   s.innerHTML=JSON.stringify(cfg);
   container.appendChild(s);
-}
-
-function initTVNSE(){
-  if(_tvNSEInited)return;
-  _tvNSEInited=true;
-  _injectTVWidget('tvMktHeatmap',{
-    exchanges:['NSE'],
-    dataSource:'INDIA',
-    grouping:'sector',
-    blockSize:'market_cap_basic',
-    blockColor:'change',
-    locale:'en',
-    colorTheme:_tvColorTheme(),
-    hasTopBar:true,
-    isDataSetEnabled:false,
-    isZoomEnabled:true,
-    hasSymbolTooltip:true,
-    isMonoSize:false,
-    width:'100%',
-    height:580
-  });
-}
-
-function initTVUSA(){
-  if(_tvUSAInited)return;
-  _tvUSAInited=true;
-  _injectTVWidget('tvUSAHeatmap',{
-    exchanges:['NYSE','NASDAQ','AMEX'],
-    dataSource:'US',
-    grouping:'sector',
-    blockSize:'market_cap_basic',
-    blockColor:'change',
-    locale:'en',
-    colorTheme:_tvColorTheme(),
-    hasTopBar:true,
-    isDataSetEnabled:false,
-    isZoomEnabled:true,
-    hasSymbolTooltip:true,
-    isMonoSize:false,
-    width:'100%',
-    height:580
-  });
-}
-
-function switchTVTab(tab,el){
-  document.querySelectorAll('#tvTabNSE,#tvTabUSA').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  if(tab==='nse'){
-    document.getElementById('tvNSEWrap').style.display='';
-    document.getElementById('tvUSAWrap').style.display='none';
-    initTVNSE();
-  }else{
-    document.getElementById('tvNSEWrap').style.display='none';
-    document.getElementById('tvUSAWrap').style.display='';
-    initTVUSA();
-  }
 }
 
 
@@ -3144,81 +2919,11 @@ function filterClientCards(){
   }else{
     setTimeout(()=>document.getElementById('userIdInput')?.focus(),100);
   }
-  initSwipeTabs();
 })();
 
 
 // ══════════════════════════════════════════════════════
-//  SWIPEABLE TABS
-// ══════════════════════════════════════════════════════
-function initSwipeTabs(){
-  const TAB_ORDER=['ov','hd','sc','st','hm','mh','an'];
-  const panels=document.getElementById('tabPanels');
-  if(!panels)return;
-  let tx0=0,ty0=0,swiping=false,inScroll=false;
-
-  panels.addEventListener('touchstart',e=>{
-    const t=e.touches[0];
-    tx0=t.clientX;ty0=t.clientY;swiping=false;
-    // Check if touch started inside a scrollable table
-    inScroll=!!e.target.closest('.scroll,.t-wrap,.hm-drill-table,.sc-client-table,.top-clients-table');
-  },{passive:true});
-
-  panels.addEventListener('touchmove',e=>{
-    if(inScroll)return;
-    const dx=e.touches[0].clientX-tx0;
-    const dy=e.touches[0].clientY-ty0;
-    if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy))swiping=true;
-  },{passive:true});
-
-  panels.addEventListener('touchend',e=>{
-    if(!swiping||inScroll)return;
-    const dx=e.changedTouches[0].clientX-tx0;
-    const dy=e.changedTouches[0].clientY-ty0;
-    if(Math.abs(dx)<60||Math.abs(dy)>80)return;
-
-    // Find current active tab index
-    const activeTab=document.querySelector('.tab.active');
-    if(!activeTab)return;
-    const onclickAttr=activeTab.getAttribute('onclick')||'';
-    const match=onclickAttr.match(/showTab\('(\w+)'/);
-    if(!match)return;
-    const curId=match[1];
-    const curIdx=TAB_ORDER.indexOf(curId);
-    if(curIdx<0)return;
-
-    const nextIdx=dx<0?curIdx+1:curIdx-1; // swipe left=next, right=prev
-    if(nextIdx<0||nextIdx>=TAB_ORDER.length)return;
-
-    const nextId=TAB_ORDER[nextIdx];
-    const nextTabEl=[...document.querySelectorAll('.tab')].find(t=>(t.getAttribute('onclick')||'').includes("'"+nextId+"'"));
-    if(!nextTabEl)return;
-
-    const outgoing=document.getElementById('t-'+curId);
-    const incoming=document.getElementById('t-'+nextId);
-    if(!outgoing||!incoming)return;
-
-    const goLeft=dx<0;
-    // Show incoming, position it off-screen via class
-    incoming.style.display='';
-    incoming.style.position='absolute';
-    incoming.style.top='0';incoming.style.left='0';incoming.style.width='100%';
-    outgoing.classList.add(goLeft?'slide-out-left':'slide-out-right');
-    incoming.classList.add(goLeft?'slide-in-right':'slide-in-left');
-
-    setTimeout(()=>{
-      outgoing.style.display='none';
-      outgoing.classList.remove('slide-out-left','slide-out-right');
-      incoming.style.position='';
-      incoming.style.top='';incoming.style.left='';incoming.style.width='';
-      incoming.classList.remove('slide-in-right','slide-in-left');
-      // Update tab state via showTab (handles renders)
-      showTab(nextId,nextTabEl);
-      // Scroll active tab into view
-      nextTabEl.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
-    },200);
-  },{passive:true});
-}
+//  SCRIPTS SUMMARY TAB
 //  Shows all unique scripts across RM's clients
 //  with % of total RM portfolio + client drilldown
 // ══════════════════════════════════════════════════════
@@ -3399,183 +3104,58 @@ function closeScDrill(){
 }
 
 // ── Market hours helper (IST) ──
-// ══════════════════════════════════════════════════════
-//  MARKET STATE HELPERS
-// ══════════════════════════════════════════════════════
-function getISTNow(){
-  // Returns a Date object representing current IST time
-  return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));
+function isMarketOpen(){
+  const now=new Date();
+  const ist=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));
+  const day=ist.getDay(); // 0=Sun,6=Sat
+  if(day===0||day===6)return false;
+  const h=ist.getHours(),m=ist.getMinutes();
+  const mins=h*60+m;
+  return mins>=555&&mins<=930; // 9:15 to 15:30
 }
 
-function getMarketState(){
-  // Returns: 'pre' | 'open' | 'post' | 'closed'
-  const ist=getISTNow();
-  const day=ist.getDay(); // 0=Sun, 6=Sat
-  if(day===0||day===6)return 'closed';
-  const mins=ist.getHours()*60+ist.getMinutes();
-  if(mins<540)return 'pre';          // before 9:00
-  if(mins<555)return 'pre';          // 9:00–9:15 pre-open
-  if(mins<=930)return 'open';        // 9:15–15:30
-  if(mins<=960)return 'post';        // 15:30–16:00 closing session
-  return 'closed';
-}
-function isMarketOpen(){return getMarketState()==='open';}
-
-function minsUntilMarketOpen(){
-  const ist=getISTNow();
-  const day=ist.getDay();
-  if(day===0||day===6)return null;
-  const totalSecs=ist.getHours()*3600+ist.getMinutes()*60+ist.getSeconds();
-  const openSecs=555*60; // 9:15 AM
-  if(totalSecs<openSecs)return (openSecs-totalSecs)/60;
-  return null;
-}
-
-function minsUntilMarketClose(){
-  const state=getMarketState();
-  if(state!=='open')return null;
-  const ist=getISTNow();
-  const totalSecs=ist.getHours()*3600+ist.getMinutes()*60+ist.getSeconds();
-  const closeSecs=930*60; // 3:30 PM
-  return Math.max(0,(closeSecs-totalSecs)/60);
-}
-
-function getRefreshInterval(){
-  const state=getMarketState();
-  if(state==='open')return 15*1000;
-  if(state==='pre'||state==='post')return 30*1000;
-  if(isAnyMajorMarketOpen())return 30*1000;
-  return 5*60*1000;
-}
-
-// ── Pre/Close market banner ──
-let _bannerTick=null;
-function updateMarketBanner(){
-  let banner=document.getElementById('mktBanner');
-  if(!banner){
-    banner=document.createElement('div');
-    banner.id='mktBanner';
-    banner.style.cssText='display:none;background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:var(--r2);padding:8px 14px;margin-bottom:10px;font-size:12px;font-family:var(--mono);color:var(--gold);font-weight:700;text-align:center;letter-spacing:.3px';
-    const liveBar=document.getElementById('liveBar');
-    if(liveBar)liveBar.insertAdjacentElement('afterend',banner);
-  }
-
-  const minsOpen=minsUntilMarketOpen();
-  const minsClose=minsUntilMarketClose();
-  const state=getMarketState();
-
-  if(minsOpen!==null&&minsOpen<=15&&minsOpen>0){
-    // Pre-market within 15 min
-    const mm=Math.floor(minsOpen);
-    const ss=Math.round((minsOpen-mm)*60);
-    banner.style.display='';
-    banner.textContent=`🔔 NSE opens in ${mm}m ${ss}s — Pre-market`;
-  }else if(minsClose!==null&&minsClose<=15&&minsClose>0){
-    // Closing within 15 min
-    const mm=Math.floor(minsClose);
-    const ss=Math.round((minsClose-mm)*60);
-    banner.style.display='';
-    banner.style.background='var(--red-bg)';
-    banner.style.borderColor='var(--red-border)';
-    banner.style.color='var(--red)';
-    banner.textContent=`⚠️ NSE closes in ${mm}m ${ss}s`;
-  }else{
-    banner.style.display='none';
-  }
-}
-
-function startBannerClock(){
-  if(_bannerTick)clearInterval(_bannerTick);
-  updateMarketBanner();
-  // Tick every second when near open/close, every 10s otherwise
-  _bannerTick=setInterval(()=>{
-    const minsOpen=minsUntilMarketOpen();
-    const minsClose=minsUntilMarketClose();
-    const nearEvent=(minsOpen!==null&&minsOpen<=15)||(minsClose!==null&&minsClose<=15);
-    updateMarketBanner();
-    if(!nearEvent){
-      // Switch to slower tick
-      clearInterval(_bannerTick);
-      _bannerTick=setInterval(updateMarketBanner,10000);
-    }
-  },1000);
-}
-
-// ── Countdown ticker ──
-let _countdownTick=null;
-let _nextRefreshAt=0;
-function startCountdown(ms){
-  if(_countdownTick)clearInterval(_countdownTick);
-  _nextRefreshAt=Date.now()+ms;
-  const el=document.getElementById('liveCountdown');
-  function tick(){
-    const rem=Math.max(0,Math.round((_nextRefreshAt-Date.now())/1000));
-    if(el)el.textContent=rem>0?'↻ '+rem+'s':'↻ now';
-  }
-  tick();
-  _countdownTick=setInterval(tick,1000);
-}
-
-// ── Single entry point for all live data ──
-let _autoIv=null;
-async function liveRefreshAll(){
-  const btn=document.getElementById('rfBtn');
-  const icon=document.getElementById('ri');
-  const mri=document.getElementById('mri');
-  if(btn)btn.disabled=true;
-  if(icon)icon.className='spin';
-  if(mri)mri.className='spin';
-  startCountdown(getRefreshInterval());
-  try{
-    // Always fetch indices (global markets run 24/5)
-    // Only fetch portfolio prices if a client is selected
-    const tasks=[fetchLiveIndices().then(()=>renderIndices())];
-    if(selectedClient)tasks.push(refreshPrices());
-    await Promise.all(tasks);
-  }catch(e){console.warn('[LIVE] refresh error',e);}
-  if(btn)btn.disabled=false;
-  if(icon)icon.className='';
-  if(mri)mri.className='';
-  updateLiveTimestamp();
-}
-
-function updateLiveTimestamp(){
-  const el=document.getElementById('liveLastTs');
-  if(el)el.textContent='Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-}
-
-function scheduleAutoRefresh(){
-  if(_autoIv)clearInterval(_autoIv);
-  const iv=getRefreshInterval();
-  startCountdown(iv);
-  _autoIv=setInterval(async()=>{
-    const newIv=getRefreshInterval();
-    // Always refresh indices; refresh prices only if client selected
-    const tasks=[fetchLiveIndices().then(()=>renderIndices())];
-    if(selectedClient)tasks.push(refreshPrices());
-    await Promise.all(tasks);
-    updateLiveTimestamp();
-    updateMarketBanner();
-    // Reschedule whenever interval changes (market open/close transition)
-    if(newIv!==iv){
-      scheduleAutoRefresh();
-    }else{
-      startCountdown(newIv);
-    }
-  },iv);
-}
+function getRefreshInterval(){return isMarketOpen()?60*1000:15*60*1000;}
 
 async function initDashboard(){
   await loadSheetData(true);
-  // Always fetch indices on startup regardless of market state
-  await fetchLiveIndices();
-  renderIndices();
-  // Only fetch portfolio prices if a client is already selected
+  await fetchLiveIndices();renderIndices();
   if(selectedClient)await refreshPrices();
-  else setLiveStatus('cached'); // show proper status when no client yet
-  updateLiveTimestamp();
-  scheduleAutoRefresh();
-  startBannerClock();
+
+  // Countdown badge for Market Overview auto-refresh
+  function startMktCountdown(intervalMs){
+    const badge=document.getElementById('mktCountdown');
+    if(!badge)return;
+    badge.style.display='';
+    let remaining=Math.round(intervalMs/1000);
+    badge.textContent='↻ '+remaining+'s';
+    const tick=setInterval(()=>{
+      remaining--;
+      if(remaining<=0){clearInterval(tick);}
+      else{badge.textContent='↻ '+remaining+'s';}
+    },1000);
+    return tick;
+  }
+
+  // Auto-refresh: indices always, prices only when client selected
+  let _cTick=null;
+  let _iv=setInterval(async()=>{
+    await fetchLiveIndices();renderIndices();
+    if(selectedClient)await refreshPrices();
+    if(_cTick)clearInterval(_cTick);
+    _cTick=startMktCountdown(getRefreshInterval());
+  },getRefreshInterval());
+  _cTick=startMktCountdown(getRefreshInterval());
+
+  setInterval(()=>{
+    const newIv=getRefreshInterval();
+    clearInterval(_iv);
+    _iv=setInterval(async()=>{
+      await fetchLiveIndices();renderIndices();
+      if(selectedClient)await refreshPrices();
+      if(_cTick)clearInterval(_cTick);
+      _cTick=startMktCountdown(newIv);
+    },newIv);
+  },60*1000);
 }
 
 // ── Canvas login animation ──
@@ -3853,32 +3433,29 @@ function hmChip(s,maxPct){
   const pct=s.pct||0;
   const wt=s.wt||0;
   const intensity=maxPct>0?Math.min(Math.abs(pct)/maxPct,1):0;
-  let bg;
-  // TradingView exact colors: dark green → bright green, dark red → bright red
+  let bg,textCol,pctCol;
   if(pct>0){
-    // TV green range: #1a4731 (weak) → #26a641 (strong)
-    const r=Math.round(14+intensity*8);
-    const g=Math.round(71+intensity*95);
-    const b=Math.round(35+intensity*30);
-    bg=`rgb(${r},${g},${b})`;
+    const g=Math.round(71+intensity*56);
+    bg=`rgb(${Math.round(15-intensity*5)},${g},${Math.round(43-intensity*15)})`;
+    textCol=intensity>0.5?'#a7f3d0':'#6ee7b7';pctCol='#4ade80';
   }else if(pct<0){
-    // TV red range: #4a1414 (weak) → #c0392b (strong)
-    const r=Math.round(74+intensity*118);
-    const g=Math.round(20+intensity*37);
-    const b=Math.round(20+intensity*23);
-    bg=`rgb(${r},${g},${b})`;
+    const r=Math.round(120+intensity*55);
+    bg=`rgb(${r},${Math.round(20-intensity*8)},${Math.round(20-intensity*8)})`;
+    textCol=intensity>0.5?'#fecaca':'#fca5a5';pctCol='#f87171';
   }else{
-    bg='#2a2e39';
+    bg='rgba(51,65,85,0.55)';textCol='var(--text2)';pctCol='var(--muted)';
   }
+  // Square tiles — proportional to weight, min 70 max 110px
+  const sz=Math.max(70,Math.min(110,70+wt*5));
   const safe=s.code.replace(/'/g,"\'");
-  const pctStr=(pct>=0?'+':'')+pct.toFixed(2)+'%';
-  const cmpStr=s.cmp>0?s.cmp.toFixed(2):'—';
+  const arrow=pct>0?'▲':pct<0?'▼':'';
+  const cmpStr=s.cmp>0?s.cmp.toFixed(0):'—';
   return `<div class="hm-tile-sq" onclick="showHmDrill('${safe}')"
-    style="background:${bg}"
-    title="${s.name}\n${pctStr} · CMP ${cmpStr} · Wt ${wt.toFixed(1)}%">
-    <span class="hm-tile-code">${s.code}</span>
-    <span class="hm-tile-pct">${pctStr}</span>
-    <span class="hm-tile-cmp">${cmpStr}</span>
+    style="background:${bg};width:${sz}px;height:${sz}px"
+    title="${s.name} · ${pct>=0?'+':''}${pct.toFixed(2)}% · Wt ${wt.toFixed(1)}%">
+    <span class="hm-tile-code" style="color:${textCol}">${s.code}</span>
+    <span class="hm-tile-pct" style="color:${pctCol}">${arrow}${Math.abs(pct).toFixed(2)}%</span>
+    <span class="hm-tile-cmp" style="color:${textCol};opacity:.8">${cmpStr}</span>
   </div>`;
 }
 
