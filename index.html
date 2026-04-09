@@ -89,14 +89,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 .slide-out-left{animation:slideOutLeft 200ms ease-out forwards;pointer-events:none}
 .slide-out-right{animation:slideOutRight 200ms ease-out forwards;pointer-events:none}
 #tabPanels{position:relative;overflow:hidden}
-@keyframes flashUp{0%{background:rgba(15,122,75,.22)}60%{background:rgba(15,122,75,.12)}100%{background:transparent}}
-@keyframes flashDn{0%{background:rgba(192,57,43,.22)}60%{background:rgba(192,57,43,.12)}100%{background:transparent}}
-.flash-up{animation:flashUp 1.4s cubic-bezier(0.4,0,0.2,1) forwards}
-.flash-dn{animation:flashDn 1.4s cubic-bezier(0.4,0,0.2,1) forwards}
-/* Per-cell price transition for smooth CMP update feel */
-.mw-row td{transition:color .35s ease}
-.mw-cmp-up{color:var(--green)!important;transition:color .35s ease}
-.mw-cmp-dn{color:var(--red)!important;transition:color .35s ease}
+@keyframes flashUp{0%{background:rgba(15,122,75,.18)}70%{background:rgba(15,122,75,.07)}100%{background:transparent}}
+@keyframes flashDn{0%{background:rgba(192,57,43,.18)}70%{background:rgba(192,57,43,.07)}100%{background:transparent}}
+.flash-up{animation:flashUp 1.6s cubic-bezier(0.4,0,0.2,1) forwards}
+.flash-dn{animation:flashDn 1.6s cubic-bezier(0.4,0,0.2,1) forwards}
+/* ── MarketView-style price ticker ── */
+.mw-price-wrap{display:inline-block;overflow:hidden;vertical-align:middle;position:relative}
+.mw-pval{display:inline-block}
+@keyframes mwTickUp{
+  0%  {transform:translateY(7px);opacity:0;color:var(--green)}
+  40% {opacity:1;color:var(--green)}
+  75% {color:var(--green)}
+  100%{transform:translateY(0);opacity:1;color:inherit}
+}
+@keyframes mwTickDn{
+  0%  {transform:translateY(-7px);opacity:0;color:var(--red)}
+  40% {opacity:1;color:var(--red)}
+  75% {color:var(--red)}
+  100%{transform:translateY(0);opacity:1;color:inherit}
+}
+.mw-tick-up .mw-pval{animation:mwTickUp 0.55s cubic-bezier(0.22,1,0.36,1) forwards}
+.mw-tick-dn .mw-pval{animation:mwTickDn 0.55s cubic-bezier(0.22,1,0.36,1) forwards}
+/* Day % pill flip */
+@keyframes mwPillIn{0%{transform:scale(0.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.mw-pill-flash{animation:mwPillIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards}
 .spin{display:inline-block;animation:spin 1s linear infinite}
 
 /* ── UPLOAD ZONE ── */
@@ -2357,8 +2373,7 @@ async function refreshPrices(){
 
   showPriceFetchIndicator(false);
   renderAll();
-  // Flash updated rows in market watch
-  // Staggered smooth flash — rows animate in sequence, not all at once
+  // ── MarketView-style price tick animation — staggered per row ──
   const mwRows=[...document.querySelectorAll('.mw-row')];
   mwRows.forEach((row,idx)=>{
     const code=row.querySelector('.mw-script-name')?.textContent?.trim();
@@ -2366,21 +2381,30 @@ async function refreshPrices(){
     const prev=prevPrices[code]||0;
     const curr=livePrices[code];
     if(!prev||curr===prev)return;
-    const dir=curr>prev?'flash-up':'flash-dn';
-    // Stagger: max 400ms spread across all rows, 12ms per row
-    const delay=Math.min(idx*12,400);
+    const up=curr>prev;
+    const delay=Math.min(idx*10,350); // 10ms stagger, max 350ms spread
     setTimeout(()=>{
+      // 1. Subtle row glow (very soft)
       row.classList.remove('flash-up','flash-dn');
       void row.offsetWidth;
-      row.classList.add(dir);
-      // Also highlight CMP cell briefly
-      const cmpCell=row.querySelector('.mw-cmp,.cmp-cell,td:nth-child(2)');
-      if(cmpCell){
-        cmpCell.classList.remove('mw-cmp-up','mw-cmp-dn');
-        cmpCell.classList.add(curr>prev?'mw-cmp-up':'mw-cmp-dn');
-        setTimeout(()=>cmpCell.classList.remove('mw-cmp-up','mw-cmp-dn'),1600);
+      row.classList.add(up?'flash-up':'flash-dn');
+      setTimeout(()=>row.classList.remove('flash-up','flash-dn'),1600);
+      // 2. Price digit slides in from below (up) or above (down) — MarketView style
+      const priceWrap=row.querySelector('.mw-price-wrap');
+      if(priceWrap){
+        priceWrap.classList.remove('mw-tick-up','mw-tick-dn');
+        void priceWrap.offsetWidth;
+        priceWrap.classList.add(up?'mw-tick-up':'mw-tick-dn');
+        setTimeout(()=>priceWrap.classList.remove('mw-tick-up','mw-tick-dn'),700);
       }
-      setTimeout(()=>row.classList.remove('flash-up','flash-dn'),1400);
+      // 3. Day % pill bounces in
+      const pill=row.querySelector('.pill');
+      if(pill){
+        pill.classList.remove('mw-pill-flash');
+        void pill.offsetWidth;
+        pill.classList.add('mw-pill-flash');
+        setTimeout(()=>pill.classList.remove('mw-pill-flash'),500);
+      }
     },delay);
   });
   btn.disabled=false;icon.className='';
@@ -2474,7 +2498,7 @@ function cmpCell(s){
   return `<div class="cmp-wrap">${p}<span class="cmp-badge neu">—</span>${tsHtml}</div>`;
 }
 
-function cmpPriceOnly(s){return `<span class="${cls(s.cmp-s.buy)}" style="font-weight:700;font-size:13px">${s.cmp.toFixed(2)}</span>`;}
+function cmpPriceOnly(s){return `<span class="mw-price-wrap" data-code="${s.code}"><span class="mw-pval ${cls(s.cmp-s.buy)}" style="font-weight:700;font-size:13px">${s.cmp.toFixed(2)}</span></span>`;}
 function dayChangePill(s){
   if(s.dayPct===null)return '<span class="pill neu">—</span>';
   return `<span class="pill ${s.dayPct>=0?'pos':'neg'}">${s.dayPct>=0?'▲':'▼'}${Math.abs(s.dayPct).toFixed(2)}%</span>`;
