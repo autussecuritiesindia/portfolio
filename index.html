@@ -1090,18 +1090,7 @@ html{-webkit-text-size-adjust:100%}
 
   <!-- ═══ SECTORS ═══ -->
   <div id="t-sc" style="display:none">
-    <div class="sec">
-      <div class="sec-hdr"><span class="sec-title">🏭 Sector Heatmap</span><span class="sec-badge">Click sector → see scripts below</span></div>
-      <div class="heatmap" id="heatmap"></div>
-    </div>
-    <div class="sec">
-      <div class="sec-hdr"><span class="sec-title">📊 Sector Summary</span><span class="sec-badge">Click row to drill down</span></div>
-      <div class="t-wrap scroll">
-        <table><thead><tr><th>Sector</th><th>Stocks</th><th>Invested</th><th>Curr. Value</th><th>P&amp;L ₹</th><th>P&amp;L %</th><th>Weight</th></tr></thead>
-        <tbody id="tb-sec"></tbody></table>
-      </div>
-    </div>
-    <!-- Sector drilldown panel — stays in this tab -->
+    <!-- Sector drilldown panel — appears ABOVE heatmap when sector clicked -->
     <div id="sectorDrill" class="sector-drill-panel" style="display:none">
       <div class="sector-drill-hdr">
         <span id="sectorDrillTitle">—</span>
@@ -1118,9 +1107,20 @@ html{-webkit-text-size-adjust:100%}
         </table>
       </div>
     </div>
+    <!-- Sector heatmap and summary — below drill panel -->
+    <div class="sec">
+      <div class="sec-hdr"><span class="sec-title">🏭 Sector Heatmap</span><span class="sec-badge">Click sector → see scripts</span></div>
+      <div class="heatmap" id="heatmap"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-hdr"><span class="sec-title">📊 Sector Summary</span><span class="sec-badge">Click row to drill down</span></div>
+      <div class="t-wrap scroll">
+        <table><thead><tr><th>Sector</th><th>Stocks</th><th>Invested</th><th>Curr. Value</th><th>P&amp;L ₹</th><th>P&amp;L %</th><th>Weight</th></tr></thead>
+        <tbody id="tb-sec"></tbody></table>
+      </div>
+    </div>
   </div>
 
-  <!-- ═══ HEATMAP ═══ -->
   <!-- ═══ SCRIPTS SUMMARY ═══ -->
   <div id="t-st" style="display:none">
     <div class="sc-toolbar">
@@ -2628,7 +2628,7 @@ function renderHoldings(data){
     'sector':(a,b)=>a.sector.localeCompare(b.sector),
     'pnlpct':(a,b)=>b.pnlPct-a.pnlPct,
     'pnlabs':(a,b)=>b.pnl-a.pnl,
-    'wt':    (a,b)=>(b.invest-a.invest),
+    'wt':    (a,b)=>b.curr-a.curr,
     'daypct':(a,b)=>(b.dayPct??-999)-(a.dayPct??-999),
   };
   let sorted=[...data].sort(sortFns[sk]||sortFns['curr']);
@@ -2641,7 +2641,7 @@ function renderHoldings(data){
   document.getElementById('tb-hold').innerHTML=sorted.map(s=>{
     const wt=_wtDenom>0?(s.curr/_wtDenom)*100:0;
     return `<tr class="h-row" data-q="${s.code.toLowerCase()} ${s.name.toLowerCase()} ${s.sector.toLowerCase()} ${(s.clientCode||'').toLowerCase()}">
-      <td><span class="sn">${s.code}</span><span class="ss">${s.name}</span></td>
+      <td><span class="sn">${s.code}</span></td>
       <td>${cmpPriceOnly(s)}</td>
       <td>${dayChangePill(s)}</td>
       <td><div class="bar-row"><span style="font-size:11px;font-weight:700;color:var(--text2)">${wt.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(wt*4,100)}%"></div></div></div></td>
@@ -2714,14 +2714,19 @@ function drillSector(sectorName){
   activeSectorFilter=sectorName;
   document.getElementById('sectorFilterName').textContent=sectorName;
   document.getElementById('sectorFilterBar').classList.add('visible');
-  // Stay in sector tab — show filtered scripts below
   renderSectorDrilldown(sectorName);
+  // Scroll drill panel into view at top
+  const drill=document.getElementById('sectorDrill');
+  if(drill){
+    drill.style.display='';
+    setTimeout(()=>drill.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  }
 }
 
 function renderSectorDrilldown(sectorName){
   const data=_lastComputedData||compute();
   const filtered=data.filter(s=>s.sector===sectorName);
-  const totalInv=filtered.reduce((a,s)=>a+s.invest,0);
+  const totalCurrDrill=filtered.reduce((a,s)=>a+s.curr,0);
   const drill=document.getElementById('sectorDrill');
   if(!drill)return;
   drill.style.display='';
@@ -2729,7 +2734,7 @@ function renderSectorDrilldown(sectorName){
   drill.querySelector('tbody').innerHTML=filtered
     .sort((a,b)=>b.curr-a.curr)
     .map(s=>{
-      const wt=totalInv>0?(s.invest/totalInv*100):0;
+      const wt=totalCurrDrill>0?(s.curr/totalCurrDrill*100):0;
       return `<tr>
         <td><span class="sn">${s.code}</span></td>
         <td class="neu">${s.qty.toLocaleString('en-IN')}</td>
@@ -3049,12 +3054,12 @@ function initTVNSE(){
     locale:'en',
     colorTheme:_tvColorTheme(),
     hasTopBar:true,
-    isDataSetEnabled:false,
+    isDataSetEnabled:true,   // enables Nifty50/100/200/500 switcher inside widget
     isZoomEnabled:true,
     hasSymbolTooltip:true,
     isMonoSize:false,
     width:'100%',
-    height:580
+    height:600
   });
 }
 
