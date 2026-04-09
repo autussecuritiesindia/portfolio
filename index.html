@@ -1367,6 +1367,8 @@ function checkSession(){
 function completeLogin(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('selWelcome').textContent=currentUser.role==='admin'?'Select RM':`Welcome, ${currentUser.display}`;
+  // Proactively wake the Render.com server — fires in background, doesn't block UI
+  warmupServer();
   initDashboard();
 }
 
@@ -1575,27 +1577,31 @@ const INDEX_FALLBACK = {
 // fetchStooqIndicesBatch — now uses yfinance Python service
 // yfinance handles Yahoo auth automatically — no IP blocking issues
 async function fetchStooqIndicesBatch(syms){
-  try{
-    const url=YFINANCE_URL+'/indices?s='+encodeURIComponent(syms.join(','));
-    const r=await Promise.race([
-      fetch(url,{cache:'no-store'}),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),30000))
-    ]);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const j=await r.json();
-    if(!j.ok||!j.data?.length)throw new Error(j.error||'No data');
-    let count=0;
-    for(const d of j.data){
-      if(!d.sym||!d.val)continue;
-      liveIndices[d.sym]={val:d.val,chg:d.chg,pct:d.pct,prevClose:d.prevClose,ts:Date.now(),isFallback:false};
-      count++;
+  for(let attempt=1;attempt<=2;attempt++){
+    try{
+      const url=YFINANCE_URL+'/indices?s='+encodeURIComponent(syms.join(','));
+      const timeoutMs=attempt===1?60000:30000;
+      const r=await Promise.race([
+        fetch(url,{cache:'no-store'}),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),timeoutMs))
+      ]);
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const j=await r.json();
+      if(!j.ok||!j.data?.length)throw new Error(j.error||'No data');
+      let count=0;
+      for(const d of j.data){
+        if(!d.sym||!d.val)continue;
+        liveIndices[d.sym]={val:d.val,chg:d.chg,pct:d.pct,prevClose:d.prevClose,ts:Date.now(),isFallback:false};
+        count++;
+      }
+      if(count>0){console.log('[INDICES] yfinance OK: '+count+' symbols (attempt '+attempt+')');_serverWarm=true;return count;}
+      throw new Error('0 valid symbols');
+    }catch(e){
+      console.warn('[INDICES] yfinance attempt '+attempt+' failed:',e.message);
+      if(attempt<2)await sleep(3000);
     }
-    if(count>0){console.log('[INDICES] yfinance OK: '+count+' symbols');return count;}
-    throw new Error('0 valid symbols in response');
-  }catch(e){
-    console.warn('[INDICES] yfinance failed:',e.message);
-    return 0;
   }
+  return 0;
 }
 async function fetchLiveIndices(){
   const allCfg=[...INDIA_INDEX_CFG,...GLOBAL_INDEX_CFG,...COMM_INDEX_CFG];
@@ -2177,40 +2183,91 @@ function compute(){
 //    Stooq col[7] with 'p' fmt  = same previous close
 // ══════════════════════════════════════════════════════
 
+// ── Warm-up ping — fires immediately on login to wake Render.com server ──
+let _serverWarm=false;
+async function warmupServer(){
+  if(_serverWarm)return;
+  try{
+    const r=await Promise.race([
+      fetch(YFINANCE_URL+'/',{cache:'no-store',mode:'cors'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),65000))
+    ]);
+    _serverWarm=r.ok||r.status===404; // any HTTP response = server is alive
+    console.log('[WARMUP] yfinance server ready, status:',r.status);
+  }catch(e){
+    console.warn('[WARMUP] yfinance server did not respond:',e.message);
+  }
+}
+
 async function fetchYahooBatch(symbols){
-  // yfinance Python service — handles only selected client batch (10-20 symbols max)
-  // Yahoo does NOT block yfinance because it manages crumb/cookie automatically
   const cleaned=symbols.map(s=>{
     if(s==='GVT&D.NS'||s==='GET&D.NS'||s==='GVT&D'||s==='GET&D')return 'GETD.NS';
     return s;
   });
+
+  // Try up to 2 attempts — handles cold-start where first response is empty/slow
+  for(let attempt=1;attempt<=2;attempt++){
+    try{
+      const url=YFINANCE_URL+'/prices?s='+encodeURIComponent(cleaned.join(','));
+      // 60s timeout on first attempt (cold start), 30s on retry
+      const timeoutMs=attempt===1?60000:30000;
+      const r=await Promise.race([
+        fetch(url,{cache:'no-store'}),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout '+timeoutMs+'ms')),timeoutMs))
+      ]);
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const j=await r.json();
+      if(!j.ok||!j.data?.length)throw new Error(j.error||'no data');
+      console.log('[PRICE] yfinance OK: '+j.data.length+' quotes (attempt '+attempt+')');
+      _serverWarm=true;
+      return j.data.map(q=>({
+        symbol:                     q.symbol,
+        regularMarketPrice:         q.price,
+        regularMarketPreviousClose: q.prevClose,
+        regularMarketChangePercent: q.changePct,
+        regularMarketChange:        q.changeAbs,
+      }));
+    }catch(e){
+      console.warn('[PRICE] yfinance attempt '+attempt+' failed:',e.message);
+      if(attempt<2){
+        // Brief pause before retry
+        setLiveStatus('loading',0,symbols.length);
+        await sleep(4000);
+      }
+    }
+  }
+
+  // Both attempts failed — try Stooq as direct fallback
+  console.warn('[PRICE] Falling back to Stooq direct CSV…');
+  return fetchStooqFallbackBatch(cleaned);
+}
+
+// Stooq direct fallback — fetches live price CSV when yfinance is down
+async function fetchStooqFallbackBatch(symbols){
+  const nsyms=symbols.map(s=>s.replace(/\.(NS|BO)$/i,'').toLowerCase());
+  const url='https://stooq.com/q/l/?s='+nsyms.map(s=>s+'.ns').join(',')+'&f=sd2t2ohlcvp&e=csv';
   try{
-    const url=YFINANCE_URL+'/prices?s='+encodeURIComponent(cleaned.join(','));
     const r=await Promise.race([
-      fetch(url,{cache:'no-store'}),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),30000))
+      fetch(url,{cache:'no-store',mode:'cors'}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Stooq timeout')),15000))
     ]);
-    if(!r.ok)throw new Error('yfinance HTTP '+r.status);
-    const j=await r.json();
-    if(!j.ok||!j.data?.length)throw new Error('yfinance: '+(j.error||'no data'));
-    console.log('[PRICE] yfinance OK: '+j.data.length+' quotes');
-    return j.data.map(q=>({
+    if(!r.ok)throw new Error('Stooq HTTP '+r.status);
+    const text=await r.text();
+    const parsed=parseStooqWithPrevClose(text);
+    if(!parsed.length)throw new Error('Stooq: no rows parsed');
+    console.log('[PRICE] Stooq fallback OK: '+parsed.length+' symbols');
+    // Convert to Yahoo format for processYahooQuotes compatibility
+    return parsed.map(q=>({
       symbol:                     q.symbol,
       regularMarketPrice:         q.price,
       regularMarketPreviousClose: q.prevClose,
-      regularMarketChangePercent: q.changePct,
-      regularMarketChange:        q.changeAbs,
+      regularMarketChangePercent: q.dayPct,
+      regularMarketChange:        q.dayAbs,
     }));
   }catch(e){
-    console.warn('[PRICE] yfinance failed:',e.message);
+    console.warn('[PRICE] Stooq fallback failed:',e.message);
     return [];
   }
-}
-
-// fetchStooqFallbackBatch — replaced by yfinance service
-// All price fetching now goes through YFINANCE_URL (autus-yfinance.onrender.com)
-async function fetchStooqFallbackBatch(symbols){
-  return [];
 }
 
 // Stooq CSV parser — handles f=sd2ohlcvp (with prev close col[7])
@@ -2302,6 +2359,13 @@ async function refreshPrices(){
   codes.forEach(c=>{prevPrices[c]=livePrices[c]||0;});
 
   console.log('[PRICE] Fetching '+codes.length+' symbols via yfinance');
+  // Show "waking" status if server not yet confirmed warm
+  if(!_serverWarm){
+    const dot=document.getElementById('liveDot');
+    const lbl=document.getElementById('liveLabel');
+    if(dot)dot.className='live-dot amber';
+    if(lbl)lbl.textContent='⏳ Waking price server… (first load may take ~30s)';
+  }
   const quotes=await fetchYahooBatch(nsSymbols);
   if(quotes.length>0)processYahooQuotes(quotes);
 
