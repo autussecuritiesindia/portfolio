@@ -89,10 +89,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 .slide-out-left{animation:slideOutLeft 200ms ease-out forwards;pointer-events:none}
 .slide-out-right{animation:slideOutRight 200ms ease-out forwards;pointer-events:none}
 #tabPanels{position:relative;overflow:hidden}
-@keyframes flashUp{0%{background:rgba(15,122,75,.35)}100%{background:transparent}}
-@keyframes flashDn{0%{background:rgba(192,57,43,.35)}100%{background:transparent}}
-.flash-up{animation:flashUp .8s ease-out}
-.flash-dn{animation:flashDn .8s ease-out}
+@keyframes flashUp{0%{background:rgba(15,122,75,.22)}60%{background:rgba(15,122,75,.12)}100%{background:transparent}}
+@keyframes flashDn{0%{background:rgba(192,57,43,.22)}60%{background:rgba(192,57,43,.12)}100%{background:transparent}}
+.flash-up{animation:flashUp 1.4s cubic-bezier(0.4,0,0.2,1) forwards}
+.flash-dn{animation:flashDn 1.4s cubic-bezier(0.4,0,0.2,1) forwards}
+/* Per-cell price transition for smooth CMP update feel */
+.mw-row td{transition:color .35s ease}
+.mw-cmp-up{color:var(--green)!important;transition:color .35s ease}
+.mw-cmp-dn{color:var(--red)!important;transition:color .35s ease}
 .spin{display:inline-block;animation:spin 1s linear infinite}
 
 /* ── UPLOAD ZONE ── */
@@ -712,29 +716,29 @@ html{-webkit-text-size-adjust:100%}
 .top-clients-table tbody tr:hover .pill{filter:brightness(1.05)}
 
 /* ══════════════════════════════════════════════════════
-   HEATMAP — Square tiles grid layout
+   PORTFOLIO HEATMAP — TradingView exact style
 ══════════════════════════════════════════════════════ */
-.hm-nested-grid{display:flex;flex-direction:column;gap:10px;width:100%}
-.hm-sector-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
-.hm-sector-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface3);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
-.hm-sector-hdr:hover{background:var(--surface2)}
-.hm-sector-title{font-size:12px;font-weight:700;color:var(--text)}
-.hm-sector-info{font-size:10px;color:var(--muted);font-family:var(--mono)}
-.hm-sector-meta{display:flex;align-items:center;gap:8px}
-.hm-sector-pct{font-size:12px;font-weight:700;font-family:var(--mono)}
-.hm-sector-body{display:flex;flex-wrap:wrap;gap:4px;padding:10px}
-
-/* Square tiles — key layout */
+#hmContainer{background:#131722;border-radius:4px;padding:4px;border:none}
+.hm-nested-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:2px;width:100%}
+.hm-sector-box{border-radius:3px;overflow:hidden;border:1px solid rgba(255,255,255,0.05)}
+.hm-sector-hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;user-select:none}
+.hm-sector-hdr:hover{background:rgba(255,255,255,0.09)}
+.hm-sector-title{font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.9);text-transform:uppercase;letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hm-sector-info{font-size:8px;color:rgba(255,255,255,0.38);font-family:var(--mono)}
+.hm-sector-meta{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.hm-sector-pct{font-size:10px;font-weight:700;font-family:var(--mono)}
+.hm-sector-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:2px;padding:3px;background:#131722}
+/* TradingView-style square tiles */
 .hm-tile-sq{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  border-radius:6px;cursor:pointer;transition:transform .12s,box-shadow .12s;
-  padding:4px;text-align:center;overflow:hidden;box-sizing:border-box;
-  border:1px solid rgba(255,255,255,0.06);gap:1px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;
+  border-radius:2px;cursor:pointer;transition:filter .1s;
+  padding:5px 6px;overflow:hidden;box-sizing:border-box;
+  aspect-ratio:1.1;width:100%;border:none;
 }
-.hm-tile-sq:hover{transform:scale(1.08);box-shadow:0 4px 20px rgba(0,0,0,.5);z-index:5;position:relative}
-.hm-tile-code{font-size:10px;font-weight:800;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.2}
-.hm-tile-pct{font-size:11px;font-weight:700;font-family:var(--mono);line-height:1}
-.hm-tile-cmp{font-size:8px;font-family:var(--mono);line-height:1}
+.hm-tile-sq:hover{filter:brightness(1.28);z-index:5;position:relative;outline:1px solid rgba(255,255,255,0.3)}
+.hm-tile-code{font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:#fff;line-height:1.3}
+.hm-tile-pct{font-size:11px;font-weight:700;font-family:var(--mono);line-height:1.2;color:#fff}
+.hm-tile-cmp{font-size:7.5px;font-family:var(--mono);line-height:1.1;color:rgba(255,255,255,0.65)}
 
 /* ══════════════════════════════════════════════════════
    ANALYTICS — Top clients table improvements
@@ -1189,14 +1193,16 @@ html{-webkit-text-size-adjust:100%}
         <button class="hm-filter" onclick="setHmView('losers',this)">📉 Top Losers</button>
         <button class="hm-filter" onclick="setHmView('all',this)">📋 All Stocks</button>
       </div>
-      <span class="hm-ts" id="hmTS">—</span>
+      <span class="hm-ts" id="hmTS" style="color:rgba(255,255,255,0.4);font-size:10px;font-family:var(--mono)">—</span>
     </div>
     <div id="hmDrillBar" style="display:none" class="hm-drill-bar">
       <button class="hm-back-btn" onclick="closeHmDrill()">← Back to Heatmap</button>
-      <span id="hmDrillTitle"></span>
+      <span id="hmDrillTitle" style="color:rgba(255,255,255,0.85);font-size:12px;font-weight:700"></span>
     </div>
-    <!-- Nested heatmap grid: sector boxes containing script chips -->
-    <div id="hmGrid" class="hm-nested-grid"></div>
+    <!-- TradingView-style dark container wraps grid -->
+    <div id="hmContainer" style="padding:4px">
+      <div id="hmGrid" class="hm-nested-grid"></div>
+    </div>
     <div id="hmDrill" style="display:none" class="hm-drill"></div>
   </div>
 
@@ -1803,8 +1809,10 @@ async function loadSheetData(navigate=true){
 
   // Always update portfolio data
   PORTFOLIO=parsed;
-  try{const cp=JSON.parse(localStorage.getItem(LS_PRICES)||'{}');Object.assign(livePrices,cp);}catch(e){}
+  // Apply VALRATE as baseline FIRST, then overlay with cached live prices
+  // This ensures live/closing prices from localStorage always win over sheet VALRATE
   PORTFOLIO.forEach(s=>{if(s.valRate>0)livePrices[s.code]=s.valRate;});
+  try{const cp=JSON.parse(localStorage.getItem(LS_PRICES)||'{}');Object.assign(livePrices,cp);}catch(e){}
   rebuildYFMaps();
   buildClientList();
   lastCSVDate=source==='live'?'Sheet '+(lastSheetSync?lastSheetSync.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):''):(source==='cache'?'Cache':'Sample');
@@ -1838,8 +1846,9 @@ async function loadSheetData(navigate=true){
 // NEW: Apply parsed rows → rebuild state → render
 function applyPortfolioData(rows,source='upload'){
   PORTFOLIO=rows;
-  try{const cp=JSON.parse(localStorage.getItem(LS_PRICES)||'{}');Object.assign(livePrices,cp);}catch(e){}
+  // Apply VALRATE as baseline FIRST, then overlay cached live prices
   PORTFOLIO.forEach(s=>{if(s.valRate>0)livePrices[s.code]=s.valRate;});
+  try{const cp=JSON.parse(localStorage.getItem(LS_PRICES)||'{}');Object.assign(livePrices,cp);}catch(e){}
   rebuildYFMaps();
   buildClientList();
   lastCSVDate='CSV Upload';
@@ -2349,18 +2358,30 @@ async function refreshPrices(){
   showPriceFetchIndicator(false);
   renderAll();
   // Flash updated rows in market watch
-  requestAnimationFrame(()=>{
-    document.querySelectorAll('.mw-row').forEach(row=>{
-      const code=row.querySelector('.mw-script-name')?.textContent?.trim();
-      if(!code||!livePrices[code])return;
-      const prev=prevPrices[code]||0;
-      const curr=livePrices[code];
-      if(prev&&curr!==prev){
-        row.classList.remove('flash-up','flash-dn');
-        void row.offsetWidth;
-        row.classList.add(curr>prev?'flash-up':'flash-dn');
+  // Staggered smooth flash — rows animate in sequence, not all at once
+  const mwRows=[...document.querySelectorAll('.mw-row')];
+  mwRows.forEach((row,idx)=>{
+    const code=row.querySelector('.mw-script-name')?.textContent?.trim();
+    if(!code||!livePrices[code])return;
+    const prev=prevPrices[code]||0;
+    const curr=livePrices[code];
+    if(!prev||curr===prev)return;
+    const dir=curr>prev?'flash-up':'flash-dn';
+    // Stagger: max 400ms spread across all rows, 12ms per row
+    const delay=Math.min(idx*12,400);
+    setTimeout(()=>{
+      row.classList.remove('flash-up','flash-dn');
+      void row.offsetWidth;
+      row.classList.add(dir);
+      // Also highlight CMP cell briefly
+      const cmpCell=row.querySelector('.mw-cmp,.cmp-cell,td:nth-child(2)');
+      if(cmpCell){
+        cmpCell.classList.remove('mw-cmp-up','mw-cmp-dn');
+        cmpCell.classList.add(curr>prev?'mw-cmp-up':'mw-cmp-dn');
+        setTimeout(()=>cmpCell.classList.remove('mw-cmp-up','mw-cmp-dn'),1600);
       }
-    });
+      setTimeout(()=>row.classList.remove('flash-up','flash-dn'),1400);
+    },delay);
   });
   btn.disabled=false;icon.className='';
   _refreshing=false;
@@ -2989,7 +3010,7 @@ function _injectTVWidget(containerId,cfg){
   const s=document.createElement('script');
   s.src='https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
   s.async=true;
-  s.innerHTML=JSON.stringify(cfg);
+  s.textContent=JSON.stringify(cfg); // textContent — innerHTML ignored on dynamic scripts
   container.appendChild(s);
 }
 
@@ -2997,8 +3018,7 @@ function initTVNSE(){
   if(_tvNSEInited)return;
   _tvNSEInited=true;
   _injectTVWidget('tvMktHeatmap',{
-    exchanges:['NSE'],
-    dataSource:'INDIA',
+    dataSource:'India',
     grouping:'sector',
     blockSize:'market_cap_basic',
     blockColor:'change',
@@ -3706,29 +3726,32 @@ function hmChip(s,maxPct){
   const pct=s.pct||0;
   const wt=s.wt||0;
   const intensity=maxPct>0?Math.min(Math.abs(pct)/maxPct,1):0;
-  let bg,textCol,pctCol;
+  let bg;
+  // TradingView exact colors: dark → bright as intensity increases
   if(pct>0){
-    const g=Math.round(71+intensity*56);
-    bg=`rgb(${Math.round(15-intensity*5)},${g},${Math.round(43-intensity*15)})`;
-    textCol=intensity>0.5?'#a7f3d0':'#6ee7b7';pctCol='#4ade80';
+    // TV green range: #0f3d25 (weak) → #0f7a4b (strong)
+    const r=Math.round(14+intensity*8);
+    const g=Math.round(71+intensity*95);
+    const b=Math.round(35+intensity*30);
+    bg=`rgb(${r},${g},${b})`;
   }else if(pct<0){
-    const r=Math.round(120+intensity*55);
-    bg=`rgb(${r},${Math.round(20-intensity*8)},${Math.round(20-intensity*8)})`;
-    textCol=intensity>0.5?'#fecaca':'#fca5a5';pctCol='#f87171';
+    // TV red range: #4a1414 (weak) → #c0392b (strong)
+    const r=Math.round(74+intensity*118);
+    const g=Math.round(20+intensity*37);
+    const b=Math.round(20+intensity*23);
+    bg=`rgb(${r},${g},${b})`;
   }else{
-    bg='rgba(51,65,85,0.55)';textCol='var(--text2)';pctCol='var(--muted)';
+    bg='#2a2e39';
   }
-  // Square tiles — proportional to weight, min 70 max 110px
-  const sz=Math.max(70,Math.min(110,70+wt*5));
   const safe=s.code.replace(/'/g,"\'");
-  const arrow=pct>0?'▲':pct<0?'▼':'';
-  const cmpStr=s.cmp>0?s.cmp.toFixed(0):'—';
+  const pctStr=(pct>=0?'+':'')+pct.toFixed(2)+'%';
+  const cmpStr=s.cmp>0?s.cmp.toFixed(2):'—';
   return `<div class="hm-tile-sq" onclick="showHmDrill('${safe}')"
-    style="background:${bg};width:${sz}px;height:${sz}px"
-    title="${s.name} · ${pct>=0?'+':''}${pct.toFixed(2)}% · Wt ${wt.toFixed(1)}%">
-    <span class="hm-tile-code" style="color:${textCol}">${s.code}</span>
-    <span class="hm-tile-pct" style="color:${pctCol}">${arrow}${Math.abs(pct).toFixed(2)}%</span>
-    <span class="hm-tile-cmp" style="color:${textCol};opacity:.8">${cmpStr}</span>
+    style="background:${bg}"
+    title="${s.name}\n${pctStr} · CMP ${cmpStr} · Wt ${wt.toFixed(1)}%">
+    <span class="hm-tile-code">${s.code}</span>
+    <span class="hm-tile-pct">${pctStr}</span>
+    <span class="hm-tile-cmp">${cmpStr}</span>
   </div>`;
 }
 
