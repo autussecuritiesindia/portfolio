@@ -80,6 +80,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 .btn.sort-dir{padding:6px 10px;font-size:12px;min-width:36px;justify-content:center}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes slideInLeft{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+@keyframes slideOutLeft{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@keyframes slideOutRight{from{transform:translateX(0)}to{transform:translateX(100%)}}
+.slide-in-right{animation:slideInRight 200ms ease-out forwards}
+.slide-in-left{animation:slideInLeft 200ms ease-out forwards}
+.slide-out-left{animation:slideOutLeft 200ms ease-out forwards;pointer-events:none}
+.slide-out-right{animation:slideOutRight 200ms ease-out forwards;pointer-events:none}
+#tabPanels{position:relative;overflow:hidden}
 @keyframes flashUp{0%{background:rgba(15,122,75,.35)}100%{background:transparent}}
 @keyframes flashDn{0%{background:rgba(192,57,43,.35)}100%{background:transparent}}
 .flash-up{animation:flashUp .8s ease-out}
@@ -941,6 +950,7 @@ html{-webkit-text-size-adjust:100%}
   </div>
 
   <!-- ═══ OVERVIEW ═══ -->
+  <div id="tabPanels">
   <div id="t-ov">
     <div class="ov-layout">
 
@@ -1208,6 +1218,7 @@ html{-webkit-text-size-adjust:100%}
     </div>
     <div style="text-align:center;padding:6px 0;font-size:9px;color:var(--muted);font-family:var(--mono)">Powered by TradingView</div>
   </div>
+  </div><!-- /#tabPanels -->
 
 </main>
 <div class="footer"><span class="dot"></span><span id="lastUp">—</span></div>
@@ -1620,13 +1631,22 @@ function parseSheetCSV(text){
   const iBuy  = col('BUYPRICE','BUY PRICE','BUYRATE','BUY RATE','AVGBUYPRICE','AVGRATE','AVG RATE');
   const iSec  = col('SECTOR');
   const iVal  = col('VALRATE','VAL RATE','CLOSINGVALUATION','CLOSING VALUATION');
-  // AR column (index 43, 0-based) — header TOTALCREDITAMT → displayed as "Ledger Balance"
-  const iLedger=(()=>{
+  // Column D (index 3) = CLIENTCATEGORYCODE — skip rows where value is "FI"
+  const iCat  = col('CLIENTCATEGORYCODE','CLIENT CATEGORY CODE','CLIENTCATEGORY','CATEGORY CODE') >= 0
+    ? col('CLIENTCATEGORYCODE','CLIENT CATEGORY CODE','CLIENTCATEGORY','CATEGORY CODE')
+    : 3; // fallback to column D (0-based index 3)
+  // AQ col (index 42) = TOTALDEBITAMT, AR col (index 43) = TOTALCREDITAMT
+  // Net ledger = CREDIT - DEBIT (positive = credit balance, negative = debit balance)
+  const iCredit=(()=>{
     const byName=col('TOTALCREDITAMT','TOTAL CREDIT AMT','TOTALCREDIT','LEDGERBALANCE','LEDGER BALANCE','LEDGER');
     return byName>=0?byName:(hdrs.length>43?43:-1);
   })();
+  const iDebit=(()=>{
+    const byName=col('TOTALDEBITAMT','TOTAL DEBIT AMT','TOTALDEBIT');
+    return byName>=0?byName:(hdrs.length>42?42:-1);
+  })();
 
-  console.log('[SHEET] Col indices:',{iSub,iCC,iName,iSym,iQty,iBuy,iSec,iVal});
+  console.log('[SHEET] Col indices:',{iSub,iCC,iName,iSym,iQty,iBuy,iSec,iVal,iCat});
 
   const rows=[];let skip=0;
   for(let i=1;i<lines.length;i++){
@@ -1634,14 +1654,19 @@ function parseSheetCSV(text){
     if(c.length<2)continue;
     const clientCode=iCC>=0?c[iCC]:'';
     const symbol    =iSym>=0?c[iSym]:'';
-    // UPDATED: skip if CLIENTCODE or SYMBOL missing
+    // Skip if CLIENTCODE or SYMBOL missing
     if(!clientCode||!symbol||symbol.startsWith('*')){skip++;continue;}
+    // Skip FI (Foreign Institutional) clients — column D / CLIENTCATEGORYCODE
+    if(iCat>=0&&(c[iCat]||'').trim().toUpperCase()==='FI'){skip++;continue;}
     const qty =parseFloat(c[iQty]||0)||0;
     const buy =parseFloat(c[iBuy]||0)||0;
     if(!qty&&!buy)continue;
     const sector=iSec>=0&&c[iSec]?c[iSec]:guessSector(symbol);
     const val   =iVal>=0?parseFloat(c[iVal]||0)||buy:buy;
-    const ledger=iLedger>=0?parseFloat((c[iLedger]||'').replace(/[₹,\s]/g,''))||null:null;
+    const creditAmt=iCredit>=0?parseFloat((c[iCredit]||'').replace(/[₹,\s]/g,''))||0:0;
+    const debitAmt =iDebit>=0 ?parseFloat((c[iDebit ]||'').replace(/[₹,\s]/g,''))||0:0;
+    // Net: positive = credit (client has cash), negative = debit (client owes)
+    const ledger=(creditAmt===0&&debitAmt===0)?null:(creditAmt-debitAmt);
     rows.push({subgroup:iSub>=0?c[iSub]:'',clientCode,clientName:iName>=0?(c[iName]||clientCode):clientCode,
                code:symbol,name:iName>=0?(c[iName]||symbol):symbol,sector,qty,buy,valRate:val,ledger});
   }
@@ -2505,27 +2530,39 @@ function renderHoldings(data){
       clientName.textContent=nm;
       clientCode.textContent=selectedClient;
       clientAvatar.textContent=nm.charAt(0).toUpperCase();
-      // Ledger Balance card
-      const lb=(window._ledgerMap||{})[selectedClient];
+      // Ledger Balance card — always show (₹0 if no data)
+      const lb=(window._ledgerMap||{})[selectedClient]??0;
       let ledgerEl=document.getElementById('ledgerCard');
       if(!ledgerEl){ledgerEl=document.createElement('div');ledgerEl.id='ledgerCard';clientHeader.parentNode.insertBefore(ledgerEl,clientHeader.nextSibling);}
-      if(lb!==undefined&&lb!==null){
-        const lCol=lb>=0?'var(--green)':'var(--red)';
-        const lBg=lb>=0?'var(--green-bg)':'var(--red-bg)';
-        const lBd=lb>=0?'var(--green-border)':'var(--red-border)';
-        ledgerEl.innerHTML=`<div style="display:flex;align-items:center;gap:14px;padding:10px 16px;background:${lBg};border:1px solid ${lBd};border-radius:var(--r);margin-bottom:10px;box-shadow:var(--shadow)">
-          <div style="font-size:20px">🏦</div>
-          <div style="flex:1">
-            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:2px">Ledger Balance</div>
-            <div style="font-size:20px;font-weight:800;font-family:var(--mono);color:${lCol}">${lb>=0?'+':'−'}₹${fmtC(Math.abs(lb))}</div>
+      {
+        const lCol=lb>0?'var(--green)':lb<0?'var(--red)':'var(--text2)';
+        const lBg=lb>0?'var(--green-bg)':lb<0?'var(--red-bg)':'var(--surface2)';
+        const lBd=lb>0?'var(--green-border)':lb<0?'var(--red-border)':'var(--border)';
+        const lIcon=lb>0?'💰':lb<0?'⚠️':'🏦';
+        const lTag=lb>0?'Credit Balance':lb<0?'Debit Balance':'No Ledger Data';
+        const _allData=compute();
+        const _portVal=_allData.reduce((a,s)=>a+s.curr,0);
+        const _effTotal=_portVal+lb;
+        ledgerEl.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;background:${lBg};border:1px solid ${lBd};border-radius:var(--r);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden">
+          <div style="padding:10px 14px;border-right:1px solid ${lBd};display:flex;align-items:center;gap:10px">
+            <span style="font-size:20px">${lIcon}</span>
+            <div>
+              <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:2px">${lTag}</div>
+              <div style="font-size:17px;font-weight:800;font-family:var(--mono);color:${lCol};letter-spacing:-.3px">${lb>0?'+':lb<0?'−':''}₹${fmtC(Math.abs(lb))}</div>
+            </div>
           </div>
-          <div style="text-align:right">
-            <div style="font-size:11px;font-weight:700;color:${lCol}">${lb>=0?'Credit':'Debit'}</div>
-            <div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:2px">Cash + Equity</div>
+          <div style="padding:10px 14px;border-right:1px solid ${lBd}">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:2px">Equity Value</div>
+            <div style="font-size:14px;font-weight:700;font-family:var(--mono);color:var(--text)">₹${fmtC(_portVal)}</div>
+          </div>
+          <div style="padding:10px 14px">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:2px">Effective Total</div>
+            <div style="font-size:14px;font-weight:800;font-family:var(--mono);color:var(--text)">₹${fmtC(_effTotal)}</div>
+            <div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:1px">Equity + Ledger</div>
           </div>
         </div>`;
         ledgerEl.style.display='';
-      }else{ledgerEl.innerHTML='';ledgerEl.style.display='none';}
+      }
     }else{
       clientHeader.style.display='none';
       const ledgerEl=document.getElementById('ledgerCard');
@@ -2533,6 +2570,10 @@ function renderHoldings(data){
     }
   }
   const totalInv=data.reduce((a,s)=>a+s.invest,0);
+  const totalCurr=data.reduce((a,s)=>a+s.curr,0);
+  // Include ledger balance in weight denominator — matches working file logic
+  const _lb=(window._ledgerMap||{})[selectedClient]||0;
+  const _wtDenom=totalCurr+_lb;
   const sk=document.getElementById('sortSelect').value||sortKey;
   sortKey=sk;
 
@@ -2553,7 +2594,7 @@ function renderHoldings(data){
 
   // UPDATED: table always renders regardless of price status
   document.getElementById('tb-hold').innerHTML=sorted.map(s=>{
-    const wt=totalInv>0?(s.invest/totalInv)*100:0;
+    const wt=_wtDenom>0?(s.curr/_wtDenom)*100:0;
     return `<tr class="h-row" data-q="${s.code.toLowerCase()} ${s.name.toLowerCase()} ${s.sector.toLowerCase()} ${(s.clientCode||'').toLowerCase()}">
       <td><span class="sn">${s.code}</span><span class="ss">${s.name}</span></td>
       <td>${cmpPriceOnly(s)}</td>
@@ -3008,6 +3049,76 @@ function switchTVTab(tab,el){
   }
 }
 
+
+// ══════════════════════════════════════════════════════
+//  SWIPEABLE TABS — mobile left/right swipe between tabs
+// ══════════════════════════════════════════════════════
+function initSwipeTabs(){
+  const TAB_ORDER=['ov','hd','sc','st','hm','mh','an'];
+  const panels=document.getElementById('tabPanels');
+  if(!panels)return;
+  let tx0=0,ty0=0,swiping=false,inScroll=false;
+
+  panels.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    tx0=t.clientX;ty0=t.clientY;swiping=false;
+    // Don't swipe if touch started inside a scrollable area
+    inScroll=!!e.target.closest('.scroll,.t-wrap,.hm-drill-table,.sc-client-table,.top-clients-table');
+  },{passive:true});
+
+  panels.addEventListener('touchmove',e=>{
+    if(inScroll)return;
+    const dx=e.touches[0].clientX-tx0;
+    const dy=e.touches[0].clientY-ty0;
+    if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy))swiping=true;
+  },{passive:true});
+
+  panels.addEventListener('touchend',e=>{
+    if(!swiping||inScroll)return;
+    const dx=e.changedTouches[0].clientX-tx0;
+    const dy=e.changedTouches[0].clientY-ty0;
+    if(Math.abs(dx)<60||Math.abs(dy)>80)return;
+
+    // Find active tab
+    const activeTab=document.querySelector('.tab.active');
+    if(!activeTab)return;
+    const onclickAttr=activeTab.getAttribute('onclick')||'';
+    const match=onclickAttr.match(/showTab\('(\w+)'/);
+    if(!match)return;
+    const curId=match[1];
+    const curIdx=TAB_ORDER.indexOf(curId);
+    if(curIdx<0)return;
+
+    const nextIdx=dx<0?curIdx+1:curIdx-1; // swipe left=next, right=prev
+    if(nextIdx<0||nextIdx>=TAB_ORDER.length)return;
+
+    const nextId=TAB_ORDER[nextIdx];
+    const nextTabEl=[...document.querySelectorAll('.tab')].find(t=>(t.getAttribute('onclick')||'').includes("'"+nextId+"'"));
+    if(!nextTabEl)return;
+
+    const outgoing=document.getElementById('t-'+curId);
+    const incoming=document.getElementById('t-'+nextId);
+    if(!outgoing||!incoming)return;
+
+    const goLeft=dx<0;
+    incoming.style.display='';
+    incoming.style.position='absolute';
+    incoming.style.top='0';incoming.style.left='0';incoming.style.width='100%';
+    outgoing.classList.add(goLeft?'slide-out-left':'slide-out-right');
+    incoming.classList.add(goLeft?'slide-in-right':'slide-in-left');
+
+    setTimeout(()=>{
+      outgoing.style.display='none';
+      outgoing.classList.remove('slide-out-left','slide-out-right');
+      incoming.style.position='';
+      incoming.style.top='';incoming.style.left='';incoming.style.width='';
+      incoming.classList.remove('slide-in-right','slide-in-left');
+      showTab(nextId,nextTabEl);
+      nextTabEl.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+    },200);
+  },{passive:true});
+}
+
 function filterClientCards(){
   const q=document.getElementById('clientSearch').value.toLowerCase();
   document.querySelectorAll('#clientGrid .client-card').forEach(card=>{
@@ -3028,6 +3139,7 @@ function filterClientCards(){
   }else{
     setTimeout(()=>document.getElementById('userIdInput')?.focus(),100);
   }
+  initSwipeTabs();
 })();
 
 
