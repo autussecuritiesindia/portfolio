@@ -2451,10 +2451,11 @@ function exportCSV(){
   const data=compute();
   if(!data.length){toast('No holdings to export','warn');return;}
   const totalInv=data.reduce((a,s)=>a+s.invest,0);
+  const totalCurr=data.reduce((a,s)=>a+s.curr,0);
   const sorted=[...data].sort((a,b)=>b.curr-a.curr);
   const hdr=['Script','Company','Sector','Client','CMP','Day%','Wt%','Qty','AvgBuy','CurrValue','PnL','PnL%'];
   const rows=sorted.map(s=>{
-    const wt=totalInv>0?(s.invest/totalInv)*100:0;
+    const wt=totalCurr>0?(s.curr/totalCurr)*100:0;
     return[s.code,`"${s.name}"`,`"${s.sector}"`,s.clientCode||'',s.cmp.toFixed(2),
       s.dayPct!==null?s.dayPct.toFixed(2):'',wt.toFixed(2),s.qty,s.buy.toFixed(2),
       s.hasLive?s.curr.toFixed(2):'',s.hasLive?s.pnl.toFixed(2):'',s.pnlPct.toFixed(2)
@@ -2528,19 +2529,20 @@ function sortMW(key){
 
 function renderOverview(data){
   const totalInv=data.reduce((a,s)=>a+s.invest,0);
+  const totalCurr=data.reduce((a,s)=>a+s.curr,0);
   const sortFns={
     'code': (a,b)=>a.code.localeCompare(b.code),
     'cmp':  (a,b)=>b.cmp-a.cmp,
     'daypct':(a,b)=>(b.dayPct??-999)-(a.dayPct??-999),
     'pnlpct':(a,b)=>b.pnlPct-a.pnlPct,
-    'wt':   (a,b)=>b.invest-a.invest,
+    'wt':   (a,b)=>b.curr-a.curr,
     'curr': (a,b)=>b.curr-a.curr,
   };
   let sorted=[...data].sort(sortFns[mwSortKey]||sortFns.daypct);
   if(mwSortAsc)sorted=sorted.reverse();
   document.getElementById('mwBadge').textContent=sorted.length+' scripts · '+liveCount+' live';
   document.getElementById('tb-mw').innerHTML=sorted.map(s=>{
-    const wt=totalInv>0?(s.invest/totalInv)*100:0;
+    const wt=totalCurr>0?(s.curr/totalCurr)*100:0;
     const pctCls=s.dayPct!==null?(s.dayPct>=0?'pos':'neg'):'neu';
     const pctArrow=s.dayPct!==null?(s.dayPct>=0?'▲':'▼'):'';
     const pnlCls=clsPill(s.pnlPct);
