@@ -445,6 +445,9 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .snap-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;font-weight:600}
 .snap-val{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--text)}
 
+/* ── Holdings sortable header hover ── */
+#t-hd thead th{cursor:pointer;user-select:none;transition:background .15s,color .15s}
+#t-hd thead th:hover{background:var(--surface3);color:var(--text)}
 /* ── PRICE TIMESTAMP ── */
 .price-ts{font-size:8.5px;color:var(--muted);font-family:var(--mono);display:block;margin-top:1px;letter-spacing:.2px}
 
@@ -1077,10 +1080,16 @@ html{-webkit-text-size-adjust:100%}
       <div class="t-wrap scroll">
         <table>
           <thead><tr>
-            <th style="text-align:left">Script</th>
-            <th>CMP ⚡</th><th>Day %</th><th>Wt%</th><th>Qty</th>
-            <th>Avg Buy ₹</th><th>Curr. Value</th><th>P&amp;L ₹</th><th>P&amp;L %</th>
-            <th style="text-align:left">Industry</th>
+            <th style="text-align:left;cursor:pointer" onclick="hdSort('script')">Script <span class="mw-arr" id="ha-script"></span></th>
+            <th style="cursor:pointer" onclick="hdSort('cmp')">CMP ⚡ <span class="mw-arr" id="ha-cmp"></span></th>
+            <th style="cursor:pointer" onclick="hdSort('daypct')">Day % <span class="mw-arr" id="ha-daypct"></span></th>
+            <th style="cursor:pointer" onclick="hdSort('wt')">Wt% <span class="mw-arr" id="ha-wt"></span></th>
+            <th style="cursor:pointer" onclick="hdSort('qty')">Qty <span class="mw-arr" id="ha-qty"></span></th>
+            <th style="cursor:pointer" onclick="hdSort('buy')">Avg Buy ₹ <span class="mw-arr" id="ha-buy"></span></th>
+            <th style="cursor:pointer" onclick="hdSort('curr')">Curr. Value <span class="mw-arr" id="ha-curr"></span></th>
+            <th style="cursor:pointer" onclick="hdSort('pnlabs')">P&amp;L ₹ <span class="mw-arr" id="ha-pnlabs"></span></th>
+            <th style="cursor:pointer" onclick="hdSort('pnlpct')">P&amp;L % <span class="mw-arr" id="ha-pnlpct"></span></th>
+            <th style="text-align:left;cursor:pointer" onclick="hdSort('sector')">Industry <span class="mw-arr" id="ha-sector"></span></th>
           </tr></thead>
           <tbody id="tb-hold"></tbody>
         </table>
@@ -1169,11 +1178,11 @@ html{-webkit-text-size-adjust:100%}
           <span class="sec-badge" id="anBadge">—</span>
         </div>
       </div>
-      <div style="padding:10px 0 10px 0;background:var(--surface2);border:1px solid var(--border);border-top:none;display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap">
-        <span style="font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700">FILTER RM:</span>
+      <div id="anToolbar" style="padding:10px 0 10px 0;background:var(--surface2);border:1px solid var(--border);border-top:none;display:flex;gap:8px;align-items:center;padding:10px 14px;flex-wrap:wrap">
+        <span id="anRMFilterWrap" style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700">FILTER RM:</span>
         <select class="an-select" id="anRMFilter" onchange="renderAnalytics()">
           <option value="">All RMs</option>
-        </select>
+        </select></span>
         <span style="font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700;margin-left:8px">RANK BY:</span>
         <div class="an-metric-btns">
           <button class="an-metric-btn active" onclick="setAnMetric('aum',this)">AUM</button>
@@ -1222,21 +1231,41 @@ html{-webkit-text-size-adjust:100%}
     <div id="hmDrill" style="display:none" class="hm-drill"></div>
   </div>
 
-  <!-- Market Heatmap — TradingView NSE + USA -->
+  <!-- Market Heatmap — TradingView multi-region -->
   <div id="t-mh" style="display:none">
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <button class="hm-filter active" id="tvTabNSE" onclick="switchTVTab('nse',this)">🇮🇳 NSE India</button>
-      <button class="hm-filter" id="tvTabUSA" onclick="switchTVTab('usa',this)">🇺🇸 USA Markets</button>
+    <!-- Region tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+      <button class="hm-filter active" id="tvTab-india" onclick="switchTVRegion('india',this)">🇮🇳 India (BSE/NSE)</button>
+      <button class="hm-filter" id="tvTab-usa" onclick="switchTVRegion('usa',this)">🇺🇸 USA</button>
+      <button class="hm-filter" id="tvTab-europe" onclick="switchTVRegion('europe',this)">🇪🇺 Europe</button>
+      <button class="hm-filter" id="tvTab-asia" onclick="switchTVRegion('asia',this)">🌏 Asia-Pacific</button>
+      <button class="hm-filter" id="tvTab-crypto" onclick="switchTVRegion('crypto',this)">₿ Crypto</button>
     </div>
-    <div id="tvNSEWrap" style="border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)">
-      <div class="tradingview-widget-container" id="tvMktHeatmap" style="min-height:580px">
-        <div class="tradingview-widget-container__widget"></div>
-      </div>
+    <!-- Heatmap container — one per region, lazy-loaded -->
+    <div id="tvHeatmapWrap" style="border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);min-height:600px;background:#131722">
+      <div id="tvHeatmapInner"></div>
     </div>
-    <div id="tvUSAWrap" style="display:none;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)">
-      <div class="tradingview-widget-container" id="tvUSAHeatmap" style="min-height:580px">
-        <div class="tradingview-widget-container__widget"></div>
+    <!-- Index quick-search panel -->
+    <div style="margin-top:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:var(--shadow)">
+      <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px">
+        🔍 Quick Index Lookup — All Exchanges
+        <span style="font-size:10px;font-weight:400;color:var(--muted);font-family:var(--mono)">Search any index worldwide</span>
       </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <input id="idxSearch" class="search" placeholder="Search index (e.g. NIFTY, SENSEX, BSE, S&amp;P)…" oninput="filterIdxList(this.value)"
+          style="flex:1;min-width:200px;padding:8px 12px;font-size:12px">
+      </div>
+      <div id="idxGroups" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <button class="hm-filter active" onclick="setIdxGroup('all',this)">All</button>
+        <button class="hm-filter" onclick="setIdxGroup('india',this)">🇮🇳 India</button>
+        <button class="hm-filter" onclick="setIdxGroup('usa',this)">🇺🇸 USA</button>
+        <button class="hm-filter" onclick="setIdxGroup('europe',this)">🇪🇺 Europe</button>
+        <button class="hm-filter" onclick="setIdxGroup('asia',this)">🌏 Asia</button>
+        <button class="hm-filter" onclick="setIdxGroup('crypto',this)">₿ Crypto</button>
+        <button class="hm-filter" onclick="setIdxGroup('commodity',this)">🛢️ Commodity</button>
+        <button class="hm-filter" onclick="setIdxGroup('fx',this)">💱 Forex</button>
+      </div>
+      <div id="idxList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;max-height:320px;overflow-y:auto"></div>
     </div>
     <div style="text-align:center;padding:6px 0;font-size:9px;color:var(--muted);font-family:var(--mono)">Powered by TradingView</div>
   </div>
@@ -1262,7 +1291,7 @@ html{-webkit-text-size-adjust:100%}
 // ══════════════════════════════════════════════════════
 const CREDS={
   'VANTAGE':{pin:'1209',role:'admin', subgroup:null,    display:'Admin'},
-  'AGL':    {pin:'0001',role:'rm',    subgroup:'AGL',   display:'AGL'},
+  'AGL':    {pin:'0001',role:'admin', subgroup:null,    display:'AGL'},
   'SAMEER': {pin:'0002',role:'rm',    subgroup:'SAMEER',display:'Sameer'},
   'HRISHI': {pin:'0003',role:'rm',    subgroup:'HRISHI',display:'Hrishi'},
   'GBL':    {pin:'0004',role:'rm',    subgroup:'GBL',   display:'GBL'},
@@ -1309,8 +1338,13 @@ function pinKey(k){
 
 function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updatePinDots();}
 
-// Global keydown listener — physical keyboard + mobile keyboard input for PIN
+// Global keydown listener — physical keyboard for PIN only
+// Only intercepts when login is visible AND no text input is focused
 document.addEventListener('keydown',function(e){
+  const tag=(document.activeElement||{}).tagName||'';
+  if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
+  const loginScreen=document.getElementById('loginScreen');
+  if(!loginScreen||loginScreen.style.display==='none')return;
   const step2=document.getElementById('loginStep2');
   const step3=document.getElementById('loginStep3');
   if(step2&&step2.style.display!=='none'){
@@ -2632,6 +2666,9 @@ function renderHoldings(data){
     'pnlabs':(a,b)=>b.pnl-a.pnl,
     'wt':    (a,b)=>b.curr-a.curr,
     'daypct':(a,b)=>(b.dayPct??-999)-(a.dayPct??-999),
+    'cmp':   (a,b)=>b.cmp-a.cmp,
+    'qty':   (a,b)=>b.qty-a.qty,
+    'buy':   (a,b)=>b.buy-a.buy,
   };
   let sorted=[...data].sort(sortFns[sk]||sortFns['curr']);
   if(sortAsc)sorted=sorted.reverse();
@@ -2667,6 +2704,25 @@ function renderHoldingsFromCurrent(){
 function toggleSortDir(){
   sortAsc=!sortAsc;
   document.getElementById('sortDirBtn').textContent=sortAsc?'▲':'▼';
+  renderHoldingsFromCurrent();
+}
+
+// Holdings column header sort — clicking same column flips direction
+const HD_SORT_KEYS=['script','cmp','daypct','wt','qty','buy','curr','pnlabs','pnlpct','sector'];
+function hdSort(key){
+  if(sortKey===key){sortAsc=!sortAsc;}
+  else{sortKey=key;sortAsc=false;}
+  // Sync the sort dropdown if key matches
+  const sel=document.getElementById('sortSelect');
+  const validKeys=['curr','script','sector','pnlpct','pnlabs','wt','daypct'];
+  if(sel&&validKeys.includes(key))sel.value=key;
+  // Update sort dir button
+  document.getElementById('sortDirBtn').textContent=sortAsc?'▲':'▼';
+  // Update header arrows
+  HD_SORT_KEYS.forEach(k=>{
+    const el=document.getElementById('ha-'+k);
+    if(el)el.textContent=k===sortKey?(sortAsc?'▲':'▼'):'';
+  });
   renderHoldingsFromCurrent();
 }
 
@@ -2901,7 +2957,7 @@ function showTab(id,el){
   if(id==='hm')renderHeatmap();
   if(id==='st')renderScripts();
   if(id==='an')renderAnalytics();
-  if(id==='mh')initTVMarketHeatmap();
+  if(id==='mh'){initTVMarketHeatmap();setTimeout(()=>renderIdxList('all',''),50);}
 }
 
 // UPDATED: debounced search
@@ -3023,81 +3079,238 @@ function renderSnapshot(){
 // ══════════════════════════════════════════════════════
 //  TRADINGVIEW MARKET HEATMAP
 // ══════════════════════════════════════════════════════
-let _tvNSEInited=false;
-let _tvUSAInited=false;
-
-function initTVMarketHeatmap(){
-  initTVNSE();
-}
+// ══════════════════════════════════════════════════════
+//  TRADINGVIEW MARKET HEATMAP — Multi-Region
+// ══════════════════════════════════════════════════════
+let _tvCurrentRegion='';
 
 function _tvColorTheme(){
   return document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
 }
 
-function _injectTVWidget(containerId,cfg){
-  const container=document.querySelector('#'+containerId+' .tradingview-widget-container__widget');
-  if(!container)return;
-  container.innerHTML='';
-  const s=document.createElement('script');
-  s.src='https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
-  s.async=true;
-  s.textContent=JSON.stringify(cfg); // textContent — innerHTML ignored on dynamic scripts
-  container.appendChild(s);
-}
-
-function initTVNSE(){
-  if(_tvNSEInited)return;
-  _tvNSEInited=true;
-  _injectTVWidget('tvMktHeatmap',{
-    dataSource:'India',
+// Region configs — each maps to a TradingView heatmap dataSource
+const TV_REGIONS={
+  india:{
+    dataSource:'BSE', // BSE = Bombay Stock Exchange — shows BSE + can switch to NSE
     grouping:'sector',
     blockSize:'market_cap_basic',
     blockColor:'change',
     locale:'en',
-    colorTheme:_tvColorTheme(),
     hasTopBar:true,
-    isDataSetEnabled:true,   // enables Nifty50/100/200/500 switcher inside widget
+    isDataSetEnabled:true,  // enables SENSEX/NIFTY50/BSE100/BSE500 picker
     isZoomEnabled:true,
     hasSymbolTooltip:true,
     isMonoSize:false,
     width:'100%',
     height:600
-  });
-}
-
-function initTVUSA(){
-  if(_tvUSAInited)return;
-  _tvUSAInited=true;
-  _injectTVWidget('tvUSAHeatmap',{
+  },
+  usa:{
     exchanges:['NYSE','NASDAQ','AMEX'],
     dataSource:'US',
     grouping:'sector',
     blockSize:'market_cap_basic',
     blockColor:'change',
     locale:'en',
-    colorTheme:_tvColorTheme(),
+    hasTopBar:true,
+    isDataSetEnabled:true,
+    isZoomEnabled:true,
+    hasSymbolTooltip:true,
+    isMonoSize:false,
+    width:'100%',
+    height:600
+  },
+  europe:{
+    dataSource:'EURONEXT',
+    grouping:'sector',
+    blockSize:'market_cap_basic',
+    blockColor:'change',
+    locale:'en',
+    hasTopBar:true,
+    isDataSetEnabled:true,
+    isZoomEnabled:true,
+    hasSymbolTooltip:true,
+    isMonoSize:false,
+    width:'100%',
+    height:600
+  },
+  asia:{
+    dataSource:'SGX',
+    grouping:'sector',
+    blockSize:'market_cap_basic',
+    blockColor:'change',
+    locale:'en',
+    hasTopBar:true,
+    isDataSetEnabled:true,
+    isZoomEnabled:true,
+    hasSymbolTooltip:true,
+    isMonoSize:false,
+    width:'100%',
+    height:600
+  },
+  crypto:{
+    dataSource:'Crypto',
+    grouping:'no_group',
+    blockSize:'market_cap_calc',
+    blockColor:'change',
+    locale:'en',
     hasTopBar:true,
     isDataSetEnabled:false,
     isZoomEnabled:true,
     hasSymbolTooltip:true,
     isMonoSize:false,
     width:'100%',
-    height:580
-  });
+    height:600
+  }
+};
+
+function initTVMarketHeatmap(){
+  if(!_tvCurrentRegion) switchTVRegion('india', document.getElementById('tvTab-india'));
 }
 
-function switchTVTab(tab,el){
-  document.querySelectorAll('#tvTabNSE,#tvTabUSA').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  if(tab==='nse'){
-    document.getElementById('tvNSEWrap').style.display='';
-    document.getElementById('tvUSAWrap').style.display='none';
-    initTVNSE();
-  }else{
-    document.getElementById('tvNSEWrap').style.display='none';
-    document.getElementById('tvUSAWrap').style.display='';
-    initTVUSA();
+function switchTVRegion(region, el){
+  if(!el) el=document.getElementById('tvTab-'+region);
+  document.querySelectorAll('[id^="tvTab-"]').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  _tvCurrentRegion=region;
+  const cfg=TV_REGIONS[region];
+  if(!cfg) return;
+  const wrap=document.getElementById('tvHeatmapInner');
+  if(!wrap) return;
+  // Clear previous widget
+  wrap.innerHTML='<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div></div>';
+  const container=wrap.querySelector('.tradingview-widget-container__widget');
+  const s=document.createElement('script');
+  s.src='https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
+  s.async=true;
+  s.textContent=JSON.stringify({...cfg, colorTheme:_tvColorTheme()});
+  container.appendChild(s);
+  // Re-render the index list for current group
+  renderIdxList(_currentIdxGroup||'all', document.getElementById('idxSearch')?.value||'');
+}
+
+// ── Global Index / Ticker Lookup ──
+const IDX_DATA=[
+  // INDIA — BSE/NSE Indices
+  {sym:'BSE:SENSEX',  name:'BSE SENSEX',         group:'india', flag:'🇮🇳', desc:'Bombay Stock Exchange Top 30'},
+  {sym:'BSE:BSE100',  name:'BSE 100',             group:'india', flag:'🇮🇳', desc:'BSE Top 100 companies'},
+  {sym:'BSE:BSE200',  name:'BSE 200',             group:'india', flag:'🇮🇳', desc:'BSE Top 200 companies'},
+  {sym:'BSE:BSE500',  name:'BSE 500',             group:'india', flag:'🇮🇳', desc:'BSE Top 500 companies'},
+  {sym:'BSE:SMLCAP',  name:'BSE SmallCap',        group:'india', flag:'🇮🇳', desc:'BSE Small Cap Index'},
+  {sym:'BSE:MIDCAP',  name:'BSE MidCap',          group:'india', flag:'🇮🇳', desc:'BSE Mid Cap Index'},
+  {sym:'NSE:NIFTY',   name:'NIFTY 50',            group:'india', flag:'🇮🇳', desc:'NSE Top 50 blue chips'},
+  {sym:'NSE:NIFTYJR', name:'NIFTY Next 50',       group:'india', flag:'🇮🇳', desc:'NSE Next 50 companies'},
+  {sym:'NSE:NIFTY100',name:'NIFTY 100',           group:'india', flag:'🇮🇳', desc:'NSE Top 100 companies'},
+  {sym:'NSE:NIFTY200',name:'NIFTY 200',           group:'india', flag:'🇮🇳', desc:'NSE Top 200 companies'},
+  {sym:'NSE:NIFTY500',name:'NIFTY 500',           group:'india', flag:'🇮🇳', desc:'NSE Top 500 companies'},
+  {sym:'NSE:NIFTYIT', name:'NIFTY IT',            group:'india', flag:'🇮🇳', desc:'NSE IT sector index'},
+  {sym:'NSE:BANKNIFTY',name:'BANK NIFTY',         group:'india', flag:'🇮🇳', desc:'NSE Banking index'},
+  {sym:'NSE:FINNIFTY', name:'FIN NIFTY',          group:'india', flag:'🇮🇳', desc:'NSE Financial Services'},
+  {sym:'NSE:MIDCPNIFTY',name:'NIFTY MidCap Select',group:'india',flag:'🇮🇳', desc:'NSE Midcap Select index'},
+  {sym:'NSE:NIFTYPHARMA',name:'NIFTY Pharma',     group:'india', flag:'🇮🇳', desc:'NSE Pharma sector'},
+  {sym:'NSE:NIFTYAUTO', name:'NIFTY Auto',        group:'india', flag:'🇮🇳', desc:'NSE Auto sector'},
+  {sym:'NSE:NIFTYFMCG', name:'NIFTY FMCG',        group:'india', flag:'🇮🇳', desc:'NSE FMCG sector'},
+  {sym:'NSE:NIFTYMETAL', name:'NIFTY Metal',      group:'india', flag:'🇮🇳', desc:'NSE Metals & Mining'},
+  {sym:'NSE:NIFTYREALTY',name:'NIFTY Realty',     group:'india', flag:'🇮🇳', desc:'NSE Real Estate'},
+  {sym:'NSE:NIFTYENERGY',name:'NIFTY Energy',     group:'india', flag:'🇮🇳', desc:'NSE Energy sector'},
+  {sym:'NSE:NIFTYINFRA', name:'NIFTY Infra',      group:'india', flag:'🇮🇳', desc:'NSE Infrastructure'},
+  {sym:'NSE:INDIAVIX',   name:'India VIX',        group:'india', flag:'🇮🇳', desc:'NSE Volatility Index'},
+  // USA
+  {sym:'SP:SPX',      name:'S&P 500',             group:'usa',   flag:'🇺🇸', desc:'Top 500 US companies'},
+  {sym:'NASDAQ:NDX',  name:'NASDAQ 100',           group:'usa',   flag:'🇺🇸', desc:'Top 100 NASDAQ stocks'},
+  {sym:'DJ:DJI',      name:'Dow Jones (DJIA)',     group:'usa',   flag:'🇺🇸', desc:'Dow Jones Industrial Avg'},
+  {sym:'RUSSELL:RUT', name:'Russell 2000',         group:'usa',   flag:'🇺🇸', desc:'US Small Cap index'},
+  {sym:'AMEX:IWM',    name:'Russell 2000 ETF',    group:'usa',   flag:'🇺🇸', desc:'iShares Russell 2000 ETF'},
+  {sym:'CBOE:VIX',    name:'VIX (Fear Index)',     group:'usa',   flag:'🇺🇸', desc:'CBOE Volatility Index'},
+  {sym:'TVC:DXY',     name:'US Dollar Index',      group:'usa',   flag:'🇺🇸', desc:'USD vs basket of currencies'},
+  // EUROPE
+  {sym:'EURONEXT:FCE1!',name:'CAC 40 (France)',   group:'europe',flag:'🇫🇷', desc:'Paris top 40 companies'},
+  {sym:'XETR:DAX',    name:'DAX 40 (Germany)',     group:'europe',flag:'🇩🇪', desc:'Frankfurt top 40'},
+  {sym:'SPREADEX:FTSE',name:'FTSE 100 (UK)',       group:'europe',flag:'🇬🇧', desc:'London top 100'},
+  {sym:'EURONEXT:AEX',name:'AEX (Netherlands)',    group:'europe',flag:'🇳🇱', desc:'Amsterdam top 25'},
+  {sym:'SIX:SMI',     name:'SMI (Switzerland)',    group:'europe',flag:'🇨🇭', desc:'Swiss Market Index top 20'},
+  {sym:'EURONEXT:IBEX35',name:'IBEX 35 (Spain)',  group:'europe',flag:'🇪🇸', desc:'Madrid top 35'},
+  {sym:'MIL:FTSEMIB', name:'FTSE MIB (Italy)',    group:'europe',flag:'🇮🇹', desc:'Milan top 40'},
+  // ASIA-PACIFIC
+  {sym:'TVC:NI225',   name:'Nikkei 225 (Japan)',  group:'asia',  flag:'🇯🇵', desc:'Tokyo top 225 blue chips'},
+  {sym:'TVC:TOPX',    name:'TOPIX (Japan)',        group:'asia',  flag:'🇯🇵', desc:'Tokyo all stocks index'},
+  {sym:'HSI:HSI',     name:'Hang Seng (HK)',       group:'asia',  flag:'🇭🇰', desc:'Hong Kong top 73'},
+  {sym:'SSE:000001',  name:'Shanghai Composite',   group:'asia',  flag:'🇨🇳', desc:'China A-share all stocks'},
+  {sym:'SZSE:399001', name:'Shenzhen Component',   group:'asia',  flag:'🇨🇳', desc:'Shenzhen top 500'},
+  {sym:'KRX:KOSPI',   name:'KOSPI (South Korea)',  group:'asia',  flag:'🇰🇷', desc:'Korean Stock Exchange'},
+  {sym:'ASX:XJO',     name:'ASX 200 (Australia)',  group:'asia',  flag:'🇦🇺', desc:'Australian top 200'},
+  {sym:'SGX:STI',     name:'STI (Singapore)',      group:'asia',  flag:'🇸🇬', desc:'Singapore top 30'},
+  {sym:'TADAWUL:TASI',name:'TASI (Saudi Arabia)',  group:'asia',  flag:'🇸🇦', desc:'Saudi All Share Index'},
+  {sym:'DFM:DFMGI',   name:'DFM (Dubai)',          group:'asia',  flag:'🇦🇪', desc:'Dubai Financial Market'},
+  // CRYPTO
+  {sym:'BINANCE:BTCUSDT',name:'Bitcoin (BTC)',     group:'crypto',flag:'₿',   desc:'Bitcoin vs US Dollar'},
+  {sym:'BINANCE:ETHUSDT',name:'Ethereum (ETH)',    group:'crypto',flag:'⟠',   desc:'Ethereum vs US Dollar'},
+  {sym:'BINANCE:BNBUSDT',name:'BNB',               group:'crypto',flag:'🟡',  desc:'Binance Coin vs USD'},
+  {sym:'BINANCE:SOLUSDT',name:'Solana (SOL)',      group:'crypto',flag:'◎',   desc:'Solana vs US Dollar'},
+  {sym:'COINBASE:XRPUSD',name:'XRP',               group:'crypto',flag:'✕',   desc:'Ripple vs US Dollar'},
+  {sym:'COINBASE:ADAUSD',name:'Cardano (ADA)',     group:'crypto',flag:'🔵',  desc:'Cardano vs US Dollar'},
+  {sym:'CRYPTOCAP:TOTAL',name:'Crypto Total MCap', group:'crypto',flag:'📊',  desc:'Total crypto market cap'},
+  // COMMODITIES
+  {sym:'TVC:GOLD',    name:'Gold (XAU/USD)',        group:'commodity',flag:'🟡',desc:'Spot gold price'},
+  {sym:'TVC:SILVER',  name:'Silver (XAG/USD)',      group:'commodity',flag:'⬜',desc:'Spot silver price'},
+  {sym:'TVC:USOIL',   name:'WTI Crude Oil',         group:'commodity',flag:'🛢️',desc:'US West Texas Intermediate'},
+  {sym:'TVC:UKOIL',   name:'Brent Crude Oil',       group:'commodity',flag:'🛢️',desc:'UK Brent Crude'},
+  {sym:'TVC:NATURALGAS',name:'Natural Gas',         group:'commodity',flag:'🔥',desc:'US Henry Hub Natural Gas'},
+  {sym:'COMEX:HG1!',  name:'Copper',                group:'commodity',flag:'🟤',desc:'Copper Futures CME'},
+  {sym:'CBOT:ZW1!',   name:'Wheat',                 group:'commodity',flag:'🌾',desc:'CBOT Wheat Futures'},
+  // FOREX
+  {sym:'FX:USDINR',   name:'USD/INR',               group:'fx',  flag:'💵', desc:'US Dollar vs Indian Rupee'},
+  {sym:'FX:EURINR',   name:'EUR/INR',               group:'fx',  flag:'💶', desc:'Euro vs Indian Rupee'},
+  {sym:'FX:GBPINR',   name:'GBP/INR',               group:'fx',  flag:'🇬🇧', desc:'British Pound vs Rupee'},
+  {sym:'FX:EURUSD',   name:'EUR/USD',               group:'fx',  flag:'💶', desc:'Euro vs US Dollar'},
+  {sym:'FX:GBPUSD',   name:'GBP/USD',               group:'fx',  flag:'🇬🇧', desc:'British Pound vs USD'},
+  {sym:'FX:USDJPY',   name:'USD/JPY',               group:'fx',  flag:'🇯🇵', desc:'US Dollar vs Japanese Yen'},
+  {sym:'FX:USDCNY',   name:'USD/CNY',               group:'fx',  flag:'🇨🇳', desc:'US Dollar vs Chinese Yuan'},
+  {sym:'FX:XAUUSD',   name:'Gold vs USD',           group:'fx',  flag:'🟡', desc:'Gold spot price in USD'},
+];
+
+let _currentIdxGroup='all';
+
+function setIdxGroup(group, el){
+  _currentIdxGroup=group;
+  document.querySelectorAll('#idxGroups .hm-filter').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderIdxList(group, document.getElementById('idxSearch')?.value||'');
+}
+
+function filterIdxList(q){
+  renderIdxList(_currentIdxGroup||'all', q);
+}
+
+function renderIdxList(group, query){
+  const el=document.getElementById('idxList');
+  if(!el) return;
+  const q=(query||'').toLowerCase().trim();
+  let items=IDX_DATA;
+  if(group&&group!=='all') items=items.filter(i=>i.group===group);
+  if(q) items=items.filter(i=>
+    i.name.toLowerCase().includes(q)||
+    i.sym.toLowerCase().includes(q)||
+    i.desc.toLowerCase().includes(q)
+  );
+  if(!items.length){
+    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:12px">No indices found</div>';
+    return;
   }
+  el.innerHTML=items.map(idx=>{
+    const tvUrl='https://www.tradingview.com/symbols/'+idx.sym.replace(':','/')+'/';
+    return `<div onclick="openLink('${tvUrl}')" style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--blue-bg)'" onmouseout="this.style.background='var(--surface2)'">
+      <span style="font-size:16px;flex-shrink:0">${idx.flag}</span>
+      <div style="min-width:0;flex:1">
+        <div style="font-size:11px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${idx.name}</div>
+        <div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:1px">${idx.sym}</div>
+      </div>
+      <span style="font-size:9px;color:var(--blue);flex-shrink:0">↗</span>
+    </div>`;
+  }).join('');
+}
+
+function openLink(url){
+  window.open(url,'_blank','noopener');
 }
 
 
@@ -3845,14 +4058,18 @@ function setAnMetric(m,el){
 }
 
 function renderAnalytics(){
-  // Populate RM filter on first call
+  // Show/hide RM filter based on role — RM users don't need the RM dropdown
+  const rmFilterWrap=document.getElementById('anRMFilterWrap');
+  if(rmFilterWrap) rmFilterWrap.style.display=currentUser?.role==='rm'?'none':'flex';
+
+  // Populate RM filter on first call (admin only)
   const rmSel=document.getElementById('anRMFilter');
-  if(rmSel&&rmSel.options.length<=1){
+  if(rmSel&&rmSel.options.length<=1&&currentUser?.role!=='rm'){
     const rms=[...new Set(PORTFOLIO.map(s=>s.subgroup||'DEFAULT'))].filter(Boolean).sort();
     rms.forEach(rm=>{const o=document.createElement('option');o.value=rm;o.textContent=rm==='DEFAULT'?'All':rm;rmSel.appendChild(o);});
   }
 
-  const rmFilter=rmSel?rmSel.value:'';
+  const rmFilter=(currentUser?.role!=='rm'&&rmSel)?rmSel.value:'';
   // Scope: RM user sees only their clients; admin sees all (filtered by RM dropdown)
   let scope=currentUser?.role==='rm'
     ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
