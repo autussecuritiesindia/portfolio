@@ -89,6 +89,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 .slide-out-left{animation:slideOutLeft 200ms ease-out forwards;pointer-events:none}
 .slide-out-right{animation:slideOutRight 200ms ease-out forwards;pointer-events:none}
 #tabPanels{position:relative;overflow:hidden}
+/* Concentration risk flag */
+.conc-flag{background:rgba(234,179,8,.08);border-left:3px solid #eab308}
+.conc-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.4);color:#ca8a04;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;font-family:var(--mono);margin-left:4px}
 @keyframes flashUp{0%{background:rgba(15,122,75,.18)}70%{background:rgba(15,122,75,.07)}100%{background:transparent}}
 @keyframes flashDn{0%{background:rgba(192,57,43,.18)}70%{background:rgba(192,57,43,.07)}100%{background:transparent}}
 .flash-up{animation:flashUp 1.6s cubic-bezier(0.4,0,0.2,1) forwards}
@@ -140,7 +143,8 @@ main{padding:12px 14px;max-width:1024px;margin:0 auto}
 
 /* ── KPI STRIP ── */
 .kpi-strip{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
-@media(min-width:500px){.kpi-strip{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:500px){.kpi-strip{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:700px){.kpi-strip{grid-template-columns:repeat(5,1fr)}}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;box-shadow:var(--shadow);border-top:3px solid transparent}
 .kpi:hover{box-shadow:var(--shadow2)}
 .kpi.c-blue{border-top-color:var(--blue)}.kpi.c-green{border-top-color:var(--green)}
@@ -321,6 +325,10 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .an-select:focus{border-color:var(--blue)}
 .an-metric-btns{display:flex;gap:5px}
 .an-metric-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:10px;font-weight:700;cursor:pointer;color:var(--text2);font-family:var(--mono)}
+.an-arr{font-size:9px;color:var(--muted);margin-left:2px;transition:color .15s}
+.top-clients-table thead th:hover .an-arr{color:var(--blue)}
+.top-clients-table thead th.an-active{color:var(--blue)!important}
+.top-clients-table thead th.an-active .an-arr{color:var(--blue)}
 .an-metric-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
 .top-clients-table{background:var(--surface);border:1px solid var(--border);border-radius:0 0 var(--r) var(--r);overflow:hidden;box-shadow:var(--shadow)}
 .top-clients-table table{width:100%;border-collapse:collapse}
@@ -457,7 +465,7 @@ td:first-child{text-align:left;font-family:var(--sans)}
   .t-title{font-size:13px}
   .btn{padding:5px 8px;font-size:10px}
   main{padding:8px 10px}
-  .kpi-strip{grid-template-columns:repeat(2,1fr);gap:8px}
+  .kpi-strip{grid-template-columns:repeat(2,1fr);gap:8px} /* 5th card wraps naturally */
   .kpi-val{font-size:15px}
   .tabs{gap:4px}
   .tab{padding:6px 10px;font-size:11px}
@@ -959,6 +967,7 @@ html{-webkit-text-size-adjust:100%}
     <div class="kpi c-green"><div class="kpi-lbl">Current Value</div><div class="kpi-val" id="k-curr">—</div><div class="kpi-sub" id="k-chg">—</div></div>
     <div class="kpi c-pos" id="kpi-pnl"><div class="kpi-lbl">Total P&amp;L</div><div class="kpi-val" id="k-pnl">—</div><div class="kpi-sub" id="k-pnlp">—</div></div>
     <div class="kpi c-gold"><div class="kpi-lbl">Holdings</div><div class="kpi-val" id="k-cnt">—</div><div class="kpi-sub" id="k-win">—</div></div>
+    <div class="kpi" id="kpi-cash" style="border-top-color:#6366f1"><div class="kpi-lbl">💧 Liquid Cash</div><div class="kpi-val" id="k-cash">—</div><div class="kpi-sub" id="k-cashpct" style="color:#6366f1">— of portfolio</div></div>
   </div>
 
   <!-- TABS -->
@@ -1189,23 +1198,28 @@ html{-webkit-text-size-adjust:100%}
           <button class="an-metric-btn" onclick="setAnMetric('pnl',this)">P&amp;L ₹</button>
           <button class="an-metric-btn" onclick="setAnMetric('pnlpct',this)">P&amp;L %</button>
           <button class="an-metric-btn" onclick="setAnMetric('stocks',this)">Stocks</button>
+          <button class="an-metric-btn" onclick="setAnMetric('cash',this)">💧 Cash</button>
         </div>
       </div>
       <div class="top-clients-table">
-        <table>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+        <table style="min-width:900px">
           <thead><tr>
-            <th style="text-align:center;width:40px">#</th>
-            <th style="text-align:left">Client</th>
-            <th style="text-align:left">RM</th>
-            <th>Invested</th>
-            <th>Curr. Value</th>
-            <th>P&amp;L ₹</th>
-            <th>P&amp;L %</th>
-            <th>Stocks</th>
-            <th>AUM Bar</th>
+            <th style="text-align:center;width:40px;cursor:default">#</th>
+            <th style="text-align:left;min-width:140px;cursor:pointer" onclick="setAnMetric('aum',this)" title="Sort by AUM">Client <span class="an-arr" id="aa-aum">↕</span></th>
+            <th style="text-align:left;min-width:70px;cursor:default">RM</th>
+            <th style="min-width:100px;cursor:pointer" onclick="setAnMetric('inv',this)" title="Sort by Invested">Invested <span class="an-arr" id="aa-inv">↕</span></th>
+            <th style="min-width:110px;cursor:pointer" onclick="setAnMetric('aum',this)" title="Sort by Current Value">Curr. Value <span class="an-arr" id="aa-curr">↕</span></th>
+            <th style="min-width:100px;cursor:pointer" onclick="setAnMetric('pnl',this)" title="Sort by P&amp;L ₹">P&amp;L ₹ <span class="an-arr" id="aa-pnl">↕</span></th>
+            <th style="min-width:80px;cursor:pointer" onclick="setAnMetric('pnlpct',this)" title="Sort by P&amp;L %">P&amp;L % <span class="an-arr" id="aa-pnlpct">↕</span></th>
+            <th style="min-width:60px;cursor:pointer" onclick="setAnMetric('stocks',this)" title="Sort by Stocks">Stocks <span class="an-arr" id="aa-stocks">↕</span></th>
+            <th style="min-width:110px;cursor:pointer" onclick="setAnMetric('cash',this)" title="Sort by Cash">💧 Cash <span class="an-arr" id="aa-cash">↕</span></th>
+            <th style="min-width:80px;cursor:pointer" onclick="setAnMetric('cashpct',this)" title="Sort by Cash %">Cash % <span class="an-arr" id="aa-cashpct">↕</span></th>
+            <th style="min-width:110px;cursor:default">AUM Bar</th>
           </tr></thead>
           <tbody id="tb-analytics"></tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>
@@ -2518,6 +2532,25 @@ function renderKPI(data){
   document.getElementById('kpi-pnl').className='kpi '+(pnl>=0?'c-pos':'c-neg');
   document.getElementById('k-cnt').textContent=data.length;
   document.getElementById('k-win').textContent=win+'▲  '+(data.length-win)+'▼';
+  // ── Liquid Cash KPI ──
+  const lb=(window._ledgerMap||{})[selectedClient]??null;
+  const cashEl=document.getElementById('k-cash');
+  const cashPctEl=document.getElementById('k-cashpct');
+  const cashCard=document.getElementById('kpi-cash');
+  if(lb!==null&&selectedClient){
+    const effTotal=curr+lb;
+    const cashPct=effTotal>0?(lb/effTotal)*100:0;
+    cashEl.textContent=(lb>=0?'+':'−')+'₹'+fmtC(Math.abs(lb));
+    cashEl.style.color=lb>=0?'#6366f1':'var(--red)';
+    cashPctEl.textContent=(cashPct>=0?cashPct.toFixed(1)+'% of portfolio':'Debit');
+    cashPctEl.style.color=lb>=0?'#6366f1':'var(--red)';
+    cashCard.style.opacity='1';
+  }else{
+    cashEl.textContent='—';
+    cashEl.style.color='';
+    cashPctEl.textContent=selectedClient?'No ledger data':'Select client';
+    cashCard.style.opacity='0.45';
+  }
 }
 
 function cmpCell(s){
@@ -2624,7 +2657,9 @@ function renderHoldings(data){
         const _allData=compute();
         const _portVal=_allData.reduce((a,s)=>a+s.curr,0);
         const _effTotal=_portVal+lb;
-        ledgerEl.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;background:${lBg};border:1px solid ${lBd};border-radius:var(--r);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden">
+        const _cashPct=_effTotal>0?(lb/_effTotal)*100:0;
+        const _cashColor=lb>=0?'#6366f1':'var(--red)';
+        ledgerEl.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;background:${lBg};border:1px solid ${lBd};border-radius:var(--r);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden">
           <div style="padding:10px 14px;border-right:1px solid ${lBd};display:flex;align-items:center;gap:10px">
             <span style="font-size:20px">${lIcon}</span>
             <div>
@@ -2636,10 +2671,15 @@ function renderHoldings(data){
             <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:2px">Equity Value</div>
             <div style="font-size:14px;font-weight:700;font-family:var(--mono);color:var(--text)">₹${fmtC(_portVal)}</div>
           </div>
-          <div style="padding:10px 14px">
+          <div style="padding:10px 14px;border-right:1px solid ${lBd}">
             <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:2px">Effective Total</div>
             <div style="font-size:14px;font-weight:800;font-family:var(--mono);color:var(--text)">₹${fmtC(_effTotal)}</div>
             <div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:1px">Equity + Ledger</div>
+          </div>
+          <div style="padding:10px 14px">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:2px">💧 Cash %</div>
+            <div style="font-size:18px;font-weight:800;font-family:var(--mono);color:${_cashColor}">${lb<0?'−':''}${Math.abs(_cashPct).toFixed(1)}%</div>
+            <div style="font-size:9px;font-family:var(--mono);margin-top:1px;color:${_cashColor}">${lb>=0?'Liquid':'Debit'}</div>
           </div>
         </div>`;
         ledgerEl.style.display='';
@@ -2677,10 +2717,12 @@ function renderHoldings(data){
   if(activeSectorFilter)sorted=sorted.filter(s=>s.sector===activeSectorFilter);
 
   // UPDATED: table always renders regardless of price status
+  const CONC_THRESH=15; // % above which a position is flagged
   document.getElementById('tb-hold').innerHTML=sorted.map(s=>{
     const wt=_wtDenom>0?(s.curr/_wtDenom)*100:0;
-    return `<tr class="h-row" data-q="${s.code.toLowerCase()} ${s.name.toLowerCase()} ${s.sector.toLowerCase()} ${(s.clientCode||'').toLowerCase()}">
-      <td><span class="sn">${s.code}</span></td>
+    const concFlag=wt>=CONC_THRESH;
+    return `<tr class="h-row${concFlag?' conc-flag':''}" data-q="${s.code.toLowerCase()} ${s.name.toLowerCase()} ${s.sector.toLowerCase()} ${(s.clientCode||'').toLowerCase()}">
+      <td><span class="sn">${s.code}</span>${concFlag?'<span class="conc-badge">⚠ HIGH</span>':''}</td>
       <td>${cmpPriceOnly(s)}</td>
       <td>${dayChangePill(s)}</td>
       <td><div class="bar-row"><span style="font-size:11px;font-weight:700;color:var(--text2)">${wt.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(wt*4,100)}%"></div></div></div></td>
@@ -4053,7 +4095,16 @@ let anMetric='aum';
 function setAnMetric(m,el){
   anMetric=m;
   document.querySelectorAll('.an-metric-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
+  if(el&&el.classList.contains('an-metric-btn'))el.classList.add('active');
+  // Highlight active TH header arrow
+  document.querySelectorAll('.top-clients-table thead th').forEach(th=>{
+    th.classList.remove('an-active');
+    const arr=th.querySelector('.an-arr');
+    if(arr)arr.textContent='↕';
+  });
+  const arrId='aa-'+m;
+  const activeArr=document.getElementById(arrId);
+  if(activeArr){activeArr.textContent='↓';activeArr.closest('th')?.classList.add('an-active');}
   renderAnalytics();
 }
 
@@ -4092,15 +4143,21 @@ function renderAnalytics(){
     ...c,
     pnl:c.curr-c.invest,
     pnlPct:c.invest>0?(c.curr-c.invest)/c.invest*100:0,
-    stockCount:c.stocks.size
+    stockCount:c.stocks.size,
+    cash:(window._ledgerMap||{})[c.clientCode]??null,
+  })).map(c=>({...c,
+    cashPct:c.cash!==null&&(c.curr+c.cash)>0?(c.cash/(c.curr+c.cash))*100:null
   }));
 
   // Sort by selected metric
   const sortFn={
     'aum':(a,b)=>b.curr-a.curr,
+    'inv':(a,b)=>b.invest-a.invest,
     'pnl':(a,b)=>b.pnl-a.pnl,
     'pnlpct':(a,b)=>b.pnlPct-a.pnlPct,
     'stocks':(a,b)=>b.stockCount-a.stockCount,
+    'cash':(a,b)=>(b.cash??-Infinity)-(a.cash??-Infinity),
+    'cashpct':(a,b)=>(b.cashPct??-Infinity)-(a.cashPct??-Infinity),
   };
   clients.sort(sortFn[anMetric]||sortFn.aum);
   // Show ALL clients — no top-10 limit
@@ -4130,6 +4187,8 @@ function renderAnalytics(){
       <td class="${pnlCls}">${pnlSign}₹${fmtC(Math.abs(c.pnl))}</td>
       <td><span class="pill ${clsPill(c.pnlPct)}">${fmtP(c.pnlPct)}</span></td>
       <td class="neu">${c.stockCount}</td>
+      <td style="font-weight:700;color:${c.cash===null?'var(--muted)':c.cash>=0?'#6366f1':'var(--red)'}">${c.cash===null?'—':(c.cash>=0?'+':'−')+'₹'+fmtC(Math.abs(c.cash??0))}</td>
+      <td>${c.cashPct===null?'<span style="color:var(--muted)">—</span>':`<span style="font-weight:700;font-family:var(--mono);font-size:11px;color:${c.cashPct>=0?'#6366f1':'var(--red)'}">${Math.abs(c.cashPct).toFixed(1)}%</span>`}</td>
       <td>
         <div class="client-aum-bar">
           <div class="aum-track"><div class="aum-fill" style="width:${aumPct.toFixed(1)}%"></div></div>
