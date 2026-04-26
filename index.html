@@ -845,7 +845,7 @@ html{-webkit-text-size-adjust:100%}
       </div>
       <!-- Hidden input captures physical keyboard / mobile numpad -->
       <input id="pinKeyboardInput" type="password" inputmode="numeric" maxlength="4"
-        style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none"
+        style="position:absolute;opacity:0;width:1px;height:1px"
         autocomplete="one-time-code">
       <input id="pinMobileInput" class="pin-mobile-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="one-time-code" oninput="syncMobilePin(this.value,'2')" onfocus="this.value=''">
       <div class="login-err" id="loginErr"></div>
@@ -868,7 +868,7 @@ html{-webkit-text-size-adjust:100%}
       </div>
       <!-- Hidden input captures physical keyboard / mobile numpad -->
       <input id="pinKeyboardInput3" type="password" inputmode="numeric" maxlength="4"
-        style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none"
+        style="position:absolute;opacity:0;width:1px;height:1px"
         autocomplete="one-time-code">
       <input id="pinMobileInput3" class="pin-mobile-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="one-time-code" oninput="syncMobilePin(this.value,'3')" onfocus="this.value=''">
       <div class="login-err" id="loginErr3"></div>
@@ -1371,13 +1371,19 @@ function proceedToPin(){
   pinUser=uid;
   pinBuffer='';
   document.getElementById('loginErr1').textContent='';
+  // Blur userIdInput FIRST — otherwise it retains focus and blocks keydown
+  document.getElementById('userIdInput').blur();
   document.getElementById('loginStep1').style.display='none';
   document.getElementById('loginStep2').style.display='';
   document.getElementById('pinLabel').textContent='Welcome, '+CREDS[uid].display+' — Enter PIN';
   document.getElementById('loginErr').textContent='';
   updatePinDots();
-  // Focus hidden input so physical keyboard works immediately
-  setTimeout(()=>{const ki=document.getElementById('pinKeyboardInput');if(ki){ki.value='';ki.focus();}},80);
+  // Focus hidden input — 150ms gives browser time to settle after display change
+  setTimeout(()=>{
+    const ki=document.getElementById('pinKeyboardInput');
+    if(ki){ki.value='';ki.focus();}
+    else{document.getElementById('loginStep2')?.focus();}
+  },150);
 }
 
 // Back to User ID step
@@ -1401,11 +1407,16 @@ function pinKey(k){
 
 function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updatePinDots();}
 
-// Global keydown listener — physical keyboard for PIN only
-// Only intercepts when login is visible AND no text input is focused
+// Global keydown listener — works immediately without clicking anything
+// Allows our hidden PIN inputs to pass through; blocks all other inputs
 document.addEventListener('keydown',function(e){
-  const tag=(document.activeElement||{}).tagName||'';
-  if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
+  const active=document.activeElement;
+  const activeId=(active||{}).id||'';
+  const tag=(active||{}).tagName||'';
+  // Our hidden PIN inputs ARE inputs — allow them through
+  const isPinInput=(activeId==='pinKeyboardInput'||activeId==='pinKeyboardInput3');
+  // Block if ANY other real input/textarea has focus (e.g. search, userId)
+  if(!isPinInput&&(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'))return;
   const loginScreen=document.getElementById('loginScreen');
   if(!loginScreen||loginScreen.style.display==='none')return;
   const step2=document.getElementById('loginStep2');
@@ -1486,7 +1497,10 @@ function showPinReturn(){
   const rn=document.getElementById('pinReturnName');
   if(rn)rn.textContent='👋 Welcome back, '+d;
   pinBuffer3='';updatePinDots3();
-  setTimeout(()=>{const ki=document.getElementById('pinKeyboardInput3');if(ki){ki.value='';ki.focus();}},80);
+  setTimeout(()=>{
+    const ki=document.getElementById('pinKeyboardInput3');
+    if(ki){ki.value='';ki.focus();}
+  },150);
 }
 function pinKey3(k){if(pinBuffer3.length>=4)return;pinBuffer3+=k;updatePinDots3();if(pinBuffer3.length===4)setTimeout(checkPin3,80);}
 function pinDel3(){pinBuffer3=pinBuffer3.slice(0,-1);updatePinDots3();}
