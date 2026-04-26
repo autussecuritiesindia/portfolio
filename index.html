@@ -137,10 +137,32 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 main{padding:12px 14px;max-width:1024px;margin:0 auto}
 
 /* ── LIVE STATUS BAR ── */
-.live-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:7px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;font-size:11px;box-shadow:var(--shadow);gap:8px;flex-wrap:wrap}
+.live-bar{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden;transition:all .3s}
+.live-bar-inner{padding:7px 12px;display:flex;align-items:center;justify-content:space-between;font-size:11px;gap:8px;flex-wrap:wrap;position:relative;z-index:1}
+/* Loading state — full takeover */
+.live-bar.lb-loading{border-color:rgba(59,130,246,.35);background:linear-gradient(135deg,#0d1117 0%,#0f1729 100%)}
+.live-bar.lb-live{border-color:rgba(38,166,154,.4)}
+.live-bar.lb-partial{border-color:rgba(217,119,6,.4)}
+/* Animated progress track behind everything */
+#lbProgressTrack{position:absolute;bottom:0;left:0;height:2px;width:100%;background:rgba(255,255,255,.04);z-index:0}
+#lbProgressFill{height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#26a69a);transition:width .5s ease;border-radius:0 2px 2px 0}
+/* Coloured block strip */
+#lbBlocks{position:absolute;top:0;left:0;right:0;height:3px;display:flex;gap:2px;z-index:2;padding:0 2px}
+.lbb{flex:1;border-radius:0 0 2px 2px;transition:background .35s,opacity .35s;opacity:.18;background:var(--border)}
+.lbb.done{opacity:1}
+.lbb.active{opacity:1;animation:lbbPulse .7s ease-in-out infinite alternate}
+@keyframes lbbPulse{from{filter:brightness(1)}to{filter:brightness(1.6)}}
+/* dot */
 .live-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s}
 .live-dot.green{background:var(--green);animation:pulse2 2s infinite}
 .live-dot.amber{background:#D97706;animation:pulse2 1s infinite}
+.live-dot.blue{background:#3b82f6;animation:lbDotSpin .6s linear infinite}
+@keyframes lbDotSpin{0%{transform:scale(1);opacity:1}50%{transform:scale(.55);opacity:.5}100%{transform:scale(1);opacity:1}}
+/* ticker row shown only during loading */
+#lbTicker{display:none;font-size:9px;font-family:var(--mono);color:#3b82f6;letter-spacing:.7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.live-bar.lb-loading #lbTicker{display:block}
+.lb-count-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:4px;padding:2px 7px;font-size:9px;font-family:var(--mono);font-weight:700;color:#60a5fa;transition:all .3s}
+.lb-count-chip.done{background:rgba(38,166,154,.12);border-color:rgba(38,166,154,.25);color:#26a69a}
 @keyframes pulse2{0%,100%{opacity:1}50%{opacity:.4}}
 .live-label{font-family:var(--mono);font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
 .live-meta{font-size:10px;color:var(--muted);font-family:var(--mono)}
@@ -381,12 +403,32 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .note.warn{background:var(--gold-bg);border-color:var(--gold-border);color:var(--gold)}
 .note.ok{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
 
-/* NEW: Loading overlay */
-#loadingOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:500;align-items:center;justify-content:center}
+/* ── Technical Chart Loading Overlay ── */
+#loadingOverlay{display:none;position:fixed;inset:0;background:#0b0e17;z-index:500;align-items:center;justify-content:center;flex-direction:column}
 #loadingOverlay.visible{display:flex}
-.spinner-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 32px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow2)}
-.spinner-icon{font-size:22px;animation:spin 1s linear infinite;display:inline-block}
-.spinner-txt{font-size:13px;font-weight:600;color:var(--text);font-family:var(--mono)}
+#lo-wrap{width:min(420px,90vw);display:flex;flex-direction:column;align-items:center;gap:0}
+#lo-chart{width:100%;height:120px;position:relative;overflow:hidden;margin-bottom:0}
+#lo-grid{position:absolute;inset:0}
+#lo-candles{position:absolute;inset:0;display:flex;align-items:flex-end;padding:0 4px;gap:3px}
+.lo-candle{display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0}
+.lo-wick{width:1.5px;background:currentColor;border-radius:1px}
+.lo-body{width:8px;border-radius:1.5px;min-height:3px}
+.lo-candle.up{color:#26a69a}.lo-candle.dn{color:#ef5350}
+.lo-body.up{background:#26a69a}.lo-body.dn{background:#ef5350}
+#lo-scan{position:absolute;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,rgba(59,130,246,.7),transparent);animation:loScan 1.8s ease-in-out infinite;pointer-events:none}
+@keyframes loScan{0%{left:-4px;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:calc(100% + 4px);opacity:0}}
+#lo-card{width:100%;background:#141722;border:1px solid #1e2535;border-top:2px solid #3b82f6;border-radius:0 0 12px 12px;padding:20px 24px 22px}
+#lo-brand{font-size:11px;font-weight:700;letter-spacing:3px;color:#3b82f6;font-family:monospace;margin-bottom:14px;text-align:center}
+#lo-msg{font-size:13px;font-weight:600;color:#e2e8f0;font-family:monospace;text-align:center;margin-bottom:14px;min-height:18px;letter-spacing:.3px}
+#lo-bar-track{width:100%;height:3px;background:#1e2535;border-radius:2px;overflow:hidden;margin-bottom:10px}
+#lo-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#26a69a);border-radius:2px;transition:width .4s ease}
+#lo-steps{display:flex;justify-content:space-between;padding:0 2px}
+.lo-step{font-size:9px;font-family:monospace;color:#4b5563;transition:color .3s;display:flex;align-items:center;gap:3px}
+.lo-step.done{color:#26a69a}.lo-step.active{color:#3b82f6}
+.lo-step::before{content:'○';font-size:8px}.lo-step.done::before{content:'●';color:#26a69a}.lo-step.active::before{content:'◉';color:#3b82f6}
+#lo-ticker{font-size:9px;font-family:monospace;color:#374151;text-align:center;margin-top:10px;letter-spacing:.5px;animation:loBlink .9s step-end infinite}
+@keyframes loBlink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes loFadeIn{from{opacity:0;transform:scaleY(.4)}to{opacity:1;transform:scaleY(1)}}
 
 /* ── TOAST ── */
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:var(--bg);border-radius:var(--r);padding:10px 18px;font-size:12px;font-family:var(--mono);z-index:999;opacity:0;white-space:nowrap;pointer-events:none;max-width:92vw;text-align:center;box-shadow:var(--shadow2);transition:opacity .3s,transform .3s}
@@ -957,14 +999,22 @@ html{-webkit-text-size-adjust:100%}
 
   <!-- LIVE STATUS -->
   <div class="live-bar" id="liveBar">
-    <div class="live-label">
-      <div class="live-dot" id="liveDot"></div>
-      <span id="liveLabel">Loading…</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <span class="live-meta" id="liveMeta"></span>
-      <span id="liveLastTs" style="font-size:10px;color:var(--muted);font-family:var(--mono)"></span>
-      <span id="liveCountdown" style="font-size:10px;font-family:var(--mono);color:var(--blue);font-weight:700;min-width:42px;text-align:right"></span>
+    <!-- Coloured block strip at top -->
+    <div id="lbBlocks"></div>
+    <!-- Progress track at bottom -->
+    <div id="lbProgressTrack"><div id="lbProgressFill"></div></div>
+    <div class="live-bar-inner">
+      <div class="live-label">
+        <div class="live-dot" id="liveDot"></div>
+        <span id="liveLabel">Loading…</span>
+        <span id="lbTicker">INITIALISING ···</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span id="lbCountChip" class="lb-count-chip" style="display:none"></span>
+        <span class="live-meta" id="liveMeta"></span>
+        <span id="liveLastTs" style="font-size:10px;color:var(--muted);font-family:var(--mono)"></span>
+        <span id="liveCountdown" style="font-size:10px;font-family:var(--mono);color:var(--blue);font-weight:700;min-width:42px;text-align:right"></span>
+      </div>
     </div>
   </div>
 
@@ -1342,9 +1392,25 @@ html{-webkit-text-size-adjust:100%}
 
 <!-- NEW: Loading spinner overlay -->
 <div id="loadingOverlay">
-  <div class="spinner-box">
-    <span class="spinner-icon">⏳</span>
-    <span class="spinner-txt" id="loadingTxt">Loading data…</span>
+  <div id="lo-wrap">
+    <!-- Mini candlestick chart built by JS -->
+    <div id="lo-chart">
+      <canvas id="lo-grid"></canvas>
+      <div id="lo-candles"></div>
+      <div id="lo-scan"></div>
+    </div>
+    <div id="lo-card">
+      <div id="lo-brand">AUTUS · PORTFOLIO ENGINE</div>
+      <div id="lo-msg" id="loadingTxt">Initialising…</div>
+      <div id="lo-bar-track"><div id="lo-bar-fill"></div></div>
+      <div id="lo-steps">
+        <span class="lo-step" id="los-conn">Connect</span>
+        <span class="lo-step" id="los-sheet">Sheet</span>
+        <span class="lo-step" id="los-price">Prices</span>
+        <span class="lo-step" id="los-render">Render</span>
+      </div>
+      <div id="lo-ticker">INITIALISING MARKET DATA STREAM ···</div>
+    </div>
   </div>
 </div>
 
@@ -2467,6 +2533,7 @@ async function refreshPrices(){
     processYahooQuotes(quotes);
   }
   setLiveStatus('loading',liveCount,codes.length);
+  _lbChip(liveCount+' / '+codes.length);
 
   // Cache live prices
   try{localStorage.setItem(LS_PRICES,JSON.stringify(livePrices));}catch(e){}
@@ -2923,30 +2990,112 @@ function clearSectorFilter(){
 }
 
 
-// FIXED: setLiveStatus with correct labels
+// ── Rich animated live status bar ──
+let _lbTickerIv=null;
+const _lbTickerMsgs=['FETCHING MARKET DATA ···','LOADING LIVE PRICES ···','SYNCING NSE FEED ···','UPDATING POSITIONS ···'];
+let _lbTickerIdx=0;
+const _lbColors=['#3b82f6','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444','#6366f1','#26a69a','#e879f9','#f97316'];
+
+function _lbInitBlocks(total){
+  const wrap=document.getElementById('lbBlocks');
+  if(!wrap)return;
+  wrap.innerHTML='';
+  const n=Math.min(total||20,40);
+  // Assign colors in groups matching sector palette
+  const palette=['#3b82f6','#6366f1','#8b5cf6','#06b6d4','#10b981','#26a69a','#f59e0b','#f97316','#ef4444','#e879f9'];
+  for(let i=0;i<n;i++){
+    const b=document.createElement('div');
+    b.className='lbb';
+    b.style.background=palette[i%palette.length];
+    wrap.appendChild(b);
+  }
+}
+
+function _lbUpdateBlocks(done,total){
+  const blocks=document.querySelectorAll('#lbBlocks .lbb');
+  if(!blocks.length)return;
+  const n=blocks.length;
+  const doneCount=total>0?Math.round((done/total)*n):0;
+  blocks.forEach((b,i)=>{
+    if(i<doneCount){b.classList.add('done');b.classList.remove('active');}
+    else if(i===doneCount){b.classList.add('active');b.classList.remove('done');}
+    else{b.classList.remove('done','active');}
+  });
+}
+
+function _lbProgress(pct){
+  const f=document.getElementById('lbProgressFill');
+  if(f)f.style.width=pct+'%';
+}
+
+function _lbChip(text,done=false){
+  const c=document.getElementById('lbCountChip');
+  if(!c)return;
+  if(text){c.style.display='';c.textContent=text;c.className='lb-count-chip'+(done?' done':'');}
+  else{c.style.display='none';}
+}
+
 function setLiveStatus(state,count,total){
+  const bar=document.getElementById('liveBar');
   const dot=document.getElementById('liveDot');
   const lbl=document.getElementById('liveLabel');
   const meta=document.getElementById('liveMeta');
+  if(!dot||!lbl||!meta)return;
+
+  clearInterval(_lbTickerIv);
+
   if(state==='loading'){
-    dot.className='live-dot amber';lbl.textContent='Fetching live prices…';meta.textContent=(count||0)+'/'+(total||'?')+' updated';
+    bar?.classList.add('lb-loading');bar?.classList.remove('lb-live','lb-partial');
+    dot.className='live-dot blue';
+    lbl.textContent='Fetching prices…';
+    meta.textContent='';
+    _lbInitBlocks(total||20);
+    _lbProgress(5);
+    _lbChip(`0 / ${total||'?'}`);
+    // Spin ticker
+    const tick=document.getElementById('lbTicker');
+    _lbTickerIv=setInterval(()=>{
+      _lbTickerIdx=(_lbTickerIdx+1)%_lbTickerMsgs.length;
+      if(tick)tick.textContent=_lbTickerMsgs[_lbTickerIdx];
+    },700);
+    if(tick)tick.textContent=_lbTickerMsgs[0];
+    // Animate blocks incrementally
+    const c=count||0,t=total||20;
+    _lbUpdateBlocks(c,t);
+    _lbProgress(5+Math.round((c/t)*85));
+
   }else if(state==='live'){
+    bar?.classList.remove('lb-loading','lb-partial');bar?.classList.add('lb-live');
     dot.className='live-dot green';
-    lbl.textContent='Live Data · '+count+' stocks updated';  // FIXED label
-    meta.textContent='Auto-refresh every 5 min · Last: '+new Date().toLocaleTimeString('en-IN');
+    lbl.textContent='Live  ·  '+count+' stocks';
+    meta.textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    _lbUpdateBlocks(total,total);_lbProgress(100);
+    _lbChip(count+' live',true);
+    setTimeout(()=>{_lbProgress(0);bar?.classList.remove('lb-live');},3000);
+
   }else if(state==='partial'){
+    bar?.classList.remove('lb-loading','lb-live');bar?.classList.add('lb-partial');
     dot.className='live-dot amber';
-    lbl.textContent='Partial Live Data · '+count+'/'+(total||'?');  // FIXED label
-    meta.textContent='Last: '+new Date().toLocaleTimeString('en-IN');
+    lbl.textContent='Partial  ·  '+count+'/'+(total||'?')+' live';
+    meta.textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    _lbUpdateBlocks(count,total);_lbProgress(Math.round((count/(total||1))*100));
+    _lbChip(count+'/'+(total||'?')+' live');
+    setTimeout(()=>{_lbProgress(0);bar?.classList.remove('lb-partial');},3000);
+
   }else if(state==='cached'){
+    bar?.classList.remove('lb-loading','lb-live','lb-partial');
     dot.className='live-dot';
     const mktOpen=isMarketOpen();
-    lbl.textContent=mktOpen?'Using Sheet Prices':'Market Closed · Last Closing Prices';
-    meta.textContent=mktOpen?'Live fetch failed · Tap ↻ to retry':'NSE closed · Showing previous session close';
+    lbl.textContent=mktOpen?'Sheet Prices':'Market Closed';
+    meta.textContent=mktOpen?'Tap ↻ to fetch live':'Previous session close';
+    _lbUpdateBlocks(0,0);_lbProgress(0);_lbChip('');
+
   }else{
+    bar?.classList.remove('lb-loading','lb-live','lb-partial');
     dot.className='live-dot';
-    lbl.textContent=isMarketOpen()?'Sheet prices — tap ↻ Live':'Market closed · Sheet closing prices';
-    meta.textContent='Tap ↻ Live to fetch real-time data';
+    lbl.textContent=isMarketOpen()?'Ready':'Market Closed';
+    meta.textContent='';
+    _lbUpdateBlocks(0,0);_lbProgress(0);_lbChip('');
   }
 }
 
@@ -3081,8 +3230,117 @@ let _tt;
 function toast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+type;clearTimeout(_tt);_tt=setTimeout(()=>el.className='',3500);}
 
 // NEW: Loading overlay
-function showLoading(msg='Loading…'){document.getElementById('loadingTxt').textContent=msg;document.getElementById('loadingOverlay').classList.add('visible');}
-function hideLoading(){document.getElementById('loadingOverlay').classList.remove('visible');}
+// ── Technical Chart Loading Interface ──
+let _loInterval=null;
+let _loPhase=0;
+const _loTickers=['LOADING PORTFOLIO DATA ···','SYNCING MARKET FEED ···','CALCULATING POSITIONS ···','BUILDING CHART ENGINE ···','FETCHING LIVE PRICES ···','COMPILING ANALYTICS ···'];
+
+function _loDrawGrid(){
+  const canvas=document.getElementById('lo-grid');
+  if(!canvas)return;
+  const W=canvas.parentElement.offsetWidth||360,H=120;
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(30,37,53,0.9)';ctx.lineWidth=1;
+  // Horizontal grid lines
+  for(let y=0;y<=H;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // Vertical grid lines
+  for(let x=0;x<=W;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  // Subtle price line
+  ctx.strokeStyle='rgba(59,130,246,0.15)';ctx.lineWidth=1.5;ctx.setLineDash([4,6]);
+  ctx.beginPath();ctx.moveTo(0,60);ctx.lineTo(W,60);ctx.stroke();ctx.setLineDash([]);
+}
+
+function _loDrawCandles(){
+  const wrap=document.getElementById('lo-candles');
+  if(!wrap)return;
+  wrap.innerHTML='';
+  const W=wrap.offsetWidth||360;
+  const n=Math.floor(W/12);
+  let price=100;
+  const candles=[];
+  for(let i=0;i<n;i++){
+    const change=(Math.random()-.47)*4;
+    const o=price,c=price+change;
+    const h2=Math.max(o,c)+Math.random()*2;
+    const l2=Math.min(o,c)-Math.random()*2;
+    candles.push({o,c,h:h2,l:l2});
+    price=c;
+  }
+  const allH=candles.map(c=>c.h),allL=candles.map(c=>c.l);
+  const maxP=Math.max(...allH),minP=Math.min(...allL),range=maxP-minP||1;
+  const H=110;
+  candles.forEach((c,i)=>{
+    const up=c.c>=c.o;
+    const bodyH=Math.max(2,Math.abs(c.c-c.o)/range*H);
+    const bodyBot=(maxP-Math.max(c.o,c.c))/range*H;
+    const wickTop=(maxP-c.h)/range*H;
+    const wickH=(c.h-c.l)/range*H;
+    const div=document.createElement('div');
+    div.className='lo-candle '+(up?'up':'dn');
+    div.style.cssText=`height:${H}px;justify-content:flex-start;padding-top:${wickTop}px;animation:loFadeIn .3s ease ${i*18}ms both`;
+    div.innerHTML=`<div class="lo-wick" style="height:${wickH}px"></div>`;
+    // We overlay body via absolute within the candle — simpler: just use flex
+    div.innerHTML=`<div class="lo-wick" style="height:${(c.h-Math.max(c.o,c.c))/range*H}px"></div>`+
+      `<div class="lo-body ${up?'up':'dn'}" style="height:${bodyH}px"></div>`+
+      `<div class="lo-wick" style="height:${(Math.min(c.o,c.c)-c.l)/range*H}px"></div>`;
+    wrap.appendChild(div);
+  });
+}
+
+function _loSetStep(step){
+  ['conn','sheet','price','render'].forEach((s,i)=>{
+    const el=document.getElementById('los-'+s);
+    if(!el)return;
+    const idx=['conn','sheet','price','render'].indexOf(step);
+    if(i<idx)el.className='lo-step done';
+    else if(i===idx)el.className='lo-step active';
+    else el.className='lo-step';
+  });
+}
+
+function _loSetProgress(pct){
+  const fill=document.getElementById('lo-bar-fill');
+  if(fill)fill.style.width=pct+'%';
+}
+
+function _loSetMsg(msg){
+  const el=document.querySelector('#lo-msg, #loadingTxt');
+  if(el)el.textContent=msg;
+}
+
+function _loTickerSpin(){
+  const el=document.getElementById('lo-ticker');
+  if(!el)return;
+  _loPhase=(_loPhase+1)%_loTickers.length;
+  el.textContent=_loTickers[_loPhase];
+}
+
+function showLoading(msg='Loading…'){
+  const ov=document.getElementById('loadingOverlay');
+  if(!ov)return;
+  ov.classList.add('visible');
+  // Draw chart immediately
+  setTimeout(()=>{_loDrawGrid();_loDrawCandles();},30);
+  _loSetMsg(msg);_loSetStep('conn');_loSetProgress(8);
+  clearInterval(_loInterval);
+  _loInterval=setInterval(_loTickerSpin,900);
+  // Progress phases
+  setTimeout(()=>{_loSetStep('sheet');_loSetProgress(25);_loSetMsg('Connecting to Google Sheet…');},300);
+  setTimeout(()=>{_loSetProgress(55);_loSetMsg('Parsing portfolio data…');},900);
+  setTimeout(()=>{_loSetStep('price');_loSetProgress(72);_loSetMsg('Fetching live prices…');},1600);
+  setTimeout(()=>{_loSetStep('render');_loSetProgress(90);_loSetMsg('Building dashboard…');},2400);
+}
+
+function hideLoading(){
+  const ov=document.getElementById('loadingOverlay');
+  if(!ov)return;
+  _loSetProgress(100);
+  _loSetMsg('Ready');
+  clearInterval(_loInterval);
+  setTimeout(()=>{ov.classList.remove('visible');_loSetProgress(0);},320);
+}
 
 // Live price fetch indicator — animated bar under topbar
 function showPriceFetchIndicator(active){
