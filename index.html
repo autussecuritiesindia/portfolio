@@ -89,22 +89,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 .slide-out-left{animation:slideOutLeft 200ms ease-out forwards;pointer-events:none}
 .slide-out-right{animation:slideOutRight 200ms ease-out forwards;pointer-events:none}
 #tabPanels{position:relative;overflow:hidden}
-.lb-credit{color:#6366f1;font-weight:700}
-.lb-debit{color:var(--red);font-weight:700}
-.lb-pill{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;font-family:var(--mono)}
-.lb-pill.credit{background:rgba(99,102,241,.12);color:#6366f1;border:1px solid rgba(99,102,241,.3)}
-.lb-pill.debit{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
-#t-lb table{width:100%;border-collapse:collapse}
-#t-lb thead th{background:var(--surface2);padding:8px 12px;font-size:9px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--border);text-align:right;user-select:none;cursor:pointer}
-#t-lb thead th:first-child,#t-lb thead th:nth-child(2),#t-lb thead th:nth-child(3),#t-lb thead th:last-child{text-align:left}
-#t-lb thead th:hover{background:var(--surface3);color:var(--text)}
-#t-lb thead th.an-active{color:var(--blue)}
-#t-lb tbody tr{border-top:1px solid var(--border)}
-#t-lb tbody tr:hover{background:var(--surface2)}
-#t-lb td{padding:9px 12px;font-size:12px;font-family:var(--mono);color:var(--text);text-align:right}
-#t-lb td:first-child,#t-lb td:nth-child(2),#t-lb td:nth-child(3),#t-lb td:last-child{text-align:left;font-family:var(--sans)}
 .lb-rm-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;color:var(--text2);font-family:var(--mono)}
 .lb-rm-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.export-btn{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text);font-family:var(--sans);transition:all .15s}
+.export-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff}
+.export-btn-pdf:hover{background:#e53e3e;border-color:#e53e3e;color:#fff}
 .conc-flag{background:rgba(234,179,8,.08);border-left:3px solid #eab308}
 .conc-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.4);color:#ca8a04;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;font-family:var(--mono);margin-left:4px}
 @keyframes flashUp{0%{background:rgba(15,122,75,.18)}70%{background:rgba(15,122,75,.07)}100%{background:transparent}}
@@ -341,7 +330,7 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .an-metric-btns{display:flex;gap:5px}
 .an-metric-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:10px;font-weight:700;cursor:pointer;color:var(--text2);font-family:var(--mono)}
 .an-metric-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
-.an-arr{font-size:9px;color:var(--muted);margin-left:2px;transition:color .15s}
+.an-arr{font-size:9px;color:var(--muted);margin-left:2px}
 .top-clients-table thead th.an-active{color:var(--blue)!important}
 .top-clients-table thead th.an-active .an-arr{color:var(--blue)}
 .top-clients-table thead th:hover .an-arr{color:var(--blue)}
@@ -798,6 +787,9 @@ html{-webkit-text-size-adjust:100%}
 .top-clients-table td{padding:9px 12px;text-align:right;font-size:12px;font-family:var(--mono);color:var(--text)}
 .top-clients-table td:first-child,.top-clients-table td:nth-child(2),.top-clients-table td:nth-child(3){text-align:left}
 </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -854,13 +846,8 @@ html{-webkit-text-size-adjust:100%}
       <!-- Hidden input captures physical keyboard / mobile numpad -->
       <input id="pinKeyboardInput" type="password" inputmode="numeric" maxlength="4"
         style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none"
-        autocomplete="one-time-code"
-        oninput="syncPin2(this)"
-        onkeydown="if(event.key==='Backspace'&&this.value.length===0){pinBuffer=pinBuffer.slice(0,-1);updatePinDots();}">
-      <input id="pinMobileInput" class="pin-mobile-input" type="password"
-        inputmode="numeric" maxlength="4" placeholder="••••"
-        autocomplete="one-time-code"
-        oninput="syncMobilePin(this.value,'2')" onfocus="this.value=''">
+        autocomplete="one-time-code">
+      <input id="pinMobileInput" class="pin-mobile-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="one-time-code" oninput="syncMobilePin(this.value,'2')" onfocus="this.value=''">
       <div class="login-err" id="loginErr"></div>
       <div class="pin-pad">
         <div class="pin-key" onclick="pinKey('1')">1</div><div class="pin-key" onclick="pinKey('2')">2</div><div class="pin-key" onclick="pinKey('3')">3</div>
@@ -882,13 +869,8 @@ html{-webkit-text-size-adjust:100%}
       <!-- Hidden input captures physical keyboard / mobile numpad -->
       <input id="pinKeyboardInput3" type="password" inputmode="numeric" maxlength="4"
         style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none"
-        autocomplete="one-time-code"
-        oninput="syncPin3(this)"
-        onkeydown="if(event.key==='Backspace'&&this.value.length===0){pinBuffer3=pinBuffer3.slice(0,-1);updatePinDots3();}">
-      <input id="pinMobileInput3" class="pin-mobile-input" type="password"
-        inputmode="numeric" maxlength="4" placeholder="••••"
-        autocomplete="one-time-code"
-        oninput="syncMobilePin(this.value,'3')" onfocus="this.value=''">
+        autocomplete="one-time-code">
+      <input id="pinMobileInput3" class="pin-mobile-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="one-time-code" oninput="syncMobilePin(this.value,'3')" onfocus="this.value=''">
       <div class="login-err" id="loginErr3"></div>
       <div class="pin-pad">
         <div class="pin-key" onclick="pinKey3('1')">1</div><div class="pin-key" onclick="pinKey3('2')">2</div><div class="pin-key" onclick="pinKey3('3')">3</div>
@@ -1143,54 +1125,25 @@ html{-webkit-text-size-adjust:100%}
   <!-- ═══ LEDGER BALANCE ═══ -->
   <div id="t-lb" style="display:none">
     <div class="sec">
-      <div class="sec-hdr" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <span class="sec-title">🏦 Ledger Balance</span>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div class="sec-hdr" style="flex-direction:column;align-items:flex-start;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%;flex-wrap:wrap;gap:8px">
+          <span class="sec-title">🏦 Ledger Balance</span>
           <span class="sec-badge" id="lbBadge">—</span>
-          <select class="ctrl-select" id="lbRMFilter" style="display:none" onchange="renderLedger()">
-            <option value="">All RMs</option>
-          </select>
-          <input class="search-box" id="lbSearch" placeholder="Search client…" oninput="renderLedger()" style="width:160px">
         </div>
+        <div id="lbRMBtns" style="display:none;flex-wrap:wrap;gap:6px;align-items:center"></div>
+        <input class="search-box" id="lbSearch" placeholder="🔍 Search client…" oninput="renderLedger()" style="width:100%;max-width:280px">
       </div>
       <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-        <table style="width:100%;min-width:520px;border-collapse:collapse" id="lbTable">
+        <table style="width:100%;min-width:680px;border-collapse:collapse">
           <thead>
-            <tr id="lbHead" style="background:var(--surface2);font-size:9px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:700">
-              <th style="padding:8px 12px;text-align:left;cursor:pointer;white-space:nowrap" onclick="lbSort('client')">Client <span id="lba-client">↕</span></th>
-              <th style="padding:8px 12px;text-align:left;cursor:pointer;white-space:nowrap" id="lbRMCol" onclick="lbSort('rm')">RM <span id="lba-rm">↕</span></th>
-              <th style="padding:8px 12px;text-align:right;cursor:pointer;white-space:nowrap" onclick="lbSort('balance')">Balance ₹ <span id="lba-balance">↓</span></th>
-              <th style="padding:8px 12px;text-align:right;cursor:pointer;white-space:nowrap" onclick="lbSort('cashpct')">Cash % <span id="lba-cashpct">↕</span></th>
-              <th style="padding:8px 12px;text-align:right;cursor:pointer;white-space:nowrap" onclick="lbSort('equity')">Equity ₹ <span id="lba-equity">↕</span></th>
-              <th style="padding:8px 12px;text-align:center;white-space:nowrap">Status</th>
-            </tr>
-          </thead>
-          <tbody id="tb-lb"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ LEDGER BALANCE ═══ -->
-  <div id="t-lb" style="display:none">
-    <div class="sec">
-      <div class="sec-hdr" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <span class="sec-title">💳 Ledger Balance</span>
-        <span class="sec-badge" id="lbBadge">—</span>
-        <div style="display:flex;gap:6px;flex-wrap:wrap" id="lbRmFilter"></div>
-      </div>
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-        <table style="min-width:640px" id="lbTable">
-          <thead>
-            <tr>
-              <th style="text-align:left;cursor:pointer;min-width:50px" onclick="sortLb('rank')"># <span class="an-arr" id="lba-rank">↕</span></th>
-              <th style="text-align:left;cursor:pointer;min-width:140px" onclick="sortLb('name')">Client <span class="an-arr" id="lba-name">↕</span></th>
-              <th style="text-align:left;cursor:pointer;min-width:70px" onclick="sortLb('rm')">RM <span class="an-arr" id="lba-rm">↕</span></th>
-              <th style="cursor:pointer;min-width:110px" onclick="sortLb('balance')">Ledger Balance <span class="an-arr" id="lba-balance">↓</span></th>
-              <th style="cursor:pointer;min-width:100px" onclick="sortLb('equity')">Equity Value <span class="an-arr" id="lba-equity">↕</span></th>
-              <th style="cursor:pointer;min-width:90px" onclick="sortLb('cashpct')">Cash % <span class="an-arr" id="lba-cashpct">↕</span></th>
-              <th style="cursor:pointer;min-width:100px" onclick="sortLb('total')">Effective Total <span class="an-arr" id="lba-total">↕</span></th>
-              <th style="text-align:left;cursor:pointer;min-width:70px" onclick="sortLb('type')">Type <span class="an-arr" id="lba-type">↕</span></th>
+            <tr style="background:var(--surface2);font-size:9px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:700">
+              <th style="padding:8px 12px;text-align:left;cursor:pointer;min-width:160px" onclick="lbSort('client')">Client <span id="lba-client">↕</span></th>
+              <th style="padding:8px 12px;text-align:left;cursor:pointer;min-width:70px" id="lbRMCol" onclick="lbSort('rm')">RM <span id="lba-rm">↕</span></th>
+              <th style="padding:8px 12px;text-align:right;cursor:pointer;min-width:130px" onclick="lbSort('balance')">Ledger Balance <span id="lba-balance">↓</span></th>
+              <th style="padding:8px 12px;text-align:right;cursor:pointer;min-width:100px" onclick="lbSort('equity')">Equity ₹ <span id="lba-equity">↕</span></th>
+              <th style="padding:8px 12px;text-align:right;cursor:pointer;min-width:110px" onclick="lbSort('total')">Effective Total <span id="lba-total">↕</span></th>
+              <th style="padding:8px 12px;text-align:right;cursor:pointer;min-width:80px" onclick="lbSort('cashpct')">Cash % <span id="lba-cashpct">↕</span></th>
+              <th style="padding:8px 12px;text-align:center;min-width:70px">Status</th>
             </tr>
           </thead>
           <tbody id="tb-lb"></tbody>
@@ -1206,6 +1159,10 @@ html{-webkit-text-size-adjust:100%}
       <div class="sector-drill-hdr">
         <span id="sectorDrillTitle">—</span>
         <button onclick="clearSectorFilter()" title="Close">✕ Close</button>
+      </div>
+      <div id="holdExportBtns" style="display:none;justify-content:flex-end;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+        <button class="export-btn" onclick="exportClientExcel()">📊 Excel</button>
+        <button class="export-btn export-btn-pdf" onclick="exportClientPDF()">📄 PDF</button>
       </div>
       <div class="t-wrap scroll">
         <table>
@@ -1292,15 +1249,14 @@ html{-webkit-text-size-adjust:100%}
           <button class="an-metric-btn" onclick="setAnMetric('pnlpct',this)">P&amp;L %</button>
           <button class="an-metric-btn" onclick="setAnMetric('stocks',this)">Stocks</button>
           <button class="an-metric-btn" onclick="setAnMetric('cash',this)">💧 Cash</button>
-          <button class="an-metric-btn" onclick="setAnMetric('cashpct',this)">Cash %</button>
         </div>
       </div>
       <div class="top-clients-table">
         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-        <table style="min-width:900px">
+        <table style="min-width:860px">
           <thead><tr>
-            <th style="text-align:center;width:40px;cursor:default">#</th>
-            <th style="text-align:left;min-width:140px;cursor:pointer" onclick="setAnMetric('aum',this)" title="Sort by AUM">Client <span class="an-arr" id="aa-aum">↓</span></th>
+            <th style="text-align:center;width:36px;cursor:default">#</th>
+            <th style="text-align:left;min-width:140px;cursor:pointer" onclick="setAnMetric('aum',this)">Client <span class="an-arr" id="aa-aum">↓</span></th>
             <th style="text-align:left;min-width:60px;cursor:default">RM</th>
             <th style="min-width:100px;cursor:pointer" onclick="setAnMetric('inv',this)">Invested <span class="an-arr" id="aa-inv">↕</span></th>
             <th style="min-width:110px;cursor:pointer" onclick="setAnMetric('aum',this)">Curr. Value <span class="an-arr" id="aa-curr">↕</span></th>
@@ -1308,7 +1264,6 @@ html{-webkit-text-size-adjust:100%}
             <th style="min-width:80px;cursor:pointer" onclick="setAnMetric('pnlpct',this)">P&amp;L % <span class="an-arr" id="aa-pnlpct">↕</span></th>
             <th style="min-width:60px;cursor:pointer" onclick="setAnMetric('stocks',this)">Stocks <span class="an-arr" id="aa-stocks">↕</span></th>
             <th style="min-width:110px;cursor:pointer" onclick="setAnMetric('cash',this)">💧 Cash <span class="an-arr" id="aa-cash">↕</span></th>
-            <th style="min-width:80px;cursor:pointer" onclick="setAnMetric('cashpct',this)">Cash % <span class="an-arr" id="aa-cashpct">↕</span></th>
             <th style="min-width:110px;cursor:default">AUM Bar</th>
           </tr></thead>
           <tbody id="tb-analytics"></tbody>
@@ -1421,13 +1376,8 @@ function proceedToPin(){
   document.getElementById('pinLabel').textContent='Welcome, '+CREDS[uid].display+' — Enter PIN';
   document.getElementById('loginErr').textContent='';
   updatePinDots();
-  // On desktop: hide pin-pad (keyboard is enough). On mobile: keep pin-pad visible
-  const pad2=document.querySelector('#loginStep2 .pin-pad');
-  if(pad2)pad2.style.display=_isTouchDevice?'':'none';
-  setTimeout(()=>{
-    const ki=document.getElementById('pinKeyboardInput');
-    if(ki){ki.value='';ki.focus();}
-  },80);
+  // Focus hidden input so physical keyboard works immediately
+  setTimeout(()=>{const ki=document.getElementById('pinKeyboardInput');if(ki){ki.value='';ki.focus();}},80);
 }
 
 // Back to User ID step
@@ -1451,48 +1401,11 @@ function pinKey(k){
 
 function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updatePinDots();}
 
-// ── syncHiddenPin: relay hidden input value → pinBuffer ──
-function syncHiddenPin(el,bufName,dotsId,errId,checkFn){
-  const digits=(el.value||'').replace(/\D/g,'').slice(0,4);
-  el.value=digits; // keep clean
-  window[bufName]=digits;
-  // Update dots
-  const pfx=dotsId==='pinDots'?'pd':'pd3';
-  for(let i=0;i<4;i++){
-    const d=document.getElementById(pfx+(dotsId==='pinDots'?i:('3'+i).replace('30','30').replace('31','31').replace('32','32').replace('33','33')));
-    if(d)d.classList.toggle('filled',i<digits.length);
-  }
-  document.getElementById(errId).textContent='';
-  if(digits.length===4)setTimeout(checkFn,60);
-}
-// Simpler dot update via updatePinDots/updatePinDots3
-function syncPin2(el){
-  const digits=(el.value||'').replace(/\D/g,'').slice(0,4);
-  el.value=digits;
-  pinBuffer=digits;
-  updatePinDots();
-  document.getElementById('loginErr').textContent='';
-  if(digits.length===4)setTimeout(checkPin,60);
-}
-function syncPin3(el){
-  const digits=(el.value||'').replace(/\D/g,'').slice(0,4);
-  el.value=digits;
-  pinBuffer3=digits;
-  updatePinDots3();
-  document.getElementById('loginErr3').textContent='';
-  if(digits.length===4)setTimeout(checkPin3,60);
-}
-
-// ── Detect touch device for pin-pad visibility ──
-const _isTouchDevice=('ontouchstart' in window)||navigator.maxTouchPoints>0;
-
-// Global keydown listener — physical keyboard for PIN
-// Allows typing when pinKeyboardInput is focused; blocks other inputs
+// Global keydown listener — physical keyboard for PIN only
+// Only intercepts when login is visible AND no text input is focused
 document.addEventListener('keydown',function(e){
-  const active=document.activeElement;
-  const activeId=(active||{}).id||'';
-  const isPinInput=(activeId==='pinKeyboardInput'||activeId==='pinKeyboardInput3');
-  if(!isPinInput&&active&&(active.tagName==='INPUT'||active.tagName==='TEXTAREA'||active.tagName==='SELECT'))return;
+  const tag=(document.activeElement||{}).tagName||'';
+  if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
   const loginScreen=document.getElementById('loginScreen');
   if(!loginScreen||loginScreen.style.display==='none')return;
   const step2=document.getElementById('loginStep2');
@@ -1573,26 +1486,14 @@ function showPinReturn(){
   const rn=document.getElementById('pinReturnName');
   if(rn)rn.textContent='👋 Welcome back, '+d;
   pinBuffer3='';updatePinDots3();
-  const pad3=document.querySelector('#loginStep3 .pin-pad');
-  if(pad3)pad3.style.display=_isTouchDevice?'':'none';
-  setTimeout(()=>{
-    const ki=document.getElementById('pinKeyboardInput3');
-    if(ki){ki.value='';ki.focus();}
-  },80);
+  setTimeout(()=>{const ki=document.getElementById('pinKeyboardInput3');if(ki){ki.value='';ki.focus();}},80);
 }
 function pinKey3(k){if(pinBuffer3.length>=4)return;pinBuffer3+=k;updatePinDots3();if(pinBuffer3.length===4)setTimeout(checkPin3,80);}
 function pinDel3(){pinBuffer3=pinBuffer3.slice(0,-1);updatePinDots3();}
-
-// Sync mobile visible input to pin buffer
 function syncMobilePin(val,step){
   const digits=val.replace(/\D/g,'').slice(0,4);
-  if(step==='2'){
-    pinBuffer=digits;updatePinDots();
-    if(pinBuffer.length===4)setTimeout(checkPin,100);
-  }else{
-    pinBuffer3=digits;updatePinDots3();
-    if(pinBuffer3.length===4)setTimeout(checkPin3,100);
-  }
+  if(step==='2'){pinBuffer=digits;updatePinDots();if(pinBuffer.length===4)setTimeout(checkPin,100);}
+  else{pinBuffer3=digits;updatePinDots3();if(pinBuffer3.length===4)setTimeout(checkPin3,100);}
 }
 function updatePinDots3(){for(let i=0;i<4;i++){const d=document.getElementById('pd3'+i);if(!d)continue;d.classList.toggle('filled',i<pinBuffer3.length);d.classList.remove('error');}}
 function checkPin3(){
@@ -2653,6 +2554,7 @@ function exportCSV(){
   if(!data.length){toast('No holdings to export','warn');return;}
   const totalInv=data.reduce((a,s)=>a+s.invest,0);
   const totalCurr=data.reduce((a,s)=>a+s.curr,0);
+  const expBtns=document.getElementById('holdExportBtns');if(expBtns)expBtns.style.display=selectedClient?'flex':'none';
   const sorted=[...data].sort((a,b)=>b.curr-a.curr);
   const hdr=['Script','Company','Sector','Client','CMP','Day%','Wt%','Qty','AvgBuy','CurrValue','PnL','PnL%'];
   const rows=sorted.map(s=>{
@@ -2685,18 +2587,14 @@ function renderKPI(data){
   document.getElementById('kpi-pnl').className='kpi '+(pnl>=0?'c-pos':'c-neg');
   document.getElementById('k-cnt').textContent=data.length;
   document.getElementById('k-win').textContent=win+'▲  '+(data.length-win)+'▼';
-  // ── Liquid Cash KPI ──
   const lb=(window._ledgerMap||{})[selectedClient]??null;
-  const cashEl=document.getElementById('k-cash');
-  const cashPctEl=document.getElementById('k-cashpct');
-  const cashCard=document.getElementById('kpi-cash');
+  const cashEl=document.getElementById('k-cash'),cashPctEl=document.getElementById('k-cashpct'),cashCard=document.getElementById('kpi-cash');
   if(cashEl&&cashCard){
     if(lb!==null&&selectedClient){
-      const effTotal=curr+lb;
-      const cashPct=effTotal>0?(lb/effTotal)*100:0;
+      const effT=curr+lb,cp=effT>0?(lb/effT)*100:0;
       cashEl.textContent=(lb>=0?'+':'−')+'₹'+fmtC(Math.abs(lb));
       cashEl.style.color=lb>=0?'#6366f1':'var(--red)';
-      cashPctEl.textContent=cashPct.toFixed(1)+'% of portfolio';
+      cashPctEl.textContent=cp.toFixed(1)+'% of portfolio';
       cashPctEl.style.color=lb>=0?'#6366f1':'var(--red)';
       cashCard.style.opacity='1';
     }else{
@@ -2811,7 +2709,8 @@ function renderHoldings(data){
         const _allData=compute();
         const _portVal=_allData.reduce((a,s)=>a+s.curr,0);
         const _effTotal=_portVal+lb;
-        ledgerEl.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;background:${lBg};border:1px solid ${lBd};border-radius:var(--r);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden">
+        const _cp2=_effTotal>0?(lb/_effTotal)*100:0,_cc=lb>=0?'#6366f1':'var(--red)';
+        ledgerEl.innerHTML=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:${lBg};border:1px solid ${lBd};border-radius:var(--r);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden">
           <div style="padding:10px 14px;border-right:1px solid ${lBd};display:flex;align-items:center;gap:10px">
             <span style="font-size:20px">${lIcon}</span>
             <div>
@@ -2821,12 +2720,18 @@ function renderHoldings(data){
           </div>
           <div style="padding:10px 14px;border-right:1px solid ${lBd}">
             <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:2px">Equity Value</div>
-            <div style="font-size:14px;font-weight:700;font-family:var(--mono);color:var(--text)">₹${fmtC(_portVal)}</div>
+            <div style="font-size:13px;font-weight:700;font-family:var(--mono);color:var(--text)">₹${fmtC(_portVal)}</div>
+            <div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:1px">${_effTotal>0?((_portVal/_effTotal)*100).toFixed(1)+'% of total':'—'}</div>
           </div>
-          <div style="padding:10px 14px">
+          <div style="padding:10px 14px;border-left:1px solid ${lBd}">
             <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:2px">Effective Total</div>
-            <div style="font-size:14px;font-weight:800;font-family:var(--mono);color:var(--text)">₹${fmtC(_effTotal)}</div>
-            <div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:1px">Equity + Ledger</div>
+            <div style="font-size:13px;font-weight:800;font-family:var(--mono);color:var(--text)">₹${fmtC(_effTotal)}</div>
+            <div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:1px">Equity + Cash</div>
+          </div>
+          <div style="padding:10px 14px;border-left:1px solid ${lBd}">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:2px">💧 Cash %</div>
+            <div style="font-size:17px;font-weight:800;font-family:var(--mono);color:${_cc}">${lb<0?'−':''}${Math.abs(_cp2).toFixed(1)}%</div>
+            <div style="font-size:9px;font-family:var(--mono);margin-top:1px;color:${_cc}">${lb>=0?'Liquid':'Debit'}</div>
           </div>
         </div>`;
         ledgerEl.style.display='';
@@ -2864,10 +2769,12 @@ function renderHoldings(data){
   if(activeSectorFilter)sorted=sorted.filter(s=>s.sector===activeSectorFilter);
 
   // UPDATED: table always renders regardless of price status
+  const CONC_THRESH=15;
   document.getElementById('tb-hold').innerHTML=sorted.map(s=>{
     const wt=_wtDenom>0?(s.curr/_wtDenom)*100:0;
-    return `<tr class="h-row" data-q="${s.code.toLowerCase()} ${s.name.toLowerCase()} ${s.sector.toLowerCase()} ${(s.clientCode||'').toLowerCase()}">
-      <td><span class="sn">${s.code}</span></td>
+    const concFlag=wt>=CONC_THRESH;
+    return `<tr class="h-row${concFlag?' conc-flag':''}" data-q="${s.code.toLowerCase()} ${s.name.toLowerCase()} ${s.sector.toLowerCase()} ${(s.clientCode||'').toLowerCase()}">
+      <td><span class="sn">${s.code}</span>${concFlag?'<span class="conc-badge">⚠ HIGH</span>':''}</td>
       <td>${cmpPriceOnly(s)}</td>
       <td>${dayChangePill(s)}</td>
       <td><div class="bar-row"><span style="font-size:11px;font-weight:700;color:var(--text2)">${wt.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(wt*4,100)}%"></div></div></div></td>
@@ -3144,7 +3051,7 @@ function showTab(id,el){
   if(id==='hm')renderHeatmap();
   if(id==='st')renderScripts();
   if(id==='an')renderAnalytics();
-  if(id==='lb')renderLedgerTab();
+  if(id==='lb')renderLedger();
   if(id==='mh'){initTVMarketHeatmap();setTimeout(()=>renderIdxList('all',''),50);}
 }
 
@@ -3575,245 +3482,286 @@ function initSwipeTabs(){
 // ══════════════════════════════════════════════════════
 //  LEDGER BALANCE TAB
 // ══════════════════════════════════════════════════════
-let _lbSortKey='balance';
-let _lbSortDir=-1; // -1=desc, 1=asc
+let _lbSortKey='balance',_lbSortDir=1;
+window._lbRMSel='ALL';
 
-function lbSort(key){
-  if(_lbSortKey===key)_lbSortDir*=-1;
-  else{_lbSortKey=key;_lbSortDir=key==='client'||key==='rm'?1:-1;}
-  // Update arrows
-  ['client','rm','balance','cashpct','equity'].forEach(k=>{
-    const el=document.getElementById('lba-'+k);
-    if(!el)return;
-    el.textContent=k===_lbSortKey?(_lbSortDir===-1?'↓':'↑'):'↕';
-    el.style.color=k===_lbSortKey?'var(--blue)':'';
-  });
+function lbSort(col){
+  if(_lbSortKey===col)_lbSortDir*=-1;else{_lbSortKey=col;_lbSortDir=1;}
   renderLedger();
 }
 
 function renderLedger(){
   const isAdmin=currentUser?.role==='admin';
-  const isRM=currentUser?.role==='rm';
-  const lbRMCol=document.getElementById('lbRMCol');
-  const lbRMFilter=document.getElementById('lbRMFilter');
   const search=(document.getElementById('lbSearch')?.value||'').trim().toLowerCase();
-
-  // Build client→RM map from PORTFOLIO
-  const clientRM={};
-  const clientName={};
-  const clientEquity={};
+  const clientRM={},clientName={},clientEquity={};
   PORTFOLIO.forEach(s=>{
-    const cc=s.clientCode;
-    if(!cc)return;
-    clientRM[cc]=s.subgroup||'—';
-    clientName[cc]=s.name||cc;
-    clientEquity[cc]=(clientEquity[cc]||0)+s.curr;
+    if(!s.clientCode)return;
+    clientRM[s.clientCode]=s.subgroup||'—';
+    clientName[s.clientCode]=s.clientName||s.name||s.clientCode;
+    clientEquity[s.clientCode]=(clientEquity[s.clientCode]||0)+((livePrices[s.code]||s.valRate||s.buy||0)*s.qty);
   });
-
-  // Filter: admin sees all (RM filterable), RM sees only their subgroup clients
-  const ledgerEntries=Object.entries(window._ledgerMap||{})
-    .filter(([cc,bal])=>bal!==0&&bal!==null)
-    .map(([cc,bal])=>({
-      clientCode:cc,
-      clientName:clientName[cc]||cc,
-      rm:clientRM[cc]||'—',
-      balance:bal,
-      equity:clientEquity[cc]||0,
-      cashPct:(clientEquity[cc]||0)+(bal)>0?(bal/((clientEquity[cc]||0)+bal))*100:null
-    }));
-
-  // RM filter — only their clients
-  let filtered=ledgerEntries;
-  if(isRM&&currentUser.subgroup){
-    filtered=filtered.filter(r=>r.rm===currentUser.subgroup||r.clientCode.startsWith(currentUser.subgroup));
-  }
-
-  // Admin RM dropdown
-  if(isAdmin){
-    lbRMCol&&(lbRMCol.style.display='');
-    if(lbRMFilter){
-      lbRMFilter.style.display='';
-      const rms=[...new Set(filtered.map(r=>r.rm).filter(r=>r!=='—'))].sort();
-      if(lbRMFilter.options.length<=1){
-        rms.forEach(rm=>{const o=document.createElement('option');o.value=rm;o.textContent=rm;lbRMFilter.appendChild(o);});
-      }
-      const selRM=lbRMFilter.value;
-      if(selRM)filtered=filtered.filter(r=>r.rm===selRM);
-    }
-  }else{
-    lbRMCol&&(lbRMCol.style.display='none');
-    if(lbRMFilter)lbRMFilter.style.display='none';
-  }
-
-  // Search
-  if(search)filtered=filtered.filter(r=>
-    r.clientCode.toLowerCase().includes(search)||
-    r.clientName.toLowerCase().includes(search)||
-    r.rm.toLowerCase().includes(search)
-  );
-
-  // Sort
-  filtered.sort((a,b)=>{
-    let av,bv;
-    if(_lbSortKey==='client'){av=a.clientName;bv=b.clientName;return _lbSortDir*(av<bv?-1:av>bv?1:0);}
-    if(_lbSortKey==='rm'){av=a.rm;bv=b.rm;return _lbSortDir*(av<bv?-1:av>bv?1:0);}
-    if(_lbSortKey==='cashpct'){av=a.cashPct??-999;bv=b.cashPct??-999;}
-    else if(_lbSortKey==='equity'){av=a.equity;bv=b.equity;}
-    else{av=a.balance;bv=b.balance;}
-    return _lbSortDir*(bv-av);
-  });
-
-  // Badge
-  const credCount=filtered.filter(r=>r.balance>0).length;
-  const debCount=filtered.filter(r=>r.balance<0).length;
-  const el=document.getElementById('lbBadge');
-  if(el)el.textContent=`${filtered.length} clients · ${credCount} credit · ${debCount} debit`;
-
-  // Render rows
-  const tbody=document.getElementById('tb-lb');
-  if(!tbody)return;
-  if(!filtered.length){
-    tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">No ledger data${search?' matching "'+search+'"':''}</td></tr>`;
-    return;
-  }
-  tbody.innerHTML=filtered.map(r=>{
-    const balColor=r.balance>0?'#6366f1':'var(--red)';
-    const balSign=r.balance>0?'+':'−';
-    const cpColor=r.cashPct!==null?(r.cashPct>0?'#6366f1':'var(--red)'):'var(--muted)';
-    const statusPill=r.balance>0
-      ?`<span style="background:rgba(99,102,241,.12);color:#6366f1;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;font-family:var(--mono)">CREDIT</span>`
-      :`<span style="background:rgba(192,57,43,.12);color:var(--red);font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;font-family:var(--mono)">DEBIT</span>`;
-    return `<tr style="border-top:1px solid var(--border);cursor:pointer" onclick="switchClient('${r.clientCode.replace(/'/g,"\'")}')">
-      <td style="padding:10px 12px;text-align:left">
-        <div style="font-size:12px;font-weight:700;color:var(--text)">${r.clientCode}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.clientName}</div>
-      </td>
-      ${isAdmin?`<td style="padding:10px 12px;text-align:left;font-size:11px;color:var(--text2)">${r.rm}</td>`:''}
-      <td style="padding:10px 12px;text-align:right;font-weight:800;font-family:var(--mono);font-size:13px;color:${balColor}">${balSign}₹${fmtC(Math.abs(r.balance))}</td>
-      <td style="padding:10px 12px;text-align:right;font-weight:700;font-family:var(--mono);font-size:12px;color:${cpColor}">${r.cashPct!==null?Math.abs(r.cashPct).toFixed(1)+'%':'—'}</td>
-      <td style="padding:10px 12px;text-align:right;font-size:12px;font-family:var(--mono);color:var(--text2)">₹${fmtC(r.equity)}</td>
-      <td style="padding:10px 12px;text-align:center">${statusPill}</td>
-    </tr>`;
-  }).join('');
-}
-
-
-// ══════════════════════════════════════════════════════
-//  LEDGER BALANCE TAB
-// ══════════════════════════════════════════════════════
-let _lbSort='balance';
-let _lbRmFilter='ALL';
-
-function renderLedgerTab(){
-  // Build client list from PORTFOLIO with ledger data
-  const ledgerMap=window._ledgerMap||{};
-  if(!Object.keys(ledgerMap).length){
-    document.getElementById('tb-lb').innerHTML='<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">No ledger data — sheet not loaded</td></tr>';
-    document.getElementById('lbBadge').textContent='No data';
-    return;
-  }
-
-  // Build per-client equity totals
-  const equityMap={};
-  const nameMap={};
-  const rmMap={};
-  PORTFOLIO.forEach(s=>{
-    const cc=s.clientCode;
-    if(!cc)return;
-    if(!equityMap[cc])equityMap[cc]=0;
-    equityMap[cc]+=(livePrices[cc==='UPLOAD'?s.code:s.code]||s.valRate||0)*s.qty;
-    nameMap[cc]=s.clientName||cc;
-    rmMap[cc]=s.subgroup||'—';
-  });
-
-  // Filter: only clients with non-zero ledger, role-based
-  const isAdmin=currentUser?.role==='admin';
-  const mySubgroup=currentUser?.subgroup||null;
-
-  let rows=Object.entries(ledgerMap)
+  let entries=Object.entries(window._ledgerMap||{})
     .filter(([cc,bal])=>bal!==0&&bal!==null)
     .map(([cc,bal])=>{
-      const eq=equityMap[cc]||0;
-      const tot=eq+bal;
-      const cashPct=tot>0?(bal/tot)*100:0;
-      return {cc,name:nameMap[cc]||cc,rm:rmMap[cc]||'—',bal,eq,tot,cashPct};
-    })
-    .filter(r=>isAdmin||(mySubgroup&&r.rm===mySubgroup));
+      const eq=clientEquity[cc]||0,tot=eq+bal;
+      return {clientCode:cc,clientName:clientName[cc]||cc,rm:clientRM[cc]||'—',
+        balance:bal,equity:eq,total:tot,cashPct:tot>0?(bal/tot)*100:null};
+    });
+  if(!isAdmin&&currentUser?.subgroup)
+    entries=entries.filter(r=>r.rm===currentUser.subgroup);
 
-  if(!rows.length){
-    document.getElementById('tb-lb').innerHTML='<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">No ledger balances for your clients</td></tr>';
-    document.getElementById('lbBadge').textContent='0 clients';
-    document.getElementById('lbRmFilter').innerHTML='';
+  // RM buttons — admin only
+  const rmBtns=document.getElementById('lbRMBtns');
+  const rmCol=document.getElementById('lbRMCol');
+  if(isAdmin&&rmBtns){
+    rmBtns.style.display='flex';
+    const rms=['ALL',...new Set(entries.map(r=>r.rm).filter(r=>r!=='—'))].sort((a,b)=>a==='ALL'?-1:a.localeCompare(b));
+    rmBtns.innerHTML='<span style="font-size:10px;font-weight:700;color:var(--muted);font-family:var(--mono);margin-right:4px;white-space:nowrap">Filter RM:</span>'+
+      rms.map(rm=>`<button class="lb-rm-btn${window._lbRMSel===rm?' active':''}" onclick="window._lbRMSel='${rm}';renderLedger()">${rm}</button>`).join('');
+    if(window._lbRMSel!=='ALL')entries=entries.filter(r=>r.rm===window._lbRMSel);
+    if(rmCol)rmCol.style.display='';
+  }else{
+    if(rmBtns)rmBtns.style.display='none';
+    if(rmCol)rmCol.style.display='none';
+  }
+
+  if(search)entries=entries.filter(r=>(r.clientCode+r.clientName+r.rm).toLowerCase().includes(search));
+
+  entries.sort((a,b)=>{
+    const d=_lbSortDir;
+    if(_lbSortKey==='client')return d*a.clientName.localeCompare(b.clientName);
+    if(_lbSortKey==='rm')return d*a.rm.localeCompare(b.rm);
+    if(_lbSortKey==='equity')return d*(b.equity-a.equity);
+    if(_lbSortKey==='total')return d*(b.total-a.total);
+    if(_lbSortKey==='cashpct')return d*((b.cashPct??-999)-(a.cashPct??-999));
+    return d*(Math.abs(b.balance)-Math.abs(a.balance));
+  });
+
+  // Update sort arrows
+  ['client','rm','balance','equity','total','cashpct'].forEach(k=>{
+    const el=document.getElementById('lba-'+k);
+    if(el)el.textContent=_lbSortKey===k?(_lbSortDir>0?'↓':'↑'):'↕';
+  });
+
+  const cred=entries.filter(r=>r.balance>0),deb=entries.filter(r=>r.balance<0);
+  const badge=document.getElementById('lbBadge');
+  if(badge)badge.textContent=`${entries.length} clients · ${cred.length} credit ₹${fmtC(cred.reduce((a,r)=>a+r.balance,0))} · ${deb.length} debit ₹${fmtC(Math.abs(deb.reduce((a,r)=>a+r.balance,0)))}`;
+
+  const tbody=document.getElementById('tb-lb');
+  if(!tbody)return;
+  if(!entries.length){
+    tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">No balances${search?' matching "'+search+'"':''}</td></tr>`;
     return;
   }
-
-  // RM filter buttons (admin only)
-  const rmFilterEl=document.getElementById('lbRmFilter');
-  if(isAdmin){
-    const rms=['ALL',...new Set(rows.map(r=>r.rm).filter(r=>r!=='—'))].sort();
-    rmFilterEl.innerHTML=rms.map(rm=>`<button class="lb-rm-btn${_lbRmFilter===rm?' active':''}" onclick="setLbRm('${rm}')">${rm}</button>`).join('');
-  }else{
-    rmFilterEl.innerHTML='';
-  }
-
-  // Apply RM filter
-  const filtered=_lbRmFilter==='ALL'?rows:rows.filter(r=>r.rm===_lbRmFilter);
-
-  // Sort
-  const sortFn={
-    'balance':(a,b)=>Math.abs(b.bal)-Math.abs(a.bal),
-    'name':(a,b)=>a.name.localeCompare(b.name),
-    'rm':(a,b)=>a.rm.localeCompare(b.rm),
-    'equity':(a,b)=>b.eq-a.eq,
-    'cashpct':(a,b)=>Math.abs(b.cashPct)-Math.abs(a.cashPct),
-    'total':(a,b)=>b.tot-a.tot,
-    'type':(a,b)=>(a.bal>=0?0:1)-(b.bal>=0?0:1),
-    'rank':(a,b)=>a._i-b._i,
-  };
-  filtered.sort(sortFn[_lbSort]||sortFn.balance);
-
-  // Summary stats
-  const totalCredit=filtered.filter(r=>r.bal>0).reduce((a,r)=>a+r.bal,0);
-  const totalDebit=filtered.filter(r=>r.bal<0).reduce((a,r)=>a+r.bal,0);
-  const creditCount=filtered.filter(r=>r.bal>0).length;
-  const debitCount=filtered.filter(r=>r.bal<0).length;
-  document.getElementById('lbBadge').textContent=`${filtered.length} clients · ${creditCount} credit ₹${fmtC(totalCredit)} · ${debitCount} debit ₹${fmtC(Math.abs(totalDebit))}`;
-
-  // Render rows
-  document.getElementById('tb-lb').innerHTML=filtered.map((r,i)=>{
-    const isCredit=r.bal>=0;
-    const balStr=(isCredit?'+':'−')+'₹'+fmtC(Math.abs(r.bal));
-    const cashStr=r.tot!==0?Math.abs(r.cashPct).toFixed(1)+'%':'—';
-    return `<tr>
-      <td style="color:var(--muted);font-size:11px">${i+1}</td>
-      <td style="font-weight:600;font-family:var(--sans)">${r.name}<br><span style="font-size:9px;color:var(--muted);font-family:var(--mono)">${r.cc}</span></td>
-      <td><span style="font-size:10px;color:var(--text2)">${r.rm}</span></td>
-      <td class="${isCredit?'lb-credit':'lb-debit'}">${balStr}</td>
-      <td>₹${fmtC(r.eq)}</td>
-      <td style="color:${isCredit?'#6366f1':'var(--red)'};font-weight:700">${cashStr}</td>
-      <td>₹${fmtC(r.tot)}</td>
-      <td><span class="lb-pill ${isCredit?'credit':'debit'}">${isCredit?'Credit':'Debit'}</span></td>
+  tbody.innerHTML=entries.map(r=>{
+    const isCr=r.balance>0,bCol=isCr?'#6366f1':'var(--red)';
+    const safeCc=r.clientCode.replace(/'/g,"\'");
+    const pill=isCr
+      ?'<span style="background:rgba(99,102,241,.12);color:#6366f1;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px">CREDIT</span>'
+      :'<span style="background:rgba(192,57,43,.12);color:var(--red);font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px">DEBIT</span>';
+    return `<tr style="border-top:1px solid var(--border);cursor:pointer" onclick="switchClient('${safeCc}')" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+      <td style="padding:10px 12px;text-align:left">
+        <div style="font-size:12px;font-weight:700">${r.clientName}</div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono)">${r.clientCode}</div>
+      </td>
+      ${isAdmin?`<td style="padding:10px 12px;font-size:11px;color:var(--text2)">${r.rm}</td>`:''}
+      <td style="padding:10px 12px;text-align:right;font-weight:800;font-family:var(--mono);font-size:13px;color:${bCol}">${isCr?'+':'−'}₹${fmtC(Math.abs(r.balance))}</td>
+      <td style="padding:10px 12px;text-align:right;font-family:var(--mono);font-size:12px">₹${fmtC(r.equity)}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:700;font-family:var(--mono);font-size:12px">₹${fmtC(r.total)}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:700;font-family:var(--mono);color:${bCol}">${r.cashPct!==null?Math.abs(r.cashPct).toFixed(1)+'%':'—'}</td>
+      <td style="padding:10px 12px;text-align:center">${pill}</td>
     </tr>`;
   }).join('');
+}
 
-  // Update sort arrow indicators
-  document.querySelectorAll('#t-lb thead th').forEach(th=>{
-    th.classList.remove('an-active');
-    const arr=th.querySelector('.an-arr');
-    if(arr)arr.textContent='↕';
+
+// ══════════════════════════════════════════════════════
+//  EXPORT — Excel (SheetJS) + PDF (jsPDF + AutoTable)
+// ══════════════════════════════════════════════════════
+function _getExportData(){
+  const data=compute();
+  const lb=(window._ledgerMap||{})[selectedClient]??null;
+  const portVal=data.reduce((a,s)=>a+s.curr,0);
+  const portInv=data.reduce((a,s)=>a+s.invest,0);
+  const portPnL=portVal-portInv;
+  const effTotal=portVal+(lb||0);
+  const ci=allClients?.find(c=>c.code===selectedClient)||{};
+  const rm=ci.rm||currentUser?.display||'—';
+  const clientName=ci.name||selectedClient||'—';
+  const reportDate=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const rows=data.slice().sort((a,b)=>b.curr-a.curr).map((s,i)=>({
+    no:i+1,code:s.code,name:s.name||s.code,sector:s.sector||'—',qty:s.qty,
+    avgBuy:s.buy,cmp:s.cmp||s.buy,currVal:s.curr,pnl:s.pnl,
+    pnlPct:s.pnlPct,wt:effTotal>0?(s.curr/effTotal)*100:0
+  }));
+  const secMap={};
+  data.forEach(s=>{
+    const sec=s.sector||'Other';
+    if(!secMap[sec])secMap[sec]={sector:sec,stocks:0,invest:0,curr:0,pnl:0};
+    secMap[sec].stocks++;secMap[sec].invest+=s.invest;secMap[sec].curr+=s.curr;secMap[sec].pnl+=s.pnl;
   });
-  const activeArr=document.getElementById('lba-'+_lbSort);
-  if(activeArr){activeArr.textContent='↓';activeArr.closest('th')?.classList.add('an-active');}
+  const sectors=Object.values(secMap).sort((a,b)=>b.curr-a.curr).map(s=>({
+    ...s,pnlPct:s.invest>0?(s.pnl/s.invest)*100:0,wt:effTotal>0?(s.curr/effTotal)*100:0
+  }));
+  return {clientName,clientCode:selectedClient,rm,reportDate,portVal,portInv,portPnL,effTotal,lb,rows,sectors};
 }
 
-function sortLb(col){
-  _lbSort=col;
-  renderLedgerTab();
+function exportClientExcel(){
+  if(!selectedClient){alert('Select a client first');return;}
+  if(typeof XLSX==='undefined'){alert('Excel library still loading — try again in a moment');return;}
+  const d=_getExportData();
+  const wb=XLSX.utils.book_new();
+
+  // Cover
+  const cov=[
+    ['AUTUS CAPITAL MANAGEMENT — CLIENT PORTFOLIO REPORT'],[''],
+    ['Client Name',d.clientName],['Client Code',d.clientCode],
+    ['RM / Advisor',d.rm],['Report Date',d.reportDate],[''],
+    ['SUMMARY'],
+    ['Invested','Current Value','P&L ₹','P&L %','Cash / Ledger','Effective Total'],
+    [d.portInv,d.portVal,d.portPnL,d.portInv>0?d.portPnL/d.portInv:0,d.lb??0,d.effTotal]
+  ];
+  const wsC=XLSX.utils.aoa_to_sheet(cov);
+  wsC['!cols']=[{wch:22},{wch:22},{wch:18},{wch:12},{wch:18},{wch:18}];
+  wsC['!merges']=[{s:{r:0,c:0},e:{r:0,c:5}},{s:{r:7,c:0},e:{r:7,c:5}}];
+  ['A10','B10','C10','D10','E10','F10'].forEach((ref,i)=>{
+    const vals=[d.portInv,d.portVal,d.portPnL,d.portInv>0?d.portPnL/d.portInv:0,d.lb??0,d.effTotal];
+    wsC[ref]={t:'n',v:vals[i],z:i===3?'0.00%':'₹#,##0.00'};
+  });
+  XLSX.utils.book_append_sheet(wb,wsC,'Cover');
+
+  // Holdings
+  const hH=['#','Code','Name','Sector','Qty','Avg Buy ₹','CMP ₹','Curr Value ₹','P&L ₹','P&L %','Wt %'];
+  const hR=d.rows.map(r=>[r.no,r.code,r.name,r.sector,r.qty,r.avgBuy,r.cmp,r.currVal,r.pnl,r.pnlPct/100,r.wt/100]);
+  const wsH=XLSX.utils.aoa_to_sheet([hH,...hR]);
+  wsH['!cols']=[{wch:5},{wch:14},{wch:28},{wch:20},{wch:8},{wch:13},{wch:13},{wch:16},{wch:14},{wch:10},{wch:8}];
+  for(let ri=1;ri<=hR.length;ri++){
+    ['F','G','H','I'].forEach(c=>{const r=c+(ri+1);if(wsH[r]){wsH[r].t='n';wsH[r].z='₹#,##0.00';}});
+    ['J','K'].forEach(c=>{const r=c+(ri+1);if(wsH[r]){wsH[r].t='n';wsH[r].z='0.00%';}});
+  }
+  wsH['!freeze']={xSplit:0,ySplit:1};
+  XLSX.utils.book_append_sheet(wb,wsH,'Holdings');
+
+  // Sector
+  const sH=['Sector','Stocks','Invested ₹','Curr Value ₹','P&L ₹','P&L %','Wt %'];
+  const sR=d.sectors.map(s=>[s.sector,s.stocks,s.invest,s.curr,s.pnl,s.pnlPct/100,s.wt/100]);
+  const wsS=XLSX.utils.aoa_to_sheet([sH,...sR]);
+  wsS['!cols']=[{wch:24},{wch:8},{wch:16},{wch:16},{wch:14},{wch:10},{wch:8}];
+  for(let ri=1;ri<=sR.length;ri++){
+    ['C','D','E'].forEach(c=>{const r=c+(ri+1);if(wsS[r]){wsS[r].t='n';wsS[r].z='₹#,##0.00';}});
+    ['F','G'].forEach(c=>{const r=c+(ri+1);if(wsS[r]){wsS[r].t='n';wsS[r].z='0.00%';}});
+  }
+  wsS['!freeze']={xSplit:0,ySplit:1};
+  XLSX.utils.book_append_sheet(wb,wsS,'Sector Breakup');
+
+  if(d.lb!==null){
+    const wsL=XLSX.utils.aoa_to_sheet([
+      ['LEDGER / CASH SUMMARY'],[''],
+      ['Equity Value','Cash / Ledger','Effective Total','Cash %'],
+      [d.portVal,d.lb,d.effTotal,d.effTotal>0?d.lb/d.effTotal:0]
+    ]);
+    wsL['!cols']=[{wch:20},{wch:18},{wch:18},{wch:12}];
+    ['A4','B4','C4'].forEach((ref,i)=>{wsL[ref]={t:'n',v:[d.portVal,d.lb,d.effTotal][i],z:'₹#,##0.00'};});
+    if(wsL['D4'])wsL['D4']={t:'n',v:d.effTotal>0?d.lb/d.effTotal:0,z:'0.00%'};
+    XLSX.utils.book_append_sheet(wb,wsL,'Ledger');
+  }
+  XLSX.writeFile(wb,'AUTUS_'+d.clientCode+'_'+d.reportDate.replace(/ /g,'_')+'.xlsx');
 }
 
-function setLbRm(rm){
-  _lbRmFilter=rm;
-  renderLedgerTab();
+async function exportClientPDF(){
+  if(!selectedClient){alert('Select a client first');return;}
+  if(typeof window.jspdf==='undefined'){alert('PDF library still loading — try again in a moment');return;}
+  const {jsPDF}=window.jspdf;
+  const d=_getExportData();
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  const W=297,M=14;
+  const NAVY=[17,45,84],WHITE=[255,255,255],LIGHT=[247,249,252],
+        GREEN=[21,128,61],RED=[185,28,28],GRAY=[100,116,139];
+  let y=M;
+
+  // Header
+  doc.setFillColor(...NAVY);doc.rect(0,0,W,22,'F');
+  doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');doc.setFontSize(15);
+  doc.text('AUTUS',M,14);
+  doc.setFontSize(8.5);doc.setFont('helvetica','normal');
+  doc.text('CLIENT PORTFOLIO REPORT',M+26,14);
+  doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+  doc.text(d.clientName+' · '+d.clientCode+' · RM: '+d.rm+' · '+d.reportDate,W-M,14,{align:'right'});
+  y=30;
+
+  // KPI boxes
+  const kpis=[
+    {l:'INVESTED',v:'₹'+fmtC(d.portInv),c:NAVY},
+    {l:'CURRENT VALUE',v:'₹'+fmtC(d.portVal),c:NAVY},
+    {l:'P&L',v:(d.portPnL>=0?'+':'-')+'₹'+fmtC(Math.abs(d.portPnL)),c:d.portPnL>=0?GREEN:RED},
+    {l:'P&L %',v:(d.portPnL>=0?'+':'')+(d.portPnL/(d.portInv||1)*100).toFixed(2)+'%',c:d.portPnL>=0?GREEN:RED},
+    {l:'CASH/LEDGER',v:d.lb!==null?(d.lb>=0?'+':'-')+'₹'+fmtC(Math.abs(d.lb??0)):'—',c:d.lb!==null&&d.lb>=0?[99,102,241]:d.lb!==null?RED:GRAY},
+    {l:'EFFECTIVE TOTAL',v:'₹'+fmtC(d.effTotal),c:NAVY},
+  ];
+  const bw=(W-M*2-5*3)/6,bh=16;
+  kpis.forEach((k,i)=>{
+    const bx=M+i*(bw+3);
+    doc.setFillColor(245,247,252);doc.roundedRect(bx,y,bw,bh,2,2,'F');
+    doc.setDrawColor(210,218,235);doc.roundedRect(bx,y,bw,bh,2,2,'S');
+    doc.setFontSize(6);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
+    doc.text(k.l,bx+bw/2,y+5,{align:'center'});
+    doc.setFontSize(9.5);doc.setFont('helvetica','bold');doc.setTextColor(...k.c);
+    doc.text(k.v,bx+bw/2,y+12,{align:'center'});
+  });
+  y+=bh+5;
+
+  // Holdings table
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...NAVY);
+  doc.text('HOLDINGS',M,y);y+=2;
+  doc.autoTable({
+    startY:y,margin:{left:M,right:M},
+    head:[['#','Code','Name','Sector','Qty','Avg Buy','CMP','Curr Value','P&L','P&L %','Wt %']],
+    body:d.rows.map(r=>[r.no,r.code,r.name,r.sector,r.qty,'₹'+fmtC(r.avgBuy),'₹'+fmtC(r.cmp),'₹'+fmtC(r.currVal),(r.pnl>=0?'+':'-')+'₹'+fmtC(Math.abs(r.pnl)),(r.pnlPct>=0?'+':'')+r.pnlPct.toFixed(2)+'%',r.wt.toFixed(1)+'%']),
+    foot:[['','TOTAL','','','','','','₹'+fmtC(d.portVal),(d.portPnL>=0?'+':'-')+'₹'+fmtC(Math.abs(d.portPnL)),(d.portPnL/(d.portInv||1)*100).toFixed(2)+'%','100%']],
+    styles:{fontSize:7.5,cellPadding:2.2,halign:'right',font:'helvetica'},
+    headStyles:{fillColor:NAVY,textColor:WHITE,fontStyle:'bold',halign:'center',fontSize:7},
+    footStyles:{fillColor:[230,234,242],textColor:NAVY,fontStyle:'bold'},
+    columnStyles:{0:{halign:'center',cellWidth:7},1:{halign:'left',cellWidth:18},2:{halign:'left',cellWidth:36},3:{halign:'left',cellWidth:24},4:{cellWidth:10},5:{cellWidth:18},6:{cellWidth:18},7:{cellWidth:22},8:{cellWidth:22},9:{cellWidth:16},10:{cellWidth:13}},
+    alternateRowStyles:{fillColor:LIGHT},
+    didParseCell:function(data){
+      if(data.section==='body'&&(data.column.index===8||data.column.index===9)){
+        const v=parseFloat((data.cell.raw+'').replace(/[^\d.\-]/g,''));
+        if(!isNaN(v))data.cell.styles.textColor=v>=0?GREEN:RED;
+      }
+    },showFoot:'lastPage'
+  });
+  y=doc.lastAutoTable.finalY+5;
+
+  // Sector table
+  if(y>175){doc.addPage();y=M;}
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...NAVY);
+  doc.text('SECTOR BREAKUP',M,y);y+=2;
+  doc.autoTable({
+    startY:y,margin:{left:M,right:M},
+    head:[['Sector','Stocks','Invested','Curr Value','P&L','P&L %','Wt %']],
+    body:d.sectors.map(s=>[s.sector,s.stocks,'₹'+fmtC(s.invest),'₹'+fmtC(s.curr),(s.pnl>=0?'+':'-')+'₹'+fmtC(Math.abs(s.pnl)),(s.pnlPct>=0?'+':'')+s.pnlPct.toFixed(2)+'%',s.wt.toFixed(1)+'%']),
+    styles:{fontSize:7.5,cellPadding:2.2,font:'helvetica'},
+    headStyles:{fillColor:NAVY,textColor:WHITE,fontStyle:'bold',fontSize:7},
+    columnStyles:{0:{cellWidth:42,halign:'left'},1:{cellWidth:14,halign:'center'},2:{cellWidth:28},3:{cellWidth:28},4:{cellWidth:28},5:{cellWidth:18},6:{cellWidth:14}},
+    alternateRowStyles:{fillColor:LIGHT},
+    didParseCell:function(data){
+      if(data.section==='body'&&data.column.index===4){
+        const v=parseFloat((data.cell.raw+'').replace(/[^\d.\-]/g,''));
+        if(!isNaN(v))data.cell.styles.textColor=v>=0?GREEN:RED;
+      }
+    }
+  });
+
+  // Footer on all pages
+  const pages=doc.internal.getNumberOfPages();
+  for(let i=1;i<=pages;i++){
+    doc.setPage(i);
+    doc.setFillColor(...NAVY);doc.rect(0,200,W,7,'F');
+    doc.setTextColor(...WHITE);doc.setFontSize(7);doc.setFont('helvetica','normal');
+    doc.text('AUTUS Capital Management  ·  Confidential — For Client Use Only',M,204.5);
+    doc.text('Page '+i+' of '+pages+'  ·  Generated: '+d.reportDate,W-M,204.5,{align:'right'});
+  }
+  doc.save('AUTUS_'+d.clientCode+'_'+d.reportDate.replace(/ /g,'_')+'.pdf');
 }
 
 function filterClientCards(){
@@ -4527,11 +4475,8 @@ function renderAnalytics(){
     pnlPct:c.invest>0?(c.curr-c.invest)/c.invest*100:0,
     stockCount:c.stocks.size,
     cash:(window._ledgerMap||{})[c.clientCode]??null,
-  })).map(c=>({...c,
-    cashPct:c.cash!==null&&(c.curr+c.cash)>0?(c.cash/(c.curr+c.cash))*100:null
-  }));
+  })).map(c=>({...c,cashPct:c.cash!==null&&(c.curr+c.cash)>0?(c.cash/(c.curr+c.cash))*100:null}));
 
-  // Sort by selected metric
   const sortFn={
     'aum':(a,b)=>b.curr-a.curr,
     'inv':(a,b)=>b.invest-a.invest,
@@ -4539,19 +4484,17 @@ function renderAnalytics(){
     'pnlpct':(a,b)=>b.pnlPct-a.pnlPct,
     'stocks':(a,b)=>b.stockCount-a.stockCount,
     'cash':(a,b)=>(b.cash??-Infinity)-(a.cash??-Infinity),
-    'cashpct':(a,b)=>(b.cashPct??-Infinity)-(a.cashPct??-Infinity),
   };
   clients.sort(sortFn[anMetric]||sortFn.aum);
-  const maxAUM=clients.length?clients[0].curr:1;
-  document.getElementById('anBadge').textContent=`${clients.length} clients · ${rmFilter||'All RMs'} · sorted by ${anMetric.toUpperCase()}`;
-  // Update sort arrow
+  // Arrow indicators
   document.querySelectorAll('.top-clients-table thead th').forEach(th=>{
-    th.classList.remove('an-active');
-    const arr=th.querySelector('.an-arr');
-    if(arr)arr.textContent='↕';
+    th.classList.remove('an-active');const arr=th.querySelector('.an-arr');if(arr)arr.textContent='↕';
   });
   const activeArr=document.getElementById('aa-'+anMetric);
   if(activeArr){activeArr.textContent='↓';activeArr.closest('th')?.classList.add('an-active');}
+  // Show ALL clients — no top-10 limit
+  const maxAUM=clients.length?clients[0].curr:1;
+  document.getElementById('anBadge').textContent=`${clients.length} clients · ${rmFilter||'All RMs'} · sorted by ${anMetric.toUpperCase()}`;
 
   const rankBadge=(i)=>{
     if(i===0)return '<span class="rank-badge rank-1">🥇</span>';
@@ -4577,7 +4520,6 @@ function renderAnalytics(){
       <td><span class="pill ${clsPill(c.pnlPct)}">${fmtP(c.pnlPct)}</span></td>
       <td class="neu">${c.stockCount}</td>
       <td style="font-weight:700;color:${c.cash===null?'var(--muted)':c.cash>=0?'#6366f1':'var(--red)'}">${c.cash===null?'—':(c.cash>=0?'+':'−')+'₹'+fmtC(Math.abs(c.cash??0))}</td>
-      <td>${c.cashPct===null?'<span style="color:var(--muted)">—</span>':`<span style="font-weight:700;font-family:var(--mono);font-size:11px;color:${c.cashPct>=0?'#6366f1':'var(--red)'}">${Math.abs(c.cashPct).toFixed(1)}%</span>`}</td>
       <td>
         <div class="client-aum-bar">
           <div class="aum-track"><div class="aum-fill" style="width:${aumPct.toFixed(1)}%"></div></div>
