@@ -89,6 +89,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13
 .slide-out-left{animation:slideOutLeft 200ms ease-out forwards;pointer-events:none}
 .slide-out-right{animation:slideOutRight 200ms ease-out forwards;pointer-events:none}
 #tabPanels{position:relative;overflow:hidden}
+
 .lb-rm-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;color:var(--text2);font-family:var(--mono)}
 .lb-rm-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
 .export-btn{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text);font-family:var(--sans);transition:all .15s}
@@ -1152,6 +1153,10 @@ html{-webkit-text-size-adjust:100%}
           <button class="btn export-btn" onclick="exportCSV()" title="Download Holdings as CSV">⬇ Export CSV</button>
         </div>
       </div>
+      <div id="holdExportBtns" style="display:none;justify-content:flex-end;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+        <button class="export-btn" onclick="exportClientExcel()">📊 Excel</button>
+        <button class="export-btn export-btn-pdf" onclick="exportClientPDF()">📄 PDF</button>
+      </div>
       <div class="t-wrap scroll">
         <table>
           <thead><tr>
@@ -1209,10 +1214,6 @@ html{-webkit-text-size-adjust:100%}
       <div class="sector-drill-hdr">
         <span id="sectorDrillTitle">—</span>
         <button onclick="clearSectorFilter()" title="Close">✕ Close</button>
-      </div>
-      <div id="holdExportBtns" style="display:none;justify-content:flex-end;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-        <button class="export-btn" onclick="exportClientExcel()">📊 Excel</button>
-        <button class="export-btn export-btn-pdf" onclick="exportClientPDF()">📄 PDF</button>
       </div>
       <div class="t-wrap scroll">
         <table>
@@ -1345,6 +1346,7 @@ html{-webkit-text-size-adjust:100%}
   </div>
 
   <!-- Market Heatmap — TradingView multi-region -->
+
   <div id="t-mh" style="display:none">
     <!-- Region tabs -->
     <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
@@ -1874,13 +1876,39 @@ function parseSheetCSV(text){
     rows.push({subgroup:iSub>=0?c[iSub]:'',clientCode,clientName:iName>=0?(c[iName]||clientCode):clientCode,
                code:symbol,name:iName>=0?(c[iName]||symbol):symbol,sector,qty,buy,valRate:val,ledger});
   }
+
+  // ── DEDUPLICATION: same clientCode + same script code → merge ──
+  // Weighted avg buy = Σ(qty×buy) / Σqty
+  // Weighted avg valRate = Σ(qty×valRate) / Σqty
+  const deduped=[];
+  const mergeMap={};// key = clientCode+'||'+code
+  rows.forEach(r=>{
+    const key=r.clientCode+'||'+r.code;
+    if(!mergeMap[key]){
+      mergeMap[key]={...r,_sumBuyVal:r.qty*r.buy,_sumValRateVal:r.qty*r.valRate};
+      deduped.push(mergeMap[key]);
+    }else{
+      const m=mergeMap[key];
+      m._sumBuyVal    +=r.qty*r.buy;
+      m._sumValRateVal+=r.qty*r.valRate;
+      m.qty           +=r.qty;
+      m.buy           = m.qty>0?m._sumBuyVal/m.qty:m.buy;
+      m.valRate       = m.qty>0?m._sumValRateVal/m.qty:m.valRate;
+      // Keep last non-null ledger
+      if(r.ledger!==null)m.ledger=r.ledger;
+    }
+  });
+  // Clean up internal accumulators
+  deduped.forEach(r=>{delete r._sumBuyVal;delete r._sumValRateVal;});
+
+  const merged=deduped.length,original=rows.length;
+  console.log(`[SHEET] Parsed ${original} rows → ${merged} after dedup (${original-merged} merged), skipped ${skip}`);
+
   // Build per-client ledger map (last non-null value wins)
   window._ledgerMap={};
-  rows.forEach(r=>{if(r.ledger!==null)window._ledgerMap[r.clientCode]=r.ledger;});
-  // Debug: first 5 rows
-  console.log('[SHEET] First 5 parsed rows:', rows.slice(0,5));
-  console.log(`[SHEET] Parsed ${rows.length} rows, skipped ${skip}`);
-  return rows;
+  deduped.forEach(r=>{if(r.ledger!==null)window._ledgerMap[r.clientCode]=r.ledger;});
+
+  return deduped;
 }
 
 // UPDATED: Broker CSV parser (fallback for file upload)
@@ -2087,7 +2115,10 @@ function buildClientList(){
     :PORTFOLIO;
   const seen=new Map();
   scope.forEach(s=>{if(!seen.has(s.clientCode))seen.set(s.clientCode,s.clientName||s.clientCode);});
-  allClients=[...seen.entries()].map(([code,name])=>({code,name})).sort((a,b)=>a.name.localeCompare(b.name));
+  // Build allClients with rm for export
+  const rmMap={};
+  scope.forEach(s=>{if(s.clientCode)rmMap[s.clientCode]=s.subgroup||'—';});
+  allClients=[...seen.entries()].map(([code,name])=>({code,name,rm:rmMap[code]||'—'})).sort((a,b)=>a.name.localeCompare(b.name));
   const sel=document.getElementById('clientSelect');
   sel.innerHTML='<option value="">— Select Client —</option>';
   allClients.forEach(c=>{
@@ -4035,6 +4066,7 @@ async function exportClientPDF(){
   }
   doc.save('AUTUS_'+d.clientCode+'_'+d.reportDate.replace(/ /g,'_')+'.pdf');
 }
+
 
 function filterClientCards(){
   const q=document.getElementById('clientSearch').value.toLowerCase();
