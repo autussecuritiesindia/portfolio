@@ -890,7 +890,7 @@ html{-webkit-text-size-adjust:100%}
       <input id="pinKeyboardInput" type="password" inputmode="numeric" maxlength="4"
         style="position:absolute;opacity:0;width:1px;height:1px"
         autocomplete="one-time-code">
-      <input id="pinMobileInput" class="pin-mobile-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="one-time-code" oninput="syncMobilePin(this.value,'2')" onfocus="this.value=''">
+      <input id="pinMobileInput" class="pin-mobile-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="one-time-code" oninput="syncMobilePin(this.value,'2')">
       <div class="login-err" id="loginErr"></div>
       <div class="pin-pad">
         <div class="pin-key" onclick="pinKey('1')">1</div><div class="pin-key" onclick="pinKey('2')">2</div><div class="pin-key" onclick="pinKey('3')">3</div>
@@ -913,7 +913,7 @@ html{-webkit-text-size-adjust:100%}
       <input id="pinKeyboardInput3" type="password" inputmode="numeric" maxlength="4"
         style="position:absolute;opacity:0;width:1px;height:1px"
         autocomplete="one-time-code">
-      <input id="pinMobileInput3" class="pin-mobile-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="one-time-code" oninput="syncMobilePin(this.value,'3')" onfocus="this.value=''">
+      <input id="pinMobileInput3" class="pin-mobile-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="one-time-code" oninput="syncMobilePin(this.value,'3')">
       <div class="login-err" id="loginErr3"></div>
       <div class="pin-pad">
         <div class="pin-key" onclick="pinKey3('1')">1</div><div class="pin-key" onclick="pinKey3('2')">2</div><div class="pin-key" onclick="pinKey3('3')">3</div>
@@ -1150,12 +1150,10 @@ html{-webkit-text-size-adjust:100%}
         <span class="sec-title">📋 All Holdings — Live CMP</span>
         <div class="sec-actions">
           <span class="sec-badge" id="hBadge">—</span>
-          <button class="btn export-btn" onclick="exportCSV()" title="Download Holdings as CSV">⬇ Export CSV</button>
+          <button class="btn export-btn" onclick="exportCSV()" title="Download Holdings as CSV">⬇ CSV</button>
+          <button class="export-btn" onclick="exportClientExcel()">📊 Excel</button>
+          <button class="export-btn export-btn-pdf" onclick="exportClientPDF()">📄 PDF</button>
         </div>
-      </div>
-      <div id="holdExportBtns" style="display:none;justify-content:flex-end;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-        <button class="export-btn" onclick="exportClientExcel()">📊 Excel</button>
-        <button class="export-btn export-btn-pdf" onclick="exportClientPDF()">📄 PDF</button>
       </div>
       <div class="t-wrap scroll">
         <table>
@@ -1188,7 +1186,7 @@ html{-webkit-text-size-adjust:100%}
         <div id="lbRMBtns" style="display:none;flex-wrap:wrap;gap:6px;align-items:center"></div>
         <input class="search-box" id="lbSearch" placeholder="🔍 Search client…" oninput="renderLedger()" style="width:100%;max-width:280px">
       </div>
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <div class="lb-scroll scroll" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
         <table style="width:100%;min-width:680px;border-collapse:collapse">
           <thead>
             <tr style="background:var(--surface2);font-size:9px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:700">
@@ -1446,12 +1444,17 @@ function proceedToPin(){
   document.getElementById('pinLabel').textContent='Welcome, '+CREDS[uid].display+' — Enter PIN';
   document.getElementById('loginErr').textContent='';
   updatePinDots();
-  // Focus hidden input — 150ms gives browser time to settle after display change
-  setTimeout(()=>{
-    const ki=document.getElementById('pinKeyboardInput');
-    if(ki){ki.value='';ki.focus();}
-    else{document.getElementById('loginStep2')?.focus();}
-  },150);
+  // Multi-attempt focus — mobile browsers need repeated tries after display change
+  const _focusPin2=()=>{
+    const mobile=document.getElementById('pinMobileInput');
+    const hidden=document.getElementById('pinKeyboardInput');
+    const isMob=window.matchMedia('(max-width:600px)').matches||('ontouchstart' in window);
+    if(isMob&&mobile){mobile.value='';mobile.focus();}
+    else if(hidden){hidden.value='';hidden.focus();}
+  };
+  setTimeout(_focusPin2,50);
+  setTimeout(_focusPin2,200);
+  setTimeout(_focusPin2,500);
 }
 
 // Back to User ID step
@@ -1565,10 +1568,14 @@ function showPinReturn(){
   const rn=document.getElementById('pinReturnName');
   if(rn)rn.textContent='👋 Welcome back, '+d;
   pinBuffer3='';updatePinDots3();
-  setTimeout(()=>{
-    const ki=document.getElementById('pinKeyboardInput3');
-    if(ki){ki.value='';ki.focus();}
-  },150);
+  const _focusPin3=()=>{
+    const mobile=document.getElementById('pinMobileInput3');
+    const hidden=document.getElementById('pinKeyboardInput3');
+    const isMob=window.matchMedia('(max-width:600px)').matches||('ontouchstart' in window);
+    if(isMob&&mobile){mobile.value='';mobile.focus();}
+    else if(hidden){hidden.value='';hidden.focus();}
+  };
+  setTimeout(_focusPin3,50);setTimeout(_focusPin3,200);setTimeout(_focusPin3,500);
 }
 function pinKey3(k){if(pinBuffer3.length>=4)return;pinBuffer3+=k;updatePinDots3();if(pinBuffer3.length===4)setTimeout(checkPin3,80);}
 function pinDel3(){pinBuffer3=pinBuffer3.slice(0,-1);updatePinDots3();}
@@ -2666,7 +2673,6 @@ function exportCSV(){
   if(!data.length){toast('No holdings to export','warn');return;}
   const totalInv=data.reduce((a,s)=>a+s.invest,0);
   const totalCurr=data.reduce((a,s)=>a+s.curr,0);
-  const expBtns=document.getElementById('holdExportBtns');if(expBtns)expBtns.style.display=selectedClient?'flex':'none';
   const sorted=[...data].sort((a,b)=>b.curr-a.curr);
   const hdr=['Script','Company','Sector','Client','CMP','Day%','Wt%','Qty','AvgBuy','CurrValue','PnL','PnL%'];
   const rows=sorted.map(s=>{
@@ -3725,21 +3731,25 @@ function initSwipeTabs(){
     const t=e.touches[0];
     tx0=t.clientX;ty0=t.clientY;swiping=false;
     // Don't swipe if touch started inside a scrollable area
-    inScroll=!!e.target.closest('.scroll,.t-wrap,.hm-drill-table,.sc-client-table,.top-clients-table');
+    inScroll=!!e.target.closest('.scroll,.t-wrap,.hm-drill-table,.sc-client-table,.top-clients-table,.lb-scroll');
   },{passive:true});
 
   panels.addEventListener('touchmove',e=>{
     if(inScroll)return;
     const dx=e.touches[0].clientX-tx0;
     const dy=e.touches[0].clientY-ty0;
-    if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy))swiping=true;
+    // Only mark as swiping if clearly horizontal (dx > 3× dy) to avoid accidental tab switch
+    if(Math.abs(dx)>14&&Math.abs(dx)>Math.abs(dy)*3)swiping=true;
+    // If clearly vertical, cancel any swipe intent
+    if(Math.abs(dy)>Math.abs(dx)*1.5)swiping=false;
   },{passive:true});
 
   panels.addEventListener('touchend',e=>{
     if(!swiping||inScroll)return;
     const dx=e.changedTouches[0].clientX-tx0;
     const dy=e.changedTouches[0].clientY-ty0;
-    if(Math.abs(dx)<60||Math.abs(dy)>80)return;
+    // Require strong horizontal intent: 70px min, dy less than 50px
+    if(Math.abs(dx)<70||Math.abs(dy)>50)return;
 
     // Find active tab
     const activeTab=document.querySelector('.tab.active');
@@ -3911,163 +3921,333 @@ function _getExportData(){
 
 function exportClientExcel(){
   if(!selectedClient){alert('Select a client first');return;}
-  if(typeof XLSX==='undefined'){alert('Excel library still loading — try again in a moment');return;}
   const d=_getExportData();
-  const wb=XLSX.utils.book_new();
 
-  // Cover
-  const cov=[
-    ['AUTUS CAPITAL MANAGEMENT — CLIENT PORTFOLIO REPORT'],[''],
-    ['Client Name',d.clientName],['Client Code',d.clientCode],
-    ['RM / Advisor',d.rm],['Report Date',d.reportDate],[''],
-    ['SUMMARY'],
-    ['Invested','Current Value','P&L ₹','P&L %','Cash / Ledger','Effective Total'],
-    [d.portInv,d.portVal,d.portPnL,d.portInv>0?d.portPnL/d.portInv:0,d.lb??0,d.effTotal]
-  ];
-  const wsC=XLSX.utils.aoa_to_sheet(cov);
-  wsC['!cols']=[{wch:22},{wch:22},{wch:18},{wch:12},{wch:18},{wch:18}];
-  wsC['!merges']=[{s:{r:0,c:0},e:{r:0,c:5}},{s:{r:7,c:0},e:{r:7,c:5}}];
-  ['A10','B10','C10','D10','E10','F10'].forEach((ref,i)=>{
-    const vals=[d.portInv,d.portVal,d.portPnL,d.portInv>0?d.portPnL/d.portInv:0,d.lb??0,d.effTotal];
-    wsC[ref]={t:'n',v:vals[i],z:i===3?'0.00%':'₹#,##0.00'};
-  });
-  XLSX.utils.book_append_sheet(wb,wsC,'Cover');
-
-  // Holdings
-  const hH=['#','Code','Name','Sector','Qty','Avg Buy ₹','CMP ₹','Curr Value ₹','P&L ₹','P&L %','Wt %'];
-  const hR=d.rows.map(r=>[r.no,r.code,r.name,r.sector,r.qty,r.avgBuy,r.cmp,r.currVal,r.pnl,r.pnlPct/100,r.wt/100]);
-  const wsH=XLSX.utils.aoa_to_sheet([hH,...hR]);
-  wsH['!cols']=[{wch:5},{wch:14},{wch:28},{wch:20},{wch:8},{wch:13},{wch:13},{wch:16},{wch:14},{wch:10},{wch:8}];
-  for(let ri=1;ri<=hR.length;ri++){
-    ['F','G','H','I'].forEach(c=>{const r=c+(ri+1);if(wsH[r]){wsH[r].t='n';wsH[r].z='₹#,##0.00';}});
-    ['J','K'].forEach(c=>{const r=c+(ri+1);if(wsH[r]){wsH[r].t='n';wsH[r].z='0.00%';}});
+  // Comma-formatted numbers: 1,00,000.00
+  function nF(v){
+    if(v===null||v===undefined||isNaN(Number(v)))return '--';
+    const n=Number(v),abs=Math.abs(n);
+    return (n<0?'-':'')+abs.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
   }
-  wsH['!freeze']={xSplit:0,ySplit:1};
-  XLSX.utils.book_append_sheet(wb,wsH,'Holdings');
+  function pF(v){return (Number(v)>=0?'+':'')+Number(v).toFixed(2)+'%';}
 
-  // Sector
-  const sH=['Sector','Stocks','Invested ₹','Curr Value ₹','P&L ₹','P&L %','Wt %'];
-  const sR=d.sectors.map(s=>[s.sector,s.stocks,s.invest,s.curr,s.pnl,s.pnlPct/100,s.wt/100]);
-  const wsS=XLSX.utils.aoa_to_sheet([sH,...sR]);
-  wsS['!cols']=[{wch:24},{wch:8},{wch:16},{wch:16},{wch:14},{wch:10},{wch:8}];
-  for(let ri=1;ri<=sR.length;ri++){
-    ['C','D','E'].forEach(c=>{const r=c+(ri+1);if(wsS[r]){wsS[r].t='n';wsS[r].z='₹#,##0.00';}});
-    ['F','G'].forEach(c=>{const r=c+(ri+1);if(wsS[r]){wsS[r].t='n';wsS[r].z='0.00%';}});
-  }
-  wsS['!freeze']={xSplit:0,ySplit:1};
-  XLSX.utils.book_append_sheet(wb,wsS,'Sector Breakup');
+  // ── Standard column widths (px) — mirrors PDF mm proportions ──
+  const COL={no:'36px',code:'80px',qty:'50px',buy:'88px',cmp:'88px',
+             curr:'100px',pnl:'100px',pnlp:'64px',wt:'50px',sec:'auto'};
 
-  if(d.lb!==null){
-    const wsL=XLSX.utils.aoa_to_sheet([
-      ['LEDGER / CASH SUMMARY'],[''],
-      ['Equity Value','Cash / Ledger','Effective Total','Cash %'],
-      [d.portVal,d.lb,d.effTotal,d.effTotal>0?d.lb/d.effTotal:0]
-    ]);
-    wsL['!cols']=[{wch:20},{wch:18},{wch:18},{wch:12}];
-    ['A4','B4','C4'].forEach((ref,i)=>{wsL[ref]={t:'n',v:[d.portVal,d.lb,d.effTotal][i],z:'₹#,##0.00'};});
-    if(wsL['D4'])wsL['D4']={t:'n',v:d.effTotal>0?d.lb/d.effTotal:0,z:'0.00%'};
-    XLSX.utils.book_append_sheet(wb,wsL,'Ledger');
-  }
-  XLSX.writeFile(wb,'AUTUS_'+d.clientCode+'_'+d.reportDate.replace(/ /g,'_')+'.xlsx');
+  const navy='#111E54',navyDk='#0D1840',white='#FFFFFF',
+    green='#166534',greenBg='#DCFCE7',red='#991B1B',redBg='#FEE2E2',
+    indigo='#3730A3',indigoBg='#EEF2FF',gray='#64748B',grayBg='#F8FAFC',
+    altRow='#EEF2FF',border='#CBD5E1',gold='#B48C1E';
+
+  const TH=(txt,bg,fg,w)=>`<th style="background:${bg||navy};color:${fg||white};font-family:Arial,sans-serif;font-size:11px;font-weight:bold;padding:7px 8px;border:1px solid ${border};text-align:center;white-space:nowrap;vertical-align:middle${w?';width:'+w:''}">${txt}</th>`;
+  const THL=(txt,bg,fg,w)=>`<th style="background:${bg||navy};color:${fg||white};font-family:Arial,sans-serif;font-size:11px;font-weight:bold;padding:7px 8px;border:1px solid ${border};text-align:left;white-space:nowrap;vertical-align:middle${w?';width:'+w:''}">${txt}</th>`;
+  const TD=(txt,align,fg,bold,bg,w)=>`<td style="background:${bg||white};color:${fg||'#1E293B'};font-family:Arial,sans-serif;font-size:11px;font-weight:${bold?'bold':'normal'};padding:6px 8px;border:1px solid ${border};text-align:${align||'right'};white-space:nowrap;vertical-align:middle${w?';width:'+w:''}">${txt}</td>`;
+  const TDW=(txt,align,fg,bold,bg)=>`<td style="background:${bg||white};color:${fg||'#1E293B'};font-family:Arial,sans-serif;font-size:11px;font-weight:${bold?'bold':'normal'};padding:6px 8px;border:1px solid ${border};text-align:${align||'left'};white-space:normal;vertical-align:middle">${txt}</td>`;
+
+  const pnlPct=d.portInv>0?d.portPnL/d.portInv*100:0;
+
+  let html=`<html xmlns:o="urn:schemas-microsoft-com:office:office"
+    xmlns:x="urn:schemas-microsoft-com:office:excel"
+    xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8"></head><body>
+<table cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;font-family:Arial,sans-serif">
+
+  <!-- ── HEADER ── -->
+  <tr>
+    <td colspan="10" style="background:${navyDk};color:${white};font-size:18px;font-weight:bold;padding:12px 16px;border:none;letter-spacing:1px">AUTUS</td>
+  </tr>
+  <tr>
+    <td colspan="5" style="background:${navy};color:${gold};font-size:10px;font-weight:bold;padding:5px 16px;border:none;letter-spacing:2px">CLIENT PORTFOLIO REPORT</td>
+    <td colspan="5" style="background:${navy};color:${white};font-size:10px;font-weight:bold;padding:5px 16px;border:none;text-align:right">${d.clientName} &nbsp;|&nbsp; RM: ${d.rm} &nbsp;|&nbsp; ${d.reportDate}</td>
+  </tr>
+  <tr><td colspan="10" style="padding:4px;border:none"></td></tr>
+
+  <!-- ── PORTFOLIO SUMMARY ── -->
+  <tr><td colspan="10" style="background:${navy};color:${white};font-size:11px;font-weight:bold;padding:7px 12px;border:none;letter-spacing:1px">PORTFOLIO SUMMARY</td></tr>
+  <tr>
+    ${TH('INVESTED',navy,white,COL.curr)}
+    ${TH('CURRENT VALUE',navy,white,COL.curr)}
+    ${TH('NOTIONAL P&L',d.portPnL>=0?green:red,white,COL.pnl)}
+    ${TH('P&L %',d.portPnL>=0?green:red,white,COL.pnlp)}
+    ${TH('CASH / LEDGER',indigo,white,COL.curr)}
+    ${TH('EFFECTIVE TOTAL',navy,white,COL.curr)}
+    <td colspan="4" style="border:none"></td>
+  </tr>
+  <tr>
+    ${TD(nF(d.portInv),'right','#1E293B',true,grayBg,COL.curr)}
+    ${TD(nF(d.portVal),'right','#1E293B',true,grayBg,COL.curr)}
+    ${TD((d.portPnL>=0?'+':'')+nF(d.portPnL),'right',d.portPnL>=0?green:red,true,d.portPnL>=0?greenBg:redBg,COL.pnl)}
+    ${TD(pF(pnlPct),'right',d.portPnL>=0?green:red,true,d.portPnL>=0?greenBg:redBg,COL.pnlp)}
+    ${TD(d.lb!==null?(d.lb>=0?'+':'')+nF(d.lb):'N/A','right',d.lb!==null&&d.lb>=0?indigo:d.lb!==null?red:gray,true,d.lb!==null&&d.lb>=0?indigoBg:d.lb!==null?redBg:grayBg,COL.curr)}
+    ${TD(nF(d.effTotal),'right','#1E293B',true,grayBg,COL.curr)}
+    <td colspan="4" style="border:none"></td>
+  </tr>
+  <tr><td colspan="10" style="padding:5px;border:none"></td></tr>
+
+  <!-- ── HOLDINGS ── -->
+  <tr><td colspan="10" style="background:${navy};color:${white};font-size:11px;font-weight:bold;padding:7px 12px;border:none;letter-spacing:1px">HOLDINGS</td></tr>
+  <tr>
+    ${TH('#',navy,white,COL.no)}
+    ${THL('CODE',navy,white,COL.code)}
+    ${TH('QTY',navy,white,COL.qty)}
+    ${TH('AVG BUY',navy,white,COL.buy)}
+    ${TH('CMP',navy,white,COL.cmp)}
+    ${TH('CURR VALUE',navy,white,COL.curr)}
+    ${TH('NOTIONAL P&L',navy,white,COL.pnl)}
+    ${TH('P&L %',navy,white,COL.pnlp)}
+    ${TH('WT %',navy,white,COL.wt)}
+    ${THL('SECTOR',navy,white,COL.sec)}
+  </tr>
+  ${d.rows.map((r,i)=>{
+    const bg=i%2===0?white:altRow;
+    const pc=r.pnl>=0?green:red,pb=r.pnl>=0?greenBg:redBg;
+    return `<tr>
+      ${TD(r.no,'center',gray,false,bg,COL.no)}
+      ${TD('<b>'+r.code+'</b>','left','#1E293B',false,bg,COL.code)}
+      ${TD(r.qty,'right','#1E293B',false,bg,COL.qty)}
+      ${TD(nF(r.avgBuy),'right',gray,false,bg,COL.buy)}
+      ${TD(nF(r.cmp),'right','#1E293B',true,bg,COL.cmp)}
+      ${TD(nF(r.currVal),'right','#1E293B',true,bg,COL.curr)}
+      ${TD((r.pnl>=0?'+':'')+nF(r.pnl),'right',pc,true,pb,COL.pnl)}
+      ${TD(pF(r.pnlPct),'right',pc,true,pb,COL.pnlp)}
+      ${TD(r.wt.toFixed(1)+'%','right',navy,true,bg,COL.wt)}
+      ${TDW(r.sector,'left',gray,false,bg)}
+    </tr>`;
+  }).join('')}
+  <tr>
+    ${TD('','center','',false,grayBg,COL.no)}
+    ${TD('<b>TOTAL</b>','left',navy,true,grayBg,COL.code)}
+    ${TD(d.rows.reduce((a,r)=>a+r.qty,0),'right',navy,true,grayBg,COL.qty)}
+    ${TD('','right','',false,grayBg,COL.buy)}
+    ${TD('','right','',false,grayBg,COL.cmp)}
+    ${TD(nF(d.portVal),'right',navy,true,grayBg,COL.curr)}
+    ${TD((d.portPnL>=0?'+':'')+nF(d.portPnL),'right',d.portPnL>=0?green:red,true,d.portPnL>=0?greenBg:redBg,COL.pnl)}
+    ${TD(pF(pnlPct),'right',d.portPnL>=0?green:red,true,d.portPnL>=0?greenBg:redBg,COL.pnlp)}
+    ${TD('100%','right',navy,true,grayBg,COL.wt)}
+    ${TD('','left','',false,grayBg)}
+  </tr>
+  <tr><td colspan="10" style="padding:5px;border:none"></td></tr>
+
+  <!-- ── SECTOR BREAKUP ── -->
+  <tr><td colspan="10" style="background:${navy};color:${white};font-size:11px;font-weight:bold;padding:7px 12px;border:none;letter-spacing:1px">SECTOR BREAKUP</td></tr>
+  <tr>
+    ${THL('SECTOR',navy,white,'200px')}
+    ${TH('STOCKS',navy,white,'60px')}
+    ${TH('INVESTED',navy,white,COL.curr)}
+    ${TH('CURR VALUE',navy,white,COL.curr)}
+    ${TH('NOTIONAL P&L',navy,white,COL.pnl)}
+    ${TH('P&L %',navy,white,COL.pnlp)}
+    ${TH('WT %',navy,white,COL.wt)}
+    <td colspan="3" style="border:none"></td>
+  </tr>
+  ${d.sectors.map((s,i)=>{
+    const bg=i%2===0?white:altRow;
+    const pc=s.pnl>=0?green:red,pb=s.pnl>=0?greenBg:redBg;
+    return `<tr>
+      ${TDW(s.sector,'left','#1E293B',true,bg)}
+      ${TD(s.stocks,'center',gray,false,bg,'60px')}
+      ${TD(nF(s.invest),'right',gray,false,bg,COL.curr)}
+      ${TD(nF(s.curr),'right','#1E293B',true,bg,COL.curr)}
+      ${TD((s.pnl>=0?'+':'')+nF(s.pnl),'right',pc,true,pb,COL.pnl)}
+      ${TD(pF(s.pnlPct),'right',pc,true,pb,COL.pnlp)}
+      ${TD(s.wt.toFixed(1)+'%','right',navy,true,bg,COL.wt)}
+      <td colspan="3" style="border:none"></td>
+    </tr>`;
+  }).join('')}
+  <tr><td colspan="10" style="padding:5px;border:none"></td></tr>
+
+  ${d.lb!==null?`
+  <tr><td colspan="10" style="background:${indigo};color:${white};font-size:11px;font-weight:bold;padding:7px 12px;border:none;letter-spacing:1px">LEDGER / CASH</td></tr>
+  <tr>
+    ${TH('EQUITY VALUE',indigo,white,COL.curr)}${TH('CASH / LEDGER',indigo,white,COL.curr)}
+    ${TH('EFFECTIVE TOTAL',indigo,white,COL.curr)}${TH('CASH %',indigo,white,COL.pnlp)}
+    <td colspan="6" style="border:none"></td>
+  </tr>
+  <tr>
+    ${TD(nF(d.portVal),'right','#1E293B',true,grayBg,COL.curr)}
+    ${TD((d.lb>=0?'+':'')+nF(d.lb),'right',d.lb>=0?indigo:red,true,d.lb>=0?indigoBg:redBg,COL.curr)}
+    ${TD(nF(d.effTotal),'right','#1E293B',true,grayBg,COL.curr)}
+    ${TD(d.effTotal>0?Math.abs(d.lb/d.effTotal*100).toFixed(1)+'%':'--','right',d.lb>=0?indigo:red,true,d.lb>=0?indigoBg:redBg,COL.pnlp)}
+    <td colspan="6" style="border:none"></td>
+  </tr>`:''}
+
+  <!-- ── FOOTER ── -->
+  <tr><td colspan="10" style="padding:4px;border:none"></td></tr>
+  <tr><td colspan="10" style="background:${navyDk};color:${gold};font-size:9px;padding:6px 12px;border:none">AUTUS &nbsp;&nbsp;&nbsp; Confidential — For Client Use Only &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; Generated: ${d.reportDate}</td></tr>
+</table></body></html>`;
+
+  const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='AUTUS_'+d.clientName.replace(/\s/g,'_')+'_'+d.reportDate.replace(/ /g,'_')+'.xls';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(a.href);},100);
 }
 
 async function exportClientPDF(){
   if(!selectedClient){alert('Select a client first');return;}
-  if(typeof window.jspdf==='undefined'){alert('PDF library still loading — try again in a moment');return;}
+  if(typeof window.jspdf==='undefined'){alert('PDF library still loading — try again');return;}
   const {jsPDF}=window.jspdf;
   const d=_getExportData();
   const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
-  const W=297,M=14;
-  const NAVY=[17,45,84],WHITE=[255,255,255],LIGHT=[247,249,252],
-        GREEN=[21,128,61],RED=[185,28,28],GRAY=[100,116,139];
+  const W=297,M=14,USABLE=W-M*2; // 269mm usable
+  const NAVY=[17,45,84],NAVYDK=[13,24,64],WHITE=[255,255,255],
+        ALTROW=[240,244,255],GRAYLT=[241,245,249],
+        GREEN=[21,128,61],GREENLT=[220,252,231],
+        RED=[185,28,28],REDLT=[254,226,226],
+        GRAY=[100,116,139],INDIGO=[99,102,241],INDIGOLT=[238,242,255],
+        GOLD=[180,140,30],BORDER=[203,213,225];
+
+  // ── Standard column widths (mm) — same proportions as Excel ──
+  // Total fixed: 8+21+12+22+22+26+26+16+12 = 165mm
+  // Sector gets remaining: 269 - 165 = 104mm max, but cap at 50 for readability
+  const COL={no:8,code:21,qty:12,buy:22,cmp:22,curr:26,pnl:26,pnlp:16,wt:12};
+  const fixedSum=Object.values(COL).reduce((a,v)=>a+v,0); // 165
+  const secW=Math.min(Math.max(Math.max(...d.rows.map(r=>(r.sector||'').length))*1.8,18),USABLE-fixedSum);
+
+  // Indian number format: 1,00,000.00
+  function pN(v,pre){
+    if(v===null||v===undefined||isNaN(Number(v)))return '--';
+    const p=pre===undefined?'Rs.':String(pre);
+    const n=Number(v),abs=Math.abs(n);
+    return (n<0?'-':'')+p+abs.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  function pP(v){return (Number(v)>=0?'+':'')+Number(v).toFixed(2)+'%';}
+
   let y=M;
 
-  // Header
-  doc.setFillColor(...NAVY);doc.rect(0,0,W,22,'F');
-  doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');doc.setFontSize(15);
-  doc.text('AUTUS',M,14);
-  doc.setFontSize(8.5);doc.setFont('helvetica','normal');
-  doc.text('CLIENT PORTFOLIO REPORT',M+26,14);
-  doc.setFont('helvetica','bold');doc.setFontSize(8.5);
-  doc.text(d.clientName+' · '+d.clientCode+' · RM: '+d.rm+' · '+d.reportDate,W-M,14,{align:'right'});
-  y=30;
+  // ── HEADER ──
+  doc.setFillColor(...NAVYDK);doc.rect(0,0,W,22,'F');
+  doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');doc.setFontSize(16);
+  doc.text('AUTUS',M,15);
+  doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(...GOLD);
+  doc.text('CLIENT PORTFOLIO REPORT',M+30,15);
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...WHITE);
+  doc.text(d.clientName,W-M,10,{align:'right'});
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(180,200,235);
+  doc.text('RM: '+d.rm+'   '+d.reportDate,W-M,17,{align:'right'});
+  doc.setDrawColor(...GOLD);doc.setLineWidth(0.5);doc.line(0,22,W,22);
+  y=29;
 
-  // KPI boxes
+  // ── KPI BOXES ──
+  const pnlPct=d.portPnL/(d.portInv||1)*100;
   const kpis=[
-    {l:'INVESTED',v:'₹'+fmtC(d.portInv),c:NAVY},
-    {l:'CURRENT VALUE',v:'₹'+fmtC(d.portVal),c:NAVY},
-    {l:'P&L',v:(d.portPnL>=0?'+':'-')+'₹'+fmtC(Math.abs(d.portPnL)),c:d.portPnL>=0?GREEN:RED},
-    {l:'P&L %',v:(d.portPnL>=0?'+':'')+(d.portPnL/(d.portInv||1)*100).toFixed(2)+'%',c:d.portPnL>=0?GREEN:RED},
-    {l:'CASH/LEDGER',v:d.lb!==null?(d.lb>=0?'+':'-')+'₹'+fmtC(Math.abs(d.lb??0)):'—',c:d.lb!==null&&d.lb>=0?[99,102,241]:d.lb!==null?RED:GRAY},
-    {l:'EFFECTIVE TOTAL',v:'₹'+fmtC(d.effTotal),c:NAVY},
+    {l:'INVESTED',v:pN(d.portInv),bg:[245,247,252],bc:BORDER,vc:NAVY},
+    {l:'CURRENT VALUE',v:pN(d.portVal),bg:[245,247,252],bc:BORDER,vc:NAVY},
+    {l:'NOTIONAL P&L',v:pN(d.portPnL,''),bg:d.portPnL>=0?GREENLT:REDLT,bc:d.portPnL>=0?[134,239,172]:[252,165,165],vc:d.portPnL>=0?GREEN:RED},
+    {l:'P&L %',v:pP(pnlPct),bg:d.portPnL>=0?GREENLT:REDLT,bc:d.portPnL>=0?[134,239,172]:[252,165,165],vc:d.portPnL>=0?GREEN:RED},
+    {l:'CASH/LEDGER',v:d.lb!==null?pN(d.lb,''):'N/A',bg:d.lb!==null&&d.lb>=0?INDIGOLT:d.lb!==null?REDLT:GRAYLT,bc:d.lb!==null&&d.lb>=0?[165,180,252]:d.lb!==null?[252,165,165]:BORDER,vc:d.lb!==null&&d.lb>=0?INDIGO:d.lb!==null?RED:GRAY},
+    {l:'EFFECTIVE TOTAL',v:pN(d.effTotal),bg:[245,247,252],bc:BORDER,vc:NAVY},
   ];
-  const bw=(W-M*2-5*3)/6,bh=16;
+  const bw=(USABLE-5*2)/6,bh=18;
   kpis.forEach((k,i)=>{
-    const bx=M+i*(bw+3);
-    doc.setFillColor(245,247,252);doc.roundedRect(bx,y,bw,bh,2,2,'F');
-    doc.setDrawColor(210,218,235);doc.roundedRect(bx,y,bw,bh,2,2,'S');
-    doc.setFontSize(6);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
-    doc.text(k.l,bx+bw/2,y+5,{align:'center'});
-    doc.setFontSize(9.5);doc.setFont('helvetica','bold');doc.setTextColor(...k.c);
-    doc.text(k.v,bx+bw/2,y+12,{align:'center'});
+    const bx=M+i*(bw+2);
+    doc.setFillColor(...k.bg);doc.roundedRect(bx,y,bw,bh,2,2,'F');
+    doc.setDrawColor(...k.bc);doc.setLineWidth(0.4);doc.roundedRect(bx,y,bw,bh,2,2,'S');
+    doc.setFillColor(...k.vc);doc.roundedRect(bx,y,bw,1.5,0.5,0.5,'F');
+    doc.setFontSize(5.5);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
+    doc.text(k.l,bx+bw/2,y+6.5,{align:'center'});
+    doc.setFontSize(8.5);doc.setFont('helvetica','bold');doc.setTextColor(...k.vc);
+    doc.text(String(k.v),bx+bw/2,y+14.5,{align:'center'});
   });
   y+=bh+5;
 
-  // Holdings table
-  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...NAVY);
-  doc.text('HOLDINGS',M,y);y+=2;
+  // ── HOLDINGS TABLE ──
+  doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(...NAVY);
+  doc.setDrawColor(...GOLD);doc.setLineWidth(0.3);doc.line(M,y-1,M+6,y-1);
+  doc.text('HOLDINGS',M+7,y-0.5);y+=2;
+
   doc.autoTable({
     startY:y,margin:{left:M,right:M},
-    head:[['#','Code','Name','Sector','Qty','Avg Buy','CMP','Curr Value','P&L','P&L %','Wt %']],
-    body:d.rows.map(r=>[r.no,r.code,r.name,r.sector,r.qty,'₹'+fmtC(r.avgBuy),'₹'+fmtC(r.cmp),'₹'+fmtC(r.currVal),(r.pnl>=0?'+':'-')+'₹'+fmtC(Math.abs(r.pnl)),(r.pnlPct>=0?'+':'')+r.pnlPct.toFixed(2)+'%',r.wt.toFixed(1)+'%']),
-    foot:[['','TOTAL','','','','','','₹'+fmtC(d.portVal),(d.portPnL>=0?'+':'-')+'₹'+fmtC(Math.abs(d.portPnL)),(d.portPnL/(d.portInv||1)*100).toFixed(2)+'%','100%']],
-    styles:{fontSize:7.5,cellPadding:2.2,halign:'right',font:'helvetica'},
-    headStyles:{fillColor:NAVY,textColor:WHITE,fontStyle:'bold',halign:'center',fontSize:7},
-    footStyles:{fillColor:[230,234,242],textColor:NAVY,fontStyle:'bold'},
-    columnStyles:{0:{halign:'center',cellWidth:7},1:{halign:'left',cellWidth:18},2:{halign:'left',cellWidth:36},3:{halign:'left',cellWidth:24},4:{cellWidth:10},5:{cellWidth:18},6:{cellWidth:18},7:{cellWidth:22},8:{cellWidth:22},9:{cellWidth:16},10:{cellWidth:13}},
-    alternateRowStyles:{fillColor:LIGHT},
+    head:[['#','Code','Qty','Avg Buy','CMP','Curr Value','Notional P&L','P&L %','Wt %','Sector']],
+    body:d.rows.map(r=>[
+      r.no,r.code,r.qty,pN(r.avgBuy),pN(r.cmp),pN(r.currVal),
+      pN(r.pnl,''),pP(r.pnlPct),r.wt.toFixed(1)+'%',r.sector
+    ]),
+    foot:[['','TOTAL',d.rows.reduce((a,r)=>a+r.qty,0),'','',
+      pN(d.portVal),pN(d.portPnL,''),pP(pnlPct),'100%','']],
+    styles:{fontSize:7,cellPadding:2,halign:'right',font:'helvetica',
+            lineWidth:0.15,lineColor:BORDER,minCellHeight:0},
+    headStyles:{fillColor:NAVYDK,textColor:WHITE,fontStyle:'bold',
+                halign:'center',fontSize:6.5,cellPadding:2.5,minCellHeight:0},
+    footStyles:{fillColor:[230,236,248],textColor:NAVY,fontStyle:'bold',lineWidth:0},
+    columnStyles:{
+      0:{halign:'center',cellWidth:COL.no},
+      1:{halign:'left',cellWidth:COL.code},
+      2:{halign:'right',cellWidth:COL.qty},
+      3:{halign:'right',cellWidth:COL.buy},
+      4:{halign:'right',cellWidth:COL.cmp},
+      5:{halign:'right',cellWidth:COL.curr},
+      6:{halign:'right',cellWidth:COL.pnl},
+      7:{halign:'right',cellWidth:COL.pnlp},
+      8:{halign:'right',cellWidth:COL.wt},
+      9:{halign:'left',cellWidth:secW,overflow:'ellipsize'}
+    },
+    alternateRowStyles:{fillColor:ALTROW},
     didParseCell:function(data){
-      if(data.section==='body'&&(data.column.index===8||data.column.index===9)){
-        const v=parseFloat((data.cell.raw+'').replace(/[^\d.\-]/g,''));
-        if(!isNaN(v))data.cell.styles.textColor=v>=0?GREEN:RED;
+      if(data.section==='body'){
+        if(data.column.index===6||data.column.index===7){
+          data.cell.styles.textColor=String(data.cell.raw).startsWith('-')?RED:GREEN;
+          data.cell.styles.fontStyle='bold';
+        }
+        if(data.column.index===8){data.cell.styles.fontStyle='bold';data.cell.styles.textColor=NAVY;}
       }
+      if(data.section==='foot'&&(data.column.index===6||data.column.index===7))
+        data.cell.styles.textColor=d.portPnL>=0?GREEN:RED;
     },showFoot:'lastPage'
   });
-  y=doc.lastAutoTable.finalY+5;
+  y=doc.lastAutoTable.finalY+7;
 
-  // Sector table
+  // ── SECTOR BREAKUP ──
   if(y>175){doc.addPage();y=M;}
-  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...NAVY);
-  doc.text('SECTOR BREAKUP',M,y);y+=2;
+  doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(...NAVY);
+  doc.setDrawColor(...GOLD);doc.setLineWidth(0.3);doc.line(M,y-1,M+6,y-1);
+  doc.text('SECTOR BREAKUP',M+7,y-0.5);y+=2;
+
+  const secLenSec=Math.max(...d.sectors.map(s=>(s.sector||'').length),6);
+  const secW2=Math.min(Math.max(secLenSec*2.2,30),80);
+
   doc.autoTable({
     startY:y,margin:{left:M,right:M},
-    head:[['Sector','Stocks','Invested','Curr Value','P&L','P&L %','Wt %']],
-    body:d.sectors.map(s=>[s.sector,s.stocks,'₹'+fmtC(s.invest),'₹'+fmtC(s.curr),(s.pnl>=0?'+':'-')+'₹'+fmtC(Math.abs(s.pnl)),(s.pnlPct>=0?'+':'')+s.pnlPct.toFixed(2)+'%',s.wt.toFixed(1)+'%']),
-    styles:{fontSize:7.5,cellPadding:2.2,font:'helvetica'},
-    headStyles:{fillColor:NAVY,textColor:WHITE,fontStyle:'bold',fontSize:7},
-    columnStyles:{0:{cellWidth:42,halign:'left'},1:{cellWidth:14,halign:'center'},2:{cellWidth:28},3:{cellWidth:28},4:{cellWidth:28},5:{cellWidth:18},6:{cellWidth:14}},
-    alternateRowStyles:{fillColor:LIGHT},
+    head:[['Sector','Stocks','Invested','Curr Value','Notional P&L','P&L %','Wt %']],
+    body:d.sectors.map(s=>[
+      s.sector,s.stocks,pN(s.invest),pN(s.curr),pN(s.pnl,''),pP(s.pnlPct),s.wt.toFixed(1)+'%'
+    ]),
+    styles:{fontSize:7,cellPadding:2,font:'helvetica',
+            lineWidth:0.15,lineColor:BORDER,minCellHeight:0,overflow:'ellipsize'},
+    headStyles:{fillColor:NAVYDK,textColor:WHITE,fontStyle:'bold',fontSize:6.5,cellPadding:2.5},
+    columnStyles:{
+      0:{halign:'left',cellWidth:secW2,overflow:'ellipsize'},
+      1:{halign:'center',cellWidth:14},
+      2:{halign:'right',cellWidth:COL.curr},
+      3:{halign:'right',cellWidth:COL.curr},
+      4:{halign:'right',cellWidth:COL.pnl},
+      5:{halign:'right',cellWidth:COL.pnlp},
+      6:{halign:'right',cellWidth:COL.wt}
+    },
+    alternateRowStyles:{fillColor:ALTROW},
     didParseCell:function(data){
       if(data.section==='body'&&data.column.index===4){
-        const v=parseFloat((data.cell.raw+'').replace(/[^\d.\-]/g,''));
-        if(!isNaN(v))data.cell.styles.textColor=v>=0?GREEN:RED;
+        data.cell.styles.textColor=String(data.cell.raw).startsWith('-')?RED:GREEN;
+        data.cell.styles.fontStyle='bold';
       }
     }
   });
 
-  // Footer on all pages
+  // ── FOOTER ALL PAGES ──
   const pages=doc.internal.getNumberOfPages();
   for(let i=1;i<=pages;i++){
     doc.setPage(i);
-    doc.setFillColor(...NAVY);doc.rect(0,200,W,7,'F');
+    doc.setFillColor(...NAVYDK);doc.rect(0,199,W,8,'F');
+    doc.setDrawColor(...GOLD);doc.setLineWidth(0.4);doc.line(0,199,W,199);
     doc.setTextColor(...WHITE);doc.setFontSize(7);doc.setFont('helvetica','normal');
-    doc.text('AUTUS Capital Management  ·  Confidential — For Client Use Only',M,204.5);
-    doc.text('Page '+i+' of '+pages+'  ·  Generated: '+d.reportDate,W-M,204.5,{align:'right'});
+    doc.text('AUTUS   Confidential - For Client Use Only',M,204);
+    doc.setTextColor(...GOLD);
+    doc.text('Page '+i+' of '+pages+'   '+d.reportDate,W-M,204,{align:'right'});
   }
-  doc.save('AUTUS_'+d.clientCode+'_'+d.reportDate.replace(/ /g,'_')+'.pdf');
+  doc.save('AUTUS_'+d.clientName.replace(/\s/g,'_')+'_'+d.reportDate.replace(/ /g,'_')+'.pdf');
 }
-
-
 function filterClientCards(){
   const q=document.getElementById('clientSearch').value.toLowerCase();
   document.querySelectorAll('#clientGrid .client-card').forEach(card=>{
