@@ -1046,6 +1046,7 @@ html{-webkit-text-size-adjust:100%}
     <div class="tab" onclick="showTab('hm',this)">🔥 Heatmap</div>
     <div class="tab" onclick="showTab('mh',this)">📡 Mkt Heatmap</div>
     <div class="tab" onclick="showTab('an',this)">🏆 Analytics</div>
+    <div class="tab" id="tabUsage" style="display:none" onclick="showTab('us',this)">👁 Usage Log</div>
   </div>
 
   <!-- ═══ OVERVIEW ═══ -->
@@ -1382,6 +1383,45 @@ html{-webkit-text-size-adjust:100%}
     </div>
     <div style="text-align:center;padding:6px 0;font-size:9px;color:var(--muted);font-family:var(--mono)">Powered by TradingView</div>
   </div>
+  <!-- ═══ USAGE LOG (VANTAGE admin only) ═══ -->
+  <div id="t-us" style="display:none">
+    <div class="sec">
+      <div class="sec-hdr" style="flex-wrap:wrap;gap:8px">
+        <span class="sec-title">👁 Login Usage Log — All Users</span>
+        <div class="sec-actions">
+          <span class="sec-badge" id="usBadge">—</span>
+          <button class="btn" style="font-size:10px;padding:5px 10px" onclick="clearUsageLog()">🗑 Clear Log</button>
+          <button class="btn" style="font-size:10px;padding:5px 10px;background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue)" onclick="renderUsageLog()">↻ Refresh</button>
+        </div>
+      </div>
+      <!-- Summary cards -->
+      <div id="usStats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-top:none;border-bottom:none"></div>
+      <!-- Filters -->
+      <div style="padding:8px 14px;background:var(--surface2);border:1px solid var(--border);border-top:none;border-bottom:none;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:10px;font-family:var(--mono);font-weight:700;color:var(--muted)">FILTER:</span>
+        <select id="usUserFilter" onchange="renderUsageLog()" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);padding:4px 8px;font-size:11px;color:var(--text);font-family:var(--mono)">
+          <option value="">All Users</option>
+        </select>
+        <select id="usDayFilter" onchange="renderUsageLog()" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);padding:4px 8px;font-size:11px;color:var(--text);font-family:var(--mono)">
+          <option value="7">Last 7 days</option>
+          <option value="30">Last 30 days</option>
+          <option value="0">All time</option>
+        </select>
+      </div>
+      <div class="t-wrap scroll">
+        <table style="min-width:580px">
+          <thead><tr>
+            <th style="text-align:left">Date &amp; Time</th>
+            <th style="text-align:left">User</th>
+            <th style="text-align:left">Role</th>
+            <th style="text-align:left">Device</th>
+            <th style="text-align:left">User Agent</th>
+          </tr></thead>
+          <tbody id="tb-usage"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
   </div><!-- /#tabPanels -->
 
 </main>
@@ -1556,6 +1596,22 @@ function completeLogin(){
   document.getElementById('selWelcome').textContent=currentUser.role==='admin'?'Select RM':`Welcome, ${currentUser.display}`;
   // Proactively wake the Render.com server — fires in background, doesn't block UI
   warmupServer();
+  // ── Login usage log (stored in localStorage, visible to VANTAGE admin) ──
+  try{
+    const LS_LOG='pf-login-log-v1';
+    const existing=JSON.parse(localStorage.getItem(LS_LOG)||'[]');
+    existing.push({
+      user:currentUser.username,
+      display:currentUser.display,
+      role:currentUser.role,
+      ts:new Date().toISOString(),
+      device:(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'Mobile':'Desktop'),
+      ua:navigator.userAgent.substring(0,80)
+    });
+    // Keep last 500 entries to avoid unbounded growth
+    if(existing.length>500)existing.splice(0,existing.length-500);
+    localStorage.setItem(LS_LOG,JSON.stringify(existing));
+  }catch(e){}
   initDashboard();
 }
 
@@ -1788,6 +1844,11 @@ async function fetchLiveIndices(){
   const allSyms=allCfg.map(c=>c.sym);
   const BSIZE=10;
   let total=0;
+  // ── Priority fetch: Sensex + Nifty first so they never wait in a batch queue ──
+  const prioritySyms=['^bsesn','^nsei'];
+  const priorityCount=await fetchStooqIndicesBatch(prioritySyms);
+  if(priorityCount>0){total+=priorityCount;renderIndices();}
+  // ── Then fetch all remaining symbols in batches ──
   for(let i=0;i<allSyms.length;i+=BSIZE){
     const batch=allSyms.slice(i,i+BSIZE);
     const count=await fetchStooqIndicesBatch(batch);
@@ -2393,6 +2454,8 @@ async function warmupServer(){
     ]);
     _serverWarm=r.ok||r.status===404; // any HTTP response = server is alive
     console.log('[WARMUP] yfinance server ready, status:',r.status);
+    // Pre-warm Sensex+Nifty immediately so they're ready at market open
+    fetch(YFINANCE_URL+'/indices?s=%5Ebsesn%2C%5Ensei',{cache:'no-store'}).catch(()=>{});
   }catch(e){
     console.warn('[WARMUP] yfinance server did not respond:',e.message);
   }
@@ -3245,13 +3308,14 @@ function renderAll(){
 // ══════════════════════════════════════════════════════
 function showDashboard(){document.getElementById('uploadZone').classList.add('hidden');document.getElementById('selectorScreen').style.display='none';document.getElementById('dashboard').style.display='';}
 function showTab(id,el){
-  ['ov','hd','lb','sc','st','hm','mh','an'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
+  ['ov','hd','lb','sc','st','hm','mh','an','us'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   if(id==='hm')renderHeatmap();
   if(id==='st')renderScripts();
   if(id==='an')renderAnalytics();
   if(id==='lb')renderLedger();
+  if(id==='us')renderUsageLog();
   if(id==='mh'){initTVMarketHeatmap();setTimeout(()=>renderIdxList('all',''),50);}
 }
 
@@ -4552,12 +4616,99 @@ function scheduleAutoRefresh(){
 }
 
 async function initDashboard(){
+  // Show VANTAGE-only Usage Log tab
+  const usTab=document.getElementById('tabUsage');
+  if(usTab)usTab.style.display=currentUser?.username==='VANTAGE'?'':'none';
   await loadSheetData(true);
   await fetchLiveIndices();
   renderIndices();
   if(selectedClient)await refreshPrices();
   else setLiveStatus('cached');
   scheduleAutoRefresh();
+}
+
+// ══════════════════════════════════════════════════════
+//  USAGE LOG — VANTAGE admin only
+// ══════════════════════════════════════════════════════
+function renderUsageLog(){
+  if(currentUser?.username!=='VANTAGE')return;
+  const LS_LOG='pf-login-log-v1';
+  let logs=[];
+  try{logs=JSON.parse(localStorage.getItem(LS_LOG)||'[]');}catch(e){}
+
+  // Apply day filter
+  const dayFilter=parseInt(document.getElementById('usDayFilter')?.value||'7');
+  const cutoff=dayFilter>0?(Date.now()-dayFilter*24*3600*1000):0;
+  let filtered=dayFilter>0?logs.filter(l=>new Date(l.ts).getTime()>=cutoff):logs;
+
+  // Populate user filter dropdown (once)
+  const userSel=document.getElementById('usUserFilter');
+  if(userSel&&userSel.options.length<=1){
+    const users=[...new Set(logs.map(l=>l.user))].sort();
+    users.forEach(u=>{const o=document.createElement('option');o.value=u;o.textContent=u;userSel.appendChild(o);});
+  }
+  const userFilter=document.getElementById('usUserFilter')?.value||'';
+  if(userFilter)filtered=filtered.filter(l=>l.user===userFilter);
+
+  // Sort newest first
+  filtered=[...filtered].reverse();
+
+  // Summary stats
+  const today=new Date().toDateString();
+  const todayLogins=filtered.filter(l=>new Date(l.ts).toDateString()===today);
+  const uniqueToday=[...new Set(todayLogins.map(l=>l.user))];
+  const uniqueTotal=[...new Set(filtered.map(l=>l.user))];
+  const mobileCount=filtered.filter(l=>l.device==='Mobile').length;
+  document.getElementById('usStats').innerHTML=`
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:4px">Today's Logins</div>
+      <div style="font-size:20px;font-weight:700;font-family:var(--mono);color:var(--blue)">${todayLogins.length}</div>
+      <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px">${uniqueToday.length} unique user${uniqueToday.length!==1?'s':''}: ${uniqueToday.join(', ')||'—'}</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:4px">Total in Period</div>
+      <div style="font-size:20px;font-weight:700;font-family:var(--mono);color:var(--green)">${filtered.length}</div>
+      <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px">${uniqueTotal.length} user${uniqueTotal.length!==1?'s':''} · ${mobileCount} mobile · ${filtered.length-mobileCount} desktop</div>
+    </div>`;
+
+  document.getElementById('usBadge').textContent=`${filtered.length} entries · ${uniqueTotal.length} users`;
+
+  if(!filtered.length){
+    document.getElementById('tb-usage').innerHTML=`<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">No login entries found for this period.</td></tr>`;
+    return;
+  }
+
+  document.getElementById('tb-usage').innerHTML=filtered.map(l=>{
+    const dt=new Date(l.ts);
+    const dateStr=dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
+    const timeStr=dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const isToday=dt.toDateString()===today;
+    const rolePill=l.role==='admin'
+      ?`<span style="background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:var(--mono)">ADMIN</span>`
+      :`<span style="background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:var(--mono)">RM</span>`;
+    const devPill=l.device==='Mobile'
+      ?`<span style="background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:var(--mono)">📱 Mobile</span>`
+      :`<span style="background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:var(--mono)">🖥 Desktop</span>`;
+    return `<tr style="${isToday?'background:rgba(15,122,75,.04)':''}">
+      <td style="text-align:left;font-size:11px">
+        <span style="font-weight:700;color:var(--text)">${timeStr}</span>
+        <span style="display:block;font-size:9px;color:var(--muted);font-family:var(--mono)">${dateStr}${isToday?' · Today':''}</span>
+      </td>
+      <td style="text-align:left;font-weight:700;font-size:12px">${l.display||l.user}</td>
+      <td style="text-align:left">${rolePill}</td>
+      <td style="text-align:left">${devPill}</td>
+      <td style="text-align:left;font-size:9px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.ua||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function clearUsageLog(){
+  if(!confirm('Clear all login history? This cannot be undone.'))return;
+  try{localStorage.removeItem('pf-login-log-v1');}catch(e){}
+  const userSel=document.getElementById('usUserFilter');
+  if(userSel){while(userSel.options.length>1)userSel.remove(1);}
+  renderUsageLog();
+  toast('Login history cleared','ok');
 }
 
 // ── Canvas login animation ──
