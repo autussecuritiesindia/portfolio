@@ -1046,7 +1046,6 @@ html{-webkit-text-size-adjust:100%}
     <div class="tab" onclick="showTab('hm',this)">🔥 Heatmap</div>
     <div class="tab" onclick="showTab('mh',this)">📡 Mkt Heatmap</div>
     <div class="tab" onclick="showTab('an',this)">🏆 Analytics</div>
-    <div class="tab" id="tabUsage" style="display:none" onclick="showTab('us',this)">👁 Usage Log</div>
   </div>
 
   <!-- ═══ OVERVIEW ═══ -->
@@ -1165,6 +1164,7 @@ html{-webkit-text-size-adjust:100%}
             <th style="cursor:pointer" onclick="hdSort('wt')">Wt% <span class="mw-arr" id="ha-wt"></span></th>
             <th style="cursor:pointer" onclick="hdSort('qty')">Qty <span class="mw-arr" id="ha-qty"></span></th>
             <th style="cursor:pointer" onclick="hdSort('buy')">Avg Buy ₹ <span class="mw-arr" id="ha-buy"></span></th>
+            <th style="cursor:pointer" onclick="hdSort('invest')">Buy Value ₹ <span class="mw-arr" id="ha-invest"></span></th>
             <th style="cursor:pointer" onclick="hdSort('curr')">Curr. Value <span class="mw-arr" id="ha-curr"></span></th>
             <th style="cursor:pointer" onclick="hdSort('pnlabs')">P&amp;L ₹ <span class="mw-arr" id="ha-pnlabs"></span></th>
             <th style="cursor:pointer" onclick="hdSort('pnlpct')">P&amp;L % <span class="mw-arr" id="ha-pnlpct"></span></th>
@@ -1219,7 +1219,7 @@ html{-webkit-text-size-adjust:100%}
           <thead><tr>
             <th style="text-align:left">Script</th>
             <th>Qty</th><th>CMP ⚡</th><th>Day %</th>
-            <th>Avg Buy</th><th>Curr. Val</th><th>P&amp;L %</th><th>Weight</th>
+            <th>Avg Buy</th><th>Buy Value ₹</th><th>Curr. Val</th><th>P&amp;L %</th><th>Weight</th>
           </tr></thead>
           <tbody></tbody>
         </table>
@@ -1247,6 +1247,13 @@ html{-webkit-text-size-adjust:100%}
         <input class="search" id="scriptSearch" placeholder="Search script name or code…"
           oninput="filterScriptRows(this.value)">
       </div>
+      <!-- RM filter — visible to admin only, toggled in renderScripts() -->
+      <span id="scRMFilterWrap" style="display:none;align-items:center;gap:6px">
+        <span style="font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700">RM:</span>
+        <select class="an-select" id="scRMFilter" onchange="renderScripts()">
+          <option value="">All RMs</option>
+        </select>
+      </span>
       <span class="sc-ts" id="scTS">—</span>
     </div>
     <div class="sec" style="margin-top:10px">
@@ -1257,15 +1264,15 @@ html{-webkit-text-size-adjust:100%}
       <div class="t-wrap scroll">
         <table id="scriptTable">
           <thead><tr>
-            <th style="text-align:left">Script</th>
-            <th>Sector</th>
-            <th>Clients</th>
-            <th>Total Qty</th>
-            <th>Avg Buy</th>
-            <th>CMP</th>
-            <th>Curr Value</th>
-            <th>Day %</th>
-            <th>% of Portfolio</th>
+            <th style="text-align:left;cursor:pointer;white-space:nowrap" onclick="scSort('script')">Script <span id="sc-arr-script"></span></th>
+            <th style="cursor:pointer;white-space:nowrap" onclick="scSort('sector')">Sector <span id="sc-arr-sector"></span></th>
+            <th style="cursor:pointer;white-space:nowrap" onclick="scSort('clients')">Clients <span id="sc-arr-clients"></span></th>
+            <th style="cursor:pointer;white-space:nowrap" onclick="scSort('qty')">Total Qty <span id="sc-arr-qty"></span></th>
+            <th style="cursor:pointer;white-space:nowrap" onclick="scSort('avgbuy')">Avg Buy <span id="sc-arr-avgbuy"></span></th>
+            <th style="cursor:pointer;white-space:nowrap" onclick="scSort('cmp')">CMP <span id="sc-arr-cmp"></span></th>
+            <th style="cursor:pointer;white-space:nowrap" onclick="scSort('curr')">Curr Value <span id="sc-arr-curr"></span></th>
+            <th style="cursor:pointer;white-space:nowrap" onclick="scSort('daypct')">Day % <span id="sc-arr-daypct"></span></th>
+            <th style="cursor:pointer;white-space:nowrap" onclick="scSort('wt')">% of Portfolio <span id="sc-arr-wt"></span></th>
           </tr></thead>
           <tbody id="tb-scripts"></tbody>
         </table>
@@ -1382,45 +1389,6 @@ html{-webkit-text-size-adjust:100%}
       <div id="idxList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;max-height:320px;overflow-y:auto"></div>
     </div>
     <div style="text-align:center;padding:6px 0;font-size:9px;color:var(--muted);font-family:var(--mono)">Powered by TradingView</div>
-  </div>
-  <!-- ═══ USAGE LOG (VANTAGE admin only) ═══ -->
-  <div id="t-us" style="display:none">
-    <div class="sec">
-      <div class="sec-hdr" style="flex-wrap:wrap;gap:8px">
-        <span class="sec-title">👁 Login Usage Log — All Users</span>
-        <div class="sec-actions">
-          <span class="sec-badge" id="usBadge">—</span>
-          <button class="btn" style="font-size:10px;padding:5px 10px" onclick="clearUsageLog()">🗑 Clear Log</button>
-          <button class="btn" style="font-size:10px;padding:5px 10px;background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue)" onclick="renderUsageLog()">↻ Refresh</button>
-        </div>
-      </div>
-      <!-- Summary cards -->
-      <div id="usStats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-top:none;border-bottom:none"></div>
-      <!-- Filters -->
-      <div style="padding:8px 14px;background:var(--surface2);border:1px solid var(--border);border-top:none;border-bottom:none;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-        <span style="font-size:10px;font-family:var(--mono);font-weight:700;color:var(--muted)">FILTER:</span>
-        <select id="usUserFilter" onchange="renderUsageLog()" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);padding:4px 8px;font-size:11px;color:var(--text);font-family:var(--mono)">
-          <option value="">All Users</option>
-        </select>
-        <select id="usDayFilter" onchange="renderUsageLog()" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);padding:4px 8px;font-size:11px;color:var(--text);font-family:var(--mono)">
-          <option value="7">Last 7 days</option>
-          <option value="30">Last 30 days</option>
-          <option value="0">All time</option>
-        </select>
-      </div>
-      <div class="t-wrap scroll">
-        <table style="min-width:580px">
-          <thead><tr>
-            <th style="text-align:left">Date &amp; Time</th>
-            <th style="text-align:left">User</th>
-            <th style="text-align:left">Role</th>
-            <th style="text-align:left">Device</th>
-            <th style="text-align:left">User Agent</th>
-          </tr></thead>
-          <tbody id="tb-usage"></tbody>
-        </table>
-      </div>
-    </div>
   </div>
   </div><!-- /#tabPanels -->
 
@@ -1596,22 +1564,6 @@ function completeLogin(){
   document.getElementById('selWelcome').textContent=currentUser.role==='admin'?'Select RM':`Welcome, ${currentUser.display}`;
   // Proactively wake the Render.com server — fires in background, doesn't block UI
   warmupServer();
-  // ── Login usage log (stored in localStorage, visible to VANTAGE admin) ──
-  try{
-    const LS_LOG='pf-login-log-v1';
-    const existing=JSON.parse(localStorage.getItem(LS_LOG)||'[]');
-    existing.push({
-      user:currentUser.username,
-      display:currentUser.display,
-      role:currentUser.role,
-      ts:new Date().toISOString(),
-      device:(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'Mobile':'Desktop'),
-      ua:navigator.userAgent.substring(0,80)
-    });
-    // Keep last 500 entries to avoid unbounded growth
-    if(existing.length>500)existing.splice(0,existing.length-500);
-    localStorage.setItem(LS_LOG,JSON.stringify(existing));
-  }catch(e){}
   initDashboard();
 }
 
@@ -1844,11 +1796,6 @@ async function fetchLiveIndices(){
   const allSyms=allCfg.map(c=>c.sym);
   const BSIZE=10;
   let total=0;
-  // ── Priority fetch: Sensex + Nifty first so they never wait in a batch queue ──
-  const prioritySyms=['^bsesn','^nsei'];
-  const priorityCount=await fetchStooqIndicesBatch(prioritySyms);
-  if(priorityCount>0){total+=priorityCount;renderIndices();}
-  // ── Then fetch all remaining symbols in batches ──
   for(let i=0;i<allSyms.length;i+=BSIZE){
     const batch=allSyms.slice(i,i+BSIZE);
     const count=await fetchStooqIndicesBatch(batch);
@@ -2454,8 +2401,6 @@ async function warmupServer(){
     ]);
     _serverWarm=r.ok||r.status===404; // any HTTP response = server is alive
     console.log('[WARMUP] yfinance server ready, status:',r.status);
-    // Pre-warm Sensex+Nifty immediately so they're ready at market open
-    fetch(YFINANCE_URL+'/indices?s=%5Ebsesn%2C%5Ensei',{cache:'no-store'}).catch(()=>{});
   }catch(e){
     console.warn('[WARMUP] yfinance server did not respond:',e.message);
   }
@@ -2737,11 +2682,12 @@ function exportCSV(){
   const totalInv=data.reduce((a,s)=>a+s.invest,0);
   const totalCurr=data.reduce((a,s)=>a+s.curr,0);
   const sorted=[...data].sort((a,b)=>b.curr-a.curr);
-  const hdr=['Script','Company','Sector','Client','CMP','Day%','Wt%','Qty','AvgBuy','CurrValue','PnL','PnL%'];
+  const hdr=['Script','Company','Sector','Client','CMP','Day%','Wt%','Qty','AvgBuy','BuyValue','CurrValue','PnL','PnL%'];
   const rows=sorted.map(s=>{
     const wt=totalCurr>0?(s.curr/totalCurr)*100:0;
     return[s.code,`"${s.name}"`,`"${s.sector}"`,s.clientCode||'',s.cmp.toFixed(2),
       s.dayPct!==null?s.dayPct.toFixed(2):'',wt.toFixed(2),s.qty,s.buy.toFixed(2),
+      s.invest.toFixed(2),
       s.hasLive?s.curr.toFixed(2):'',s.hasLive?s.pnl.toFixed(2):'',s.pnlPct.toFixed(2)
     ].join(',');
   });
@@ -2942,6 +2888,7 @@ function renderHoldings(data){
     'cmp':   (a,b)=>b.cmp-a.cmp,
     'qty':   (a,b)=>b.qty-a.qty,
     'buy':   (a,b)=>b.buy-a.buy,
+    'invest':(a,b)=>b.invest-a.invest,
   };
   let sorted=[...data].sort(sortFns[sk]||sortFns['curr']);
   if(sortAsc)sorted=sorted.reverse();
@@ -2961,6 +2908,7 @@ function renderHoldings(data){
       <td><div class="bar-row"><span style="font-size:11px;font-weight:700;color:var(--text2)">${wt.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(wt*4,100)}%"></div></div></div></td>
       <td class="neu">${s.qty.toLocaleString('en-IN')}</td>
       <td class="neu">${s.buy.toFixed(2)}</td>
+      <td class="neu">₹${fmtC(s.invest)}</td>
       <td class="neu">${s.hasLive?'₹'+fmtC(s.curr):'—'}</td>
       <td class="${cls(s.pnl)}">${s.hasLive?(s.pnl>=0?'+':'−')+'₹'+fmtC(Math.abs(s.pnl)):'—'}</td>
       <td><span class="pill ${clsPill(s.pnlPct)}">${fmtP(s.pnlPct)}</span></td>
@@ -2983,7 +2931,7 @@ function toggleSortDir(){
 }
 
 // Holdings column header sort — clicking same column flips direction
-const HD_SORT_KEYS=['script','cmp','daypct','wt','qty','buy','curr','pnlabs','pnlpct','sector'];
+const HD_SORT_KEYS=['script','cmp','daypct','wt','qty','buy','invest','curr','pnlabs','pnlpct','sector'];
 function hdSort(key){
   if(sortKey===key){sortAsc=!sortAsc;}
   else{sortKey=key;sortAsc=false;}
@@ -3074,6 +3022,7 @@ function renderSectorDrilldown(sectorName){
         <td>${cmpPriceOnly(s)}</td>
         <td>${dayChangePill(s)}</td>
         <td class="neu">${s.buy.toFixed(2)}</td>
+        <td class="neu">₹${fmtC(s.invest)}</td>
         <td class="neu">${s.hasLive?'₹'+fmtC(s.curr):'—'}</td>
         <td><span class="pill ${clsPill(s.pnlPct)}">${fmtP(s.pnlPct)}</span></td>
         <td class="neu">${wt.toFixed(1)}%</td>
@@ -3308,14 +3257,13 @@ function renderAll(){
 // ══════════════════════════════════════════════════════
 function showDashboard(){document.getElementById('uploadZone').classList.add('hidden');document.getElementById('selectorScreen').style.display='none';document.getElementById('dashboard').style.display='';}
 function showTab(id,el){
-  ['ov','hd','lb','sc','st','hm','mh','an','us'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
+  ['ov','hd','lb','sc','st','hm','mh','an'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'':'none');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   if(id==='hm')renderHeatmap();
   if(id==='st')renderScripts();
   if(id==='an')renderAnalytics();
   if(id==='lb')renderLedger();
-  if(id==='us')renderUsageLog();
   if(id==='mh'){initTVMarketHeatmap();setTimeout(()=>renderIdxList('all',''),50);}
 }
 
@@ -4056,6 +4004,7 @@ function exportClientExcel(){
     ${THL('CODE',navy,white,COL.code)}
     ${TH('QTY',navy,white,COL.qty)}
     ${TH('AVG BUY',navy,white,COL.buy)}
+    ${TH('BUY VALUE',navy,white,COL.curr)}
     ${TH('CMP',navy,white,COL.cmp)}
     ${TH('CURR VALUE',navy,white,COL.curr)}
     ${TH('NOTIONAL P&L',navy,white,COL.pnl)}
@@ -4071,6 +4020,7 @@ function exportClientExcel(){
       ${TD('<b>'+r.code+'</b>','left','#1E293B',false,bg,COL.code)}
       ${TD(r.qty,'right','#1E293B',false,bg,COL.qty)}
       ${TD(nF(r.avgBuy),'right',gray,false,bg,COL.buy)}
+      ${TD(nF(r.avgBuy*r.qty),'right','#1E293B',false,bg,COL.curr)}
       ${TD(nF(r.cmp),'right','#1E293B',true,bg,COL.cmp)}
       ${TD(nF(r.currVal),'right','#1E293B',true,bg,COL.curr)}
       ${TD((r.pnl>=0?'+':'')+nF(r.pnl),'right',pc,true,pb,COL.pnl)}
@@ -4084,6 +4034,7 @@ function exportClientExcel(){
     ${TD('<b>TOTAL</b>','left',navy,true,grayBg,COL.code)}
     ${TD(d.rows.reduce((a,r)=>a+r.qty,0),'right',navy,true,grayBg,COL.qty)}
     ${TD('','right','',false,grayBg,COL.buy)}
+    ${TD(nF(d.portInv),'right',navy,true,grayBg,COL.curr)}
     ${TD('','right','',false,grayBg,COL.cmp)}
     ${TD(nF(d.portVal),'right',navy,true,grayBg,COL.curr)}
     ${TD((d.portPnL>=0?'+':'')+nF(d.portPnL),'right',d.portPnL>=0?green:red,true,d.portPnL>=0?greenBg:redBg,COL.pnl)}
@@ -4342,11 +4293,40 @@ function filterClientCards(){
 //  with % of total RM portfolio + client drilldown
 // ══════════════════════════════════════════════════════
 
+// ── Scripts tab sort state ──
+let scSortKey='wt', scSortAsc=false;
+function scSort(key){
+  if(scSortKey===key)scSortAsc=!scSortAsc;
+  else{scSortKey=key;scSortAsc=false;}
+  renderScripts();
+}
+function _scUpdateArrows(key){
+  ['script','sector','clients','qty','avgbuy','cmp','curr','daypct','wt'].forEach(k=>{
+    const el=document.getElementById('sc-arr-'+k);
+    if(el)el.textContent=k===key?(scSortAsc?'▲':'▼'):'';
+  });
+}
+
 function renderScripts(){
-  // Scope: all data for this RM (regardless of selected client)
-  const scope = currentUser?.role==='rm'
-    ? PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
-    : PORTFOLIO;
+  // ── RM filter: show dropdown for admin only ──
+  const isAdmin=currentUser?.role==='admin';
+  const rmWrap=document.getElementById('scRMFilterWrap');
+  if(rmWrap)rmWrap.style.display=isAdmin?'flex':'none';
+
+  // Populate RM dropdown once
+  const rmSel=document.getElementById('scRMFilter');
+  if(isAdmin&&rmSel&&rmSel.options.length<=1){
+    const rms=[...new Set(PORTFOLIO.map(s=>s.subgroup||'DEFAULT'))].filter(Boolean).sort();
+    rms.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;rmSel.appendChild(o);});
+  }
+  const rmFilter=isAdmin?(rmSel?.value||''):'';
+
+  // Scope: RM sees only their subgroup; admin sees all (optionally filtered)
+  let scope=currentUser?.role==='rm'
+    ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
+    :PORTFOLIO;
+  if(isAdmin&&rmFilter)
+    scope=scope.filter(s=>(s.subgroup||'DEFAULT')===rmFilter);
 
   if(!scope.length){
     document.getElementById('tb-scripts').innerHTML=
@@ -4355,67 +4335,71 @@ function renderScripts(){
   }
 
   // Aggregate by script code
-  const scriptMap = new Map();
+  const scriptMap=new Map();
   scope.forEach(s=>{
     if(!scriptMap.has(s.code)){
-      scriptMap.set(s.code,{
-        code:s.code, name:s.name, sector:s.sector,
-        totalQty:0, totalInvest:0, clients:new Set(), rows:[]
-      });
+      scriptMap.set(s.code,{code:s.code,name:s.name,sector:s.sector,
+        totalQty:0,totalInvest:0,clients:new Set(),rows:[]});
     }
     const m=scriptMap.get(s.code);
-    m.totalQty  += s.qty;
-    m.totalInvest += s.buy*s.qty;
+    m.totalQty    +=s.qty;
+    m.totalInvest +=s.buy*s.qty;
     m.clients.add(s.clientCode);
     m.rows.push(s);
   });
 
-  const totalPortfolio = [...scriptMap.values()].reduce((a,m)=>a+m.totalInvest,0);
-  const now = livePriceTS&&Object.keys(livePriceTS).length
-    ? new Date(Math.max(...Object.values(livePriceTS))).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
-    : null;
-
+  const totalPortfolio=[...scriptMap.values()].reduce((a,m)=>a+m.totalInvest,0);
+  const now=livePriceTS&&Object.keys(livePriceTS).length
+    ?new Date(Math.max(...Object.values(livePriceTS))).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
+    :null;
   const tsEl=document.getElementById('scTS');
-  if(tsEl) tsEl.textContent = now
-    ? (isMarketOpen()?'Live ':'Closed · ')+now
-    : (isMarketOpen()?'Tap ↻ Live':'Market closed · Sheet prices');
+  if(tsEl)tsEl.textContent=now
+    ?(isMarketOpen()?'Live ':'Closed · ')+now
+    :(isMarketOpen()?'Tap ↻ Live':'Market closed · Sheet prices');
 
-  // Sort by portfolio weight desc
-  const scripts = [...scriptMap.values()].map(m=>{
-    const cmp  = livePrices[m.code]||0;
-    const pct  = liveChangePct[m.code]??null;
-    const currVal = cmp>0 ? cmp*m.totalQty : m.totalInvest;
-    const wtPct   = totalPortfolio>0 ? m.totalInvest/totalPortfolio*100 : 0;
-    return {...m, cmp, pct, currVal, wtPct, clientCount:m.clients.size};
-  }).sort((a,b)=>b.wtPct-a.wtPct);
+  // Build enriched array
+  let scripts=[...scriptMap.values()].map(m=>{
+    const cmp    =livePrices[m.code]||0;
+    const pct    =liveChangePct[m.code]??null;
+    const currVal=cmp>0?cmp*m.totalQty:m.totalInvest;
+    const wtPct  =totalPortfolio>0?m.totalInvest/totalPortfolio*100:0;
+    const avgBuy =m.totalQty>0?m.totalInvest/m.totalQty:0;
+    return {...m,cmp,pct,currVal,wtPct,clientCount:m.clients.size,avgBuy};
+  });
 
-  document.getElementById('scBadge').textContent = scripts.length+' scripts · '+scope.length+' holdings';
+  // ── Sort ──
+  const sortFns={
+    'script': (a,b)=>a.code.localeCompare(b.code),
+    'sector': (a,b)=>a.sector.localeCompare(b.sector),
+    'clients':(a,b)=>b.clientCount-a.clientCount,
+    'qty':    (a,b)=>b.totalQty-a.totalQty,
+    'avgbuy': (a,b)=>b.avgBuy-a.avgBuy,
+    'cmp':    (a,b)=>b.cmp-a.cmp,
+    'curr':   (a,b)=>b.currVal-a.currVal,
+    'daypct': (a,b)=>(b.pct??-999)-(a.pct??-999),
+    'wt':     (a,b)=>b.wtPct-a.wtPct,
+  };
+  scripts.sort(sortFns[scSortKey]||sortFns.wt);
+  if(scSortAsc)scripts.reverse();
+  _scUpdateArrows(scSortKey);
 
-  document.getElementById('tb-scripts').innerHTML = scripts.map(sc=>{
-    const dayHtml = sc.pct!==null
-      ? `<span class="${sc.pct>=0?'pos':'neg'}">${sc.pct>=0?'▲ +':'▼ '}${Math.abs(sc.pct).toFixed(2)}%</span>`
-      : '<span class="neu">—</span>';
-    const safe = sc.code.replace(/'/g,"\'");
+  document.getElementById('scBadge').textContent=scripts.length+' scripts · '+scope.length+' holdings'+(rmFilter?' · '+rmFilter:'');
+
+  document.getElementById('tb-scripts').innerHTML=scripts.map(sc=>{
+    const dayHtml=sc.pct!==null
+      ?`<span class="${sc.pct>=0?'pos':'neg'}">${sc.pct>=0?'▲ +':'▼ '}${Math.abs(sc.pct).toFixed(2)}%</span>`
+      :'<span class="neu">—</span>';
+    const safe=sc.code.replace(/'/g,"\'");
     return `<tr onclick="showScDrill('${safe}')" data-q="${sc.code.toLowerCase()} ${sc.name.toLowerCase()} ${sc.sector.toLowerCase()}">
-      <td>
-        <span class="sn">${sc.code}</span>
-        <span class="ss" style="max-width:130px">${sc.name}</span>
-      </td>
+      <td><span class="sn">${sc.code}</span><span class="ss" style="max-width:130px">${sc.name}</span></td>
       <td class="neu" style="font-size:10px;text-align:left">${sc.sector}</td>
       <td class="neu">${sc.clientCount}</td>
       <td class="neu">${sc.totalQty.toLocaleString('en-IN')}</td>
-      <td class="neu">${(sc.totalInvest/sc.totalQty).toFixed(2)}</td>
-      <td class="${sc.cmp>0&&sc.cmp>sc.totalInvest/sc.totalQty?'pos':'neg'}" style="font-weight:700">
-        ${sc.cmp>0?sc.cmp.toFixed(2):'—'}
-      </td>
+      <td class="neu">${sc.avgBuy.toFixed(2)}</td>
+      <td class="${sc.cmp>0&&sc.cmp>sc.avgBuy?'pos':'neg'}" style="font-weight:700">${sc.cmp>0?sc.cmp.toFixed(2):'—'}</td>
       <td class="neu">₹${fmtC(sc.currVal)}</td>
       <td>${dayHtml}</td>
-      <td>
-        <div class="bar-row">
-          <span style="font-size:11px;font-weight:700;color:var(--text2)">${sc.wtPct.toFixed(1)}%</span>
-          <div class="bar-track"><div class="bar-fill" style="width:${Math.min(sc.wtPct*3,100)}%"></div></div>
-        </div>
-      </td>
+      <td><div class="bar-row"><span style="font-size:11px;font-weight:700;color:var(--text2)">${sc.wtPct.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(sc.wtPct*3,100)}%"></div></div></div></td>
     </tr>`;
   }).join('');
 }
@@ -4616,99 +4600,12 @@ function scheduleAutoRefresh(){
 }
 
 async function initDashboard(){
-  // Show VANTAGE-only Usage Log tab
-  const usTab=document.getElementById('tabUsage');
-  if(usTab)usTab.style.display=currentUser?.username==='VANTAGE'?'':'none';
   await loadSheetData(true);
   await fetchLiveIndices();
   renderIndices();
   if(selectedClient)await refreshPrices();
   else setLiveStatus('cached');
   scheduleAutoRefresh();
-}
-
-// ══════════════════════════════════════════════════════
-//  USAGE LOG — VANTAGE admin only
-// ══════════════════════════════════════════════════════
-function renderUsageLog(){
-  if(currentUser?.username!=='VANTAGE')return;
-  const LS_LOG='pf-login-log-v1';
-  let logs=[];
-  try{logs=JSON.parse(localStorage.getItem(LS_LOG)||'[]');}catch(e){}
-
-  // Apply day filter
-  const dayFilter=parseInt(document.getElementById('usDayFilter')?.value||'7');
-  const cutoff=dayFilter>0?(Date.now()-dayFilter*24*3600*1000):0;
-  let filtered=dayFilter>0?logs.filter(l=>new Date(l.ts).getTime()>=cutoff):logs;
-
-  // Populate user filter dropdown (once)
-  const userSel=document.getElementById('usUserFilter');
-  if(userSel&&userSel.options.length<=1){
-    const users=[...new Set(logs.map(l=>l.user))].sort();
-    users.forEach(u=>{const o=document.createElement('option');o.value=u;o.textContent=u;userSel.appendChild(o);});
-  }
-  const userFilter=document.getElementById('usUserFilter')?.value||'';
-  if(userFilter)filtered=filtered.filter(l=>l.user===userFilter);
-
-  // Sort newest first
-  filtered=[...filtered].reverse();
-
-  // Summary stats
-  const today=new Date().toDateString();
-  const todayLogins=filtered.filter(l=>new Date(l.ts).toDateString()===today);
-  const uniqueToday=[...new Set(todayLogins.map(l=>l.user))];
-  const uniqueTotal=[...new Set(filtered.map(l=>l.user))];
-  const mobileCount=filtered.filter(l=>l.device==='Mobile').length;
-  document.getElementById('usStats').innerHTML=`
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px">
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:4px">Today's Logins</div>
-      <div style="font-size:20px;font-weight:700;font-family:var(--mono);color:var(--blue)">${todayLogins.length}</div>
-      <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px">${uniqueToday.length} unique user${uniqueToday.length!==1?'s':''}: ${uniqueToday.join(', ')||'—'}</div>
-    </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px">
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:4px">Total in Period</div>
-      <div style="font-size:20px;font-weight:700;font-family:var(--mono);color:var(--green)">${filtered.length}</div>
-      <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px">${uniqueTotal.length} user${uniqueTotal.length!==1?'s':''} · ${mobileCount} mobile · ${filtered.length-mobileCount} desktop</div>
-    </div>`;
-
-  document.getElementById('usBadge').textContent=`${filtered.length} entries · ${uniqueTotal.length} users`;
-
-  if(!filtered.length){
-    document.getElementById('tb-usage').innerHTML=`<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">No login entries found for this period.</td></tr>`;
-    return;
-  }
-
-  document.getElementById('tb-usage').innerHTML=filtered.map(l=>{
-    const dt=new Date(l.ts);
-    const dateStr=dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
-    const timeStr=dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    const isToday=dt.toDateString()===today;
-    const rolePill=l.role==='admin'
-      ?`<span style="background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:var(--mono)">ADMIN</span>`
-      :`<span style="background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:var(--mono)">RM</span>`;
-    const devPill=l.device==='Mobile'
-      ?`<span style="background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:var(--mono)">📱 Mobile</span>`
-      :`<span style="background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:var(--mono)">🖥 Desktop</span>`;
-    return `<tr style="${isToday?'background:rgba(15,122,75,.04)':''}">
-      <td style="text-align:left;font-size:11px">
-        <span style="font-weight:700;color:var(--text)">${timeStr}</span>
-        <span style="display:block;font-size:9px;color:var(--muted);font-family:var(--mono)">${dateStr}${isToday?' · Today':''}</span>
-      </td>
-      <td style="text-align:left;font-weight:700;font-size:12px">${l.display||l.user}</td>
-      <td style="text-align:left">${rolePill}</td>
-      <td style="text-align:left">${devPill}</td>
-      <td style="text-align:left;font-size:9px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.ua||'—'}</td>
-    </tr>`;
-  }).join('');
-}
-
-function clearUsageLog(){
-  if(!confirm('Clear all login history? This cannot be undone.'))return;
-  try{localStorage.removeItem('pf-login-log-v1');}catch(e){}
-  const userSel=document.getElementById('usUserFilter');
-  if(userSel){while(userSel.options.length>1)userSel.remove(1);}
-  renderUsageLog();
-  toast('Login history cleared','ok');
 }
 
 // ── Canvas login animation ──
