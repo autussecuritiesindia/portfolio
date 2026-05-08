@@ -197,16 +197,14 @@ main{padding:12px 14px;max-width:1024px;margin:0 auto}
 /* ── TABLE ── */
 .t-wrap{background:var(--surface);border:1px solid var(--border);border-radius:0 0 var(--r) var(--r);overflow:hidden;box-shadow:var(--shadow)}
 .t-wrap.scroll{overflow-x:auto}
-/* ── Sticky headers for all scrollable tables ── */
 .t-wrap.scroll thead th{position:sticky;top:0;z-index:3}
-/* ── scriptTable: sticky header + frozen first column (Script name) ── */
 #scriptTable{border-collapse:collapse}
 #scriptTable thead th{position:sticky;top:0;z-index:3;background:var(--surface2)}
 #scriptTable thead th:first-child{position:sticky;top:0;left:0;z-index:4;background:var(--surface2)}
 #scriptTable tbody td:first-child{position:sticky;left:0;z-index:1;background:var(--surface);box-shadow:2px 0 4px rgba(0,0,0,.08)}
 #scriptTable tbody tr:hover td:first-child{background:var(--surface2)}
-/* ── sc-client-table (drilldown): sticky header ── */
 .sc-client-table thead th{position:sticky;top:0;z-index:3;background:var(--surface2)}
+#scriptTable-wrap{max-height:70vh;overflow-y:auto;overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse}
 thead th{background:var(--surface2);padding:8px 12px;text-align:right;font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--border)}
 thead th:first-child{text-align:left}
@@ -588,6 +586,54 @@ html{-webkit-text-size-adjust:100%}
 .sel-crumb strong{color:var(--text)}
 .sel-upload-row{margin-bottom:20px;background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:var(--r2);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .sel-upload-txt{font-size:11px;color:var(--gold);font-family:var(--mono);font-weight:600}
+/* ── NEW: RM card cash data ── */
+.rm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 14px 12px;cursor:pointer;box-shadow:var(--shadow);border-top:3px solid var(--blue);transition:box-shadow .15s,transform .1s}
+.rm-card:hover{box-shadow:var(--shadow2);transform:translateY(-2px)}
+.rm-card:active{transform:scale(.97)}
+.rm-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.rm-card-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:7px;border-top:1px solid var(--border)}
+.rm-name{font-size:13px;font-weight:700;color:var(--text);word-break:break-word}
+.rm-meta{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px}
+.rm-aum{font-size:11px;font-weight:700;font-family:var(--mono);color:var(--text2);text-align:right}
+.rm-cash-row{display:flex;align-items:center;gap:5px;font-size:10px;font-family:var(--mono)}
+.rm-cash-lbl{color:var(--muted)}
+.rm-cash-val{font-weight:700;color:var(--blue)}
+.rm-cashpct{font-weight:700;padding:1px 6px;border-radius:4px;font-size:10px;font-family:var(--mono)}
+.rm-cashpct.low{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.rm-cashpct.mid{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border)}
+.rm-cashpct.high{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.rm-count{display:inline-block;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:4px;padding:1px 7px;font-size:10px;color:var(--blue);font-family:var(--mono);font-weight:700}
+/* ── NEW: client card cash row ── */
+.client-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;cursor:pointer;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:3px;border-left:3px solid var(--green);transition:box-shadow .15s,transform .1s}
+.client-card:hover{box-shadow:var(--shadow2);transform:translateY(-2px)}
+.client-card:active{transform:scale(.97)}
+.cc-code{font-size:10px;font-family:var(--mono);color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.cc-name{font-size:13px;font-weight:700;color:var(--text)}
+.cc-row2{display:flex;align-items:center;justify-content:space-between;margin-top:2px}
+.cc-portval{font-size:11px;font-weight:700;font-family:var(--mono);color:var(--text2)}
+.cc-cashinfo{display:flex;align-items:center;gap:4px;font-size:10px;font-family:var(--mono)}
+.cc-cash-amt{color:var(--blue)}
+.cc-cashpct{padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;font-family:var(--mono)}
+.cc-cashpct.low{background:var(--green-bg);color:var(--green)}
+.cc-cashpct.mid{background:var(--gold-bg);color:var(--gold)}
+.cc-cashpct.high{background:var(--red-bg);color:var(--red)}
+.cc-stocks{font-size:10px;color:var(--muted);font-family:var(--mono)}
+/* ── NEW: sort pills ── */
+.sort-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.sort-pill{background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:4px 12px;font-size:10px;font-family:var(--mono);font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s}
+.sort-pill:hover{background:var(--surface3)}
+.sort-pill.active{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue)}
+/* ── NEW: RM welcome KPI strip ── */
+.rm-welcome-kpi{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+@media(min-width:400px){.rm-welcome-kpi{grid-template-columns:repeat(4,1fr)}}
+.rwk-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;box-shadow:var(--shadow);border-top:2px solid var(--blue)}
+.rwk-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;font-weight:600}
+.rwk-val{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.rwk-sub{font-size:9px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+/* ── NEW: client list header row ── */
+.client-list-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px}
+.cl-hdr-title{font-size:12px;font-weight:700;color:var(--text)}
+.cl-hdr-meta{font-size:10px;font-family:var(--mono);color:var(--muted)}
 /* Client identity bar inside dashboard */
 .client-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;gap:10px;font-size:11px;font-family:var(--mono);position:sticky;top:54px;z-index:250;box-shadow:var(--shadow)}
 .client-bar .cb-back{cursor:pointer;background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--text2)}
@@ -746,8 +792,6 @@ html{-webkit-text-size-adjust:100%}
 .sc-ts{font-size:10px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
 #scriptTable tbody tr{cursor:pointer}
 #scriptTable tbody tr:hover td{background:var(--blue-bg)}
-/* scriptTable scroll container needs height for sticky header to work */
-#scriptTable-wrap{max-height:70vh;overflow-y:auto;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .sc-drill-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;
   background:var(--surface);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;
   border-bottom:1px solid var(--border);margin-top:8px}
@@ -967,13 +1011,17 @@ html{-webkit-text-size-adjust:100%}
     <div class="sel-step">Portfolio Overview</div>
     <div class="snap-strip" id="snapStrip"></div>
   </div>
-  <!-- Step 1: RM list -->
+  <!-- Step 1: RM list (admin) / RM Welcome (rm role) -->
   <div id="rmListView">
     <div class="sel-header">
       <div class="sel-title" id="selWelcome">Select RM</div>
-      <div class="sel-sub">Choose a relationship manager to view their clients</div>
+      <div class="sel-sub" id="selSub">Choose a relationship manager to view their clients</div>
     </div>
-    <div class="sel-step">Relationship Managers</div>
+    <!-- RM role: welcome KPI cards (hidden for admin) -->
+    <div id="rmWelcomeKPI" style="display:none">
+      <div class="rm-welcome-kpi" id="rmWelcomeStrip"></div>
+    </div>
+    <div class="sel-step" id="selStep1Label">Relationship Managers</div>
     <div class="rm-grid" id="rmGrid"></div>
   </div>
   <!-- Step 2: Client list under RM -->
@@ -982,7 +1030,19 @@ html{-webkit-text-size-adjust:100%}
       <button class="back-btn" onclick="showRMList()">← Back</button>
       <span class="sel-crumb">RM: <strong id="selRMName">—</strong></span>
     </div>
-    <div class="sel-step">Select Client</div>
+    <!-- RM cash summary for this RM's client list -->
+    <div id="clientListKPI" style="display:none">
+      <div class="rm-welcome-kpi" id="clientListKPIStrip"></div>
+    </div>
+    <div class="client-list-hdr">
+      <span class="sel-step" style="margin-bottom:0;flex:1">Select Client</span>
+      <div class="sort-pills" id="clientSortPills">
+        <span class="sort-pill active" onclick="sortClientList('portval',this)">Portfolio ▼</span>
+        <span class="sort-pill" onclick="sortClientList('cash',this)">Cash ₹</span>
+        <span class="sort-pill" onclick="sortClientList('cashpct',this)">Cash %</span>
+        <span class="sort-pill" onclick="sortClientList('scripts',this)">Scripts</span>
+      </div>
+    </div>
     <!-- Searchable client box -->
     <div class="search-wrap" style="margin-bottom:12px">
       <span class="s-icon">🔍</span>
@@ -2237,21 +2297,33 @@ function switchClient(code){
 
 // Build RM grid for selector screen
 function buildSelectorScreen(){
-  // SECURITY: RM only sees their own subgroup in the RM grid
+  const isAdmin=currentUser?.role==='admin';
   const visibleData=currentUser?.role==='rm'
     ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
     :PORTFOLIO;
 
+  // ── Helper: get cash for a client from _ledgerMap ──
+  function clientCash(code){
+    if(!window._ledgerMap)return null;
+    const v=_ledgerMap[code];
+    return(v!==undefined&&v!==null&&!isNaN(Number(v)))?Number(v):null;
+  }
+
+  // ── Helper: cash % colour class ──
+  function cashPctCls(pct){return pct<8?'low':pct<15?'mid':'high';}
+
   const rmMap=new Map();
   visibleData.forEach(s=>{
     const rm=s.subgroup||'DEFAULT';
-    if(!rmMap.has(rm))rmMap.set(rm,{clients:new Map()});
-    const rm_=rmMap.get(rm);
-    if(!rm_.clients.has(s.clientCode))rm_.clients.set(s.clientCode,{name:s.clientName||s.clientCode,stocks:0});
-    rm_.clients.get(s.clientCode).stocks++;
+    if(!rmMap.has(rm))rmMap.set(rm,{clients:new Map(),totalInvest:0});
+    const rmd=rmMap.get(rm);
+    rmd.totalInvest+=s.buy*s.qty;
+    if(!rmd.clients.has(s.clientCode))
+      rmd.clients.set(s.clientCode,{name:s.clientName||s.clientCode,stocks:0,invested:0});
+    const c=rmd.clients.get(s.clientCode);
+    c.stocks++;c.invested+=s.buy*s.qty;
   });
 
-  // If no data found for this RM, show a warning
   if(rmMap.size===0){
     document.getElementById('rmGrid').innerHTML=`
       <div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--muted)">
@@ -2262,52 +2334,187 @@ function buildSelectorScreen(){
     return;
   }
 
-  const rmGrid=document.getElementById('rmGrid');
-  rmGrid.innerHTML=[...rmMap.entries()].map(([rm,data])=>{
-    const clientCount=data.clients.size;
-    const totalStocks=[...data.clients.values()].reduce((a,c)=>a+c.stocks,0);
-    const safe=rm.replace(/'/g,"\\'");
-    return `<div class="rm-card" onclick="showClientList('${safe}')">
-      <div class="rm-name">${rm==='DEFAULT'?'All Clients':rm}</div>
-      <div class="rm-meta">${clientCount} client${clientCount!==1?'s':''} · ${totalStocks} stocks</div>
-      <span class="rm-count">${clientCount} client${clientCount!==1?'s':''}</span>
-    </div>`;
-  }).join('');
+  if(isAdmin){
+    // ── ADMIN: enrich RM cards with cash totals ──
+    let totalRMCash=0,totalAUM=0;
+    const rmGrid=document.getElementById('rmGrid');
+    const rmEntries=[...rmMap.entries()].map(([rm,data])=>{
+      const clientCodes=[...data.clients.keys()];
+      const rmCash=clientCodes.reduce((a,code)=>{const c=clientCash(code);return a+(c!==null?c:0);},0);
+      const rmAUM=data.totalInvest;
+      const effAUM=rmAUM+(rmCash>0?rmCash:0);
+      const cashPct=effAUM>0?(rmCash/effAUM)*100:0;
+      totalRMCash+=rmCash;totalAUM+=rmAUM;
+      return{rm,data,rmCash,rmAUM,cashPct,clientCount:data.clients.size,
+        totalStocks:[...data.clients.values()].reduce((a,c)=>a+c.stocks,0)};
+    });
+    // Admin top KPI: total RMs, clients, cash, cash%
+    const totalClients=rmEntries.reduce((a,r)=>a+r.clientCount,0);
+    const totalScripts=new Set(visibleData.map(s=>s.code)).size;
+    const totalEffAUM=totalAUM+(totalRMCash>0?totalRMCash:0);
+    const totalCashPct=totalEffAUM>0?(totalRMCash/totalEffAUM)*100:0;
+    const snapEl=document.getElementById('snapStrip');
+    if(snapEl){
+      // Inject extra cash KPI tiles into admin snap strip
+      const cashTile=`<div class="snap-tile"><div class="st-lbl">Total Cash</div><div class="st-val" style="color:var(--blue)">₹${fmtC(totalRMCash)}</div></div>`;
+      const cashPctTile=`<div class="snap-tile"><div class="st-lbl">Cash %</div><div class="st-val ${cashPctCls(totalCashPct)==='low'?'':'st-warn'}" style="color:var(--${totalCashPct<8?'green':totalCashPct<15?'gold':'red'})">${totalCashPct.toFixed(1)}%</div></div>`;
+      if(!document.getElementById('snapCashTile')){
+        const cashDiv=document.createElement('div');cashDiv.id='snapCashTile';
+        cashDiv.innerHTML=cashTile+cashPctTile;cashDiv.style.display='contents';
+        snapEl.appendChild(cashDiv);
+      }
+    }
+    rmGrid.innerHTML=rmEntries.map(({rm,data,rmCash,rmAUM,cashPct,clientCount,totalStocks})=>{
+      const safe=rm.replace(/'/g,"\\'");
+      const cls=cashPctCls(cashPct);
+      return`<div class="rm-card" onclick="showClientList('${safe}')">
+        <div class="rm-card-top">
+          <div>
+            <div class="rm-name">${rm==='DEFAULT'?'All Clients':rm}</div>
+            <div class="rm-meta">${clientCount} client${clientCount!==1?'s':''} · ${totalStocks} scripts</div>
+          </div>
+          <div class="rm-aum">₹${fmtC(rmAUM)}</div>
+        </div>
+        <div class="rm-card-bottom">
+          <div class="rm-cash-row">
+            <span class="rm-cash-lbl">Cash</span>
+            <span class="rm-cash-val">₹${fmtC(rmCash)}</span>
+          </div>
+          <span class="rm-cashpct ${cls}">${cashPct.toFixed(1)}% cash</span>
+        </div>
+      </div>`;
+    }).join('');
+
+  } else {
+    // ── RM: welcome home screen with KPI strip ──
+    const rmData=rmMap.get(currentUser.subgroup)||rmMap.get('DEFAULT');
+    if(!rmData){document.getElementById('rmGrid').innerHTML='';return;}
+    const clientCodes=[...rmData.clients.keys()];
+    const totalCash=clientCodes.reduce((a,code)=>{const c=clientCash(code);return a+(c!==null?c:0);},0);
+    const totalAUM_=rmData.totalInvest;
+    const effAUM=totalAUM_+(totalCash>0?totalCash:0);
+    const cashPct=effAUM>0?(totalCash/effAUM)*100:0;
+    const uniqueScripts=new Set(visibleData.map(s=>s.code)).size;
+
+    // Show KPI welcome strip
+    const kpiEl=document.getElementById('rmWelcomeKPI');
+    if(kpiEl)kpiEl.style.display='';
+    const stripEl=document.getElementById('rmWelcomeStrip');
+    if(stripEl)stripEl.innerHTML=`
+      <div class="rwk-card"><div class="rwk-lbl">Clients</div><div class="rwk-val">${rmData.clients.size}</div><div class="rwk-sub">active</div></div>
+      <div class="rwk-card"><div class="rwk-lbl">Scripts</div><div class="rwk-val">${uniqueScripts}</div><div class="rwk-sub">unique</div></div>
+      <div class="rwk-card"><div class="rwk-lbl">Total AUM</div><div class="rwk-val">₹${fmtC(totalAUM_)}</div><div class="rwk-sub">invested</div></div>
+      <div class="rwk-card" style="border-top-color:var(--blue)">
+        <div class="rwk-lbl">Total Cash</div>
+        <div class="rwk-val" style="color:var(--blue)">₹${fmtC(totalCash)}</div>
+        <div class="rwk-sub ${cashPctCls(cashPct)}" style="color:var(--${cashPct<8?'green':cashPct<15?'gold':'red'});font-weight:700">${cashPct.toFixed(1)}% of AUM</div>
+      </div>`;
+
+    // Hide the RM label — RM doesn't need to pick themselves
+    const step1=document.getElementById('selStep1Label');
+    if(step1)step1.textContent='Your Clients';
+
+    // Directly show client list (RM has only one subgroup)
+    showClientList(currentUser.subgroup||'DEFAULT');
+  }
+}
+
+// ── Client list sort state ──
+let _clientSortKey='portval';
+function sortClientList(key,el){
+  _clientSortKey=key;
+  document.querySelectorAll('.sort-pill').forEach(p=>p.classList.remove('active'));
+  if(el)el.classList.add('active');
+  // Re-render client grid with new sort
+  if(window._currentClientListRM)_renderClientGrid(window._currentClientListRM);
 }
 
 function showRMList(){
   selectedRM='';
   document.getElementById('rmListView').style.display='';
   document.getElementById('clientListView').style.display='none';
+  window._currentClientListRM=null;
+}
+
+function _cashPctCls(pct){return pct<8?'low':pct<15?'mid':'high';}
+
+function _renderClientGrid(rm){
+  function clientCash(code){
+    if(!window._ledgerMap)return null;
+    const v=_ledgerMap[code];
+    return(v!==undefined&&v!==null&&!isNaN(Number(v)))?Number(v):null;
+  }
+  const clients=PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===rm);
+  const clientMap=new Map();
+  clients.forEach(s=>{
+    if(!clientMap.has(s.clientCode))
+      clientMap.set(s.clientCode,{name:s.clientName||s.clientCode,stocks:0,invested:0});
+    const c=clientMap.get(s.clientCode);
+    c.stocks++;c.invested+=s.buy*s.qty;
+  });
+  // Enrich with cash data
+  let items=[...clientMap.entries()].map(([code,info])=>{
+    const cmp_total=clients.filter(s=>s.clientCode===code)
+      .reduce((a,s)=>{const p=livePrices[s.code]||0;return a+(p>0?p*s.qty:s.buy*s.qty);},0);
+    const cash=clientCash(code);
+    const portval=cmp_total||info.invested;
+    const effTotal=portval+(cash!==null&&cash>0?cash:0);
+    const cashPct=effTotal>0&&cash!==null?(Math.abs(cash)/effTotal)*100:0;
+    return{code,name:info.name,stocks:info.stocks,invested:info.invested,
+      portval,cash,cashPct,effTotal};
+  });
+  // Sort
+  const sortFns={
+    portval:(a,b)=>b.portval-a.portval,
+    cash:   (a,b)=>(b.cash||0)-(a.cash||0),
+    cashpct:(a,b)=>b.cashPct-a.cashPct,
+    scripts:(a,b)=>b.stocks-a.stocks,
+  };
+  items.sort(sortFns[_clientSortKey]||sortFns.portval);
+
+  // Client list summary KPI
+  const kpiEl=document.getElementById('clientListKPI');
+  const kpiStrip=document.getElementById('clientListKPIStrip');
+  if(kpiEl&&kpiStrip&&currentUser?.role==='admin'){
+    const sumAUM=items.reduce((a,i)=>a+i.portval,0);
+    const sumCash=items.reduce((a,i)=>a+(i.cash||0),0);
+    const sumEff=items.reduce((a,i)=>a+i.effTotal,0);
+    const sumCashPct=sumEff>0?(sumCash/sumEff)*100:0;
+    kpiEl.style.display='';
+    kpiStrip.innerHTML=`
+      <div class="rwk-card"><div class="rwk-lbl">Clients</div><div class="rwk-val">${items.length}</div></div>
+      <div class="rwk-card"><div class="rwk-lbl">Total AUM</div><div class="rwk-val">₹${fmtC(sumAUM)}</div></div>
+      <div class="rwk-card" style="border-top-color:var(--blue)"><div class="rwk-lbl">Total Cash</div><div class="rwk-val" style="color:var(--blue)">₹${fmtC(sumCash)}</div></div>
+      <div class="rwk-card"><div class="rwk-lbl">Cash %</div><div class="rwk-val" style="color:var(--${sumCashPct<8?'green':sumCashPct<15?'gold':'red'})">${sumCashPct.toFixed(1)}%</div></div>`;
+  }
+
+  const grid=document.getElementById('clientGrid');
+  grid.innerHTML=items.map(({code,name,stocks,portval,cash,cashPct})=>{
+    const safe=code.replace(/'/g,"\\'");
+    const cls=_cashPctCls(cashPct);
+    const cashStr=cash!==null?`₹${fmtC(cash)}`:'—';
+    const pctStr=cash!==null?`<span class="cc-cashpct ${cls}">${cashPct.toFixed(1)}%</span>`:'';
+    return`<div class="client-card" onclick="selectClientFromSelector('${safe}','${rm.replace(/'/g,"\\'")}')">
+      <span class="cc-code">${code}</span>
+      <span class="cc-name">${name}</span>
+      <div class="cc-row2">
+        <span class="cc-portval">₹${fmtC(portval)}</span>
+        <span class="cc-cashinfo"><span class="cc-cash-amt">${cashStr}</span>${pctStr}</span>
+      </div>
+      <span class="cc-stocks">${stocks} script${stocks!==1?'s':''}</span>
+    </div>`;
+  }).join('');
 }
 
 function showClientList(rm){
   selectedRM=rm;
+  window._currentClientListRM=rm;
   document.getElementById('selRMName').textContent=rm==='DEFAULT'?'All Clients':rm;
-  document.getElementById('rmListView').style.display='none';
+  document.getElementById('rmListView').style.display=currentUser?.role==='rm'?'':'none';
   document.getElementById('clientListView').style.display='';
-  // Hide back button for RM role — only admin can navigate between RMs
   const backRow=document.getElementById('selBackRow');
   if(backRow)backRow.style.display=currentUser?.role==='rm'?'none':'flex';
-
-  // Build client cards for this RM
-  const clients=PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===rm);
-  const clientMap=new Map();
-  clients.forEach(s=>{
-    if(!clientMap.has(s.clientCode))clientMap.set(s.clientCode,{name:s.clientName||s.clientCode,stocks:0,invested:0});
-    const c=clientMap.get(s.clientCode);
-    c.stocks++;c.invested+=s.buy*s.qty;
-  });
-
-  const grid=document.getElementById('clientGrid');
-  grid.innerHTML=[...clientMap.entries()].map(([code,info])=>{
-    const safe=code.replace(/'/g,"\\'");
-    return `<div class="client-card" onclick="selectClientFromSelector('${safe}','${rm.replace(/'/g,"\\'")}')">
-      <span class="cc-code">${code}</span>
-      <span class="cc-name">${info.name}</span>
-      <span class="cc-stocks">${info.stocks} stocks · ₹${fmtC(info.invested)} invested</span>
-    </div>`;
-  }).join('');
+  _renderClientGrid(rm);
 }
 
 function selectClientFromSelector(clientCode, rm){
@@ -3954,7 +4161,6 @@ function exportClientExcel(){
   }
   function pF(v){return (Number(v)>=0?'+':'')+Number(v).toFixed(2)+'%';}
 
-  // ── Standard column widths (px) — mirrors PDF mm proportions ──
   const COL={no:'36px',code:'80px',qty:'50px',buy:'88px',buyval:'100px',cmp:'88px',
              curr:'100px',pnl:'100px',pnlp:'64px',wt:'50px',sec:'auto'};
 
@@ -3976,25 +4182,18 @@ function exportClientExcel(){
 <head><meta charset="UTF-8"></head><body>
 <table cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;font-family:Arial,sans-serif">
 
-  <!-- ── HEADER ── -->
-  <tr>
-    <td colspan="11" style="background:${navyDk};color:${white};font-size:18px;font-weight:bold;padding:12px 16px;border:none;letter-spacing:1px">AUTUS</td>
-  </tr>
+  <tr><td colspan="11" style="background:${navyDk};color:${white};font-size:18px;font-weight:bold;padding:12px 16px;border:none;letter-spacing:1px">AUTUS</td></tr>
   <tr>
     <td colspan="6" style="background:${navy};color:${gold};font-size:10px;font-weight:bold;padding:5px 16px;border:none;letter-spacing:2px">CLIENT PORTFOLIO REPORT</td>
     <td colspan="5" style="background:${navy};color:${white};font-size:10px;font-weight:bold;padding:5px 16px;border:none;text-align:right">${d.clientName} &nbsp;|&nbsp; RM: ${d.rm} &nbsp;|&nbsp; ${d.reportDate}</td>
   </tr>
   <tr><td colspan="11" style="padding:4px;border:none"></td></tr>
 
-  <!-- ── PORTFOLIO SUMMARY ── -->
   <tr><td colspan="11" style="background:${navy};color:${white};font-size:11px;font-weight:bold;padding:7px 12px;border:none;letter-spacing:1px">PORTFOLIO SUMMARY</td></tr>
   <tr>
-    ${TH('INVESTED',navy,white,COL.curr)}
-    ${TH('CURRENT VALUE',navy,white,COL.curr)}
-    ${TH('NOTIONAL P&L',d.portPnL>=0?green:red,white,COL.pnl)}
-    ${TH('P&L %',d.portPnL>=0?green:red,white,COL.pnlp)}
-    ${TH('CASH / LEDGER',indigo,white,COL.curr)}
-    ${TH('EFFECTIVE TOTAL',navy,white,COL.curr)}
+    ${TH('INVESTED',navy,white,COL.curr)}${TH('CURRENT VALUE',navy,white,COL.curr)}
+    ${TH('NOTIONAL P&L',d.portPnL>=0?green:red,white,COL.pnl)}${TH('P&L %',d.portPnL>=0?green:red,white,COL.pnlp)}
+    ${TH('CASH / LEDGER',indigo,white,COL.curr)}${TH('EFFECTIVE TOTAL',navy,white,COL.curr)}
     <td colspan="5" style="border:none"></td>
   </tr>
   <tr>
@@ -4008,19 +4207,13 @@ function exportClientExcel(){
   </tr>
   <tr><td colspan="11" style="padding:5px;border:none"></td></tr>
 
-  <!-- ── HOLDINGS ── -->
   <tr><td colspan="11" style="background:${navy};color:${white};font-size:11px;font-weight:bold;padding:7px 12px;border:none;letter-spacing:1px">HOLDINGS</td></tr>
   <tr>
-    ${TH('#',navy,white,COL.no)}
-    ${THL('CODE',navy,white,COL.code)}
-    ${TH('QTY',navy,white,COL.qty)}
-    ${TH('AVG BUY',navy,white,COL.buy)}
-    ${TH('BUY VALUE',navy,white,COL.buyval)}
-    ${TH('CMP',navy,white,COL.cmp)}
-    ${TH('CURR VALUE',navy,white,COL.curr)}
-    ${TH('NOTIONAL P&L',navy,white,COL.pnl)}
-    ${TH('P&L %',navy,white,COL.pnlp)}
-    ${TH('WT %',navy,white,COL.wt)}
+    ${TH('#',navy,white,COL.no)}${THL('CODE',navy,white,COL.code)}
+    ${TH('QTY',navy,white,COL.qty)}${TH('AVG BUY',navy,white,COL.buy)}
+    ${TH('BUY VALUE',navy,white,COL.buyval)}${TH('CMP',navy,white,COL.cmp)}
+    ${TH('CURR VALUE',navy,white,COL.curr)}${TH('NOTIONAL P&L',navy,white,COL.pnl)}
+    ${TH('P&L %',navy,white,COL.pnlp)}${TH('WT %',navy,white,COL.wt)}
     ${THL('SECTOR',navy,white,COL.sec)}
   </tr>
   ${d.rows.map((r,i)=>{
@@ -4055,17 +4248,12 @@ function exportClientExcel(){
   </tr>
   <tr><td colspan="11" style="padding:5px;border:none"></td></tr>
 
-  <!-- ── SECTOR BREAKUP ── -->
   <tr><td colspan="11" style="background:${navy};color:${white};font-size:11px;font-weight:bold;padding:7px 12px;border:none;letter-spacing:1px">SECTOR BREAKUP</td></tr>
   <tr>
-    ${THL('SECTOR',navy,white,'200px')}
-    ${TH('STOCKS',navy,white,'60px')}
-    ${TH('INVESTED',navy,white,COL.curr)}
-    ${TH('CURR VALUE',navy,white,COL.curr)}
-    ${TH('NOTIONAL P&L',navy,white,COL.pnl)}
-    ${TH('P&L %',navy,white,COL.pnlp)}
-    ${TH('WT %',navy,white,COL.wt)}
-    <td colspan="4" style="border:none"></td>
+    ${THL('SECTOR',navy,white,'200px')}${TH('STOCKS',navy,white,'60px')}
+    ${TH('INVESTED',navy,white,COL.curr)}${TH('CURR VALUE',navy,white,COL.curr)}
+    ${TH('NOTIONAL P&L',navy,white,COL.pnl)}${TH('P&L %',navy,white,COL.pnlp)}
+    ${TH('WT %',navy,white,COL.wt)}<td colspan="4" style="border:none"></td>
   </tr>
   ${d.sectors.map((s,i)=>{
     const bg=i%2===0?white:altRow;
@@ -4098,7 +4286,6 @@ function exportClientExcel(){
     <td colspan="7" style="border:none"></td>
   </tr>`:''}
 
-  <!-- ── FOOTER ── -->
   <tr><td colspan="11" style="padding:4px;border:none"></td></tr>
   <tr><td colspan="11" style="background:${navyDk};color:${gold};font-size:9px;padding:6px 12px;border:none">AUTUS &nbsp;&nbsp;&nbsp; Confidential — For Client Use Only &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; Generated: ${d.reportDate}</td></tr>
 </table></body></html>`;
@@ -4277,9 +4464,181 @@ async function exportClientPDF(){
 function filterClientCards(){
   const q=document.getElementById('clientSearch').value.toLowerCase();
   document.querySelectorAll('#clientGrid .client-card').forEach(card=>{
-    const txt=card.textContent.toLowerCase();
-    card.style.display=txt.includes(q)?'':'none';
+    card.style.display=card.textContent.toLowerCase().includes(q)?'':'none';
   });
+}
+
+// ══════════════════════════════════════════════════════
+//  SCRIPTS SUMMARY TAB
+// ══════════════════════════════════════════════════════
+
+// ── Scripts sort state ──
+let scSortKey='wt', scSortAsc=false;
+function scSort(key){
+  if(scSortKey===key)scSortAsc=!scSortAsc;
+  else{scSortKey=key;scSortAsc=false;}
+  renderScripts();
+}
+function _scUpdateArrows(key){
+  ['script','sector','clients','qty','avgbuy','cmp','curr','daypct','wt'].forEach(k=>{
+    const el=document.getElementById('sc-arr-'+k);
+    if(el)el.textContent=k===key?(scSortAsc?'▲':'▼'):'';
+  });
+}
+
+// ── Single source of truth for Scripts scope ──
+function _scScope(){
+  const isAdmin=currentUser?.role==='admin';
+  const rmFilter=isAdmin?(document.getElementById('scRMFilter')?.value||''):'';
+  let scope=currentUser?.role==='rm'
+    ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
+    :PORTFOLIO;
+  if(isAdmin&&rmFilter)scope=scope.filter(s=>(s.subgroup||'DEFAULT')===rmFilter);
+  return{scope,isAdmin,rmFilter};
+}
+
+function renderScripts(){
+  const{scope,isAdmin,rmFilter}=_scScope();
+  const rmWrap=document.getElementById('scRMFilterWrap');
+  if(rmWrap)rmWrap.style.display=isAdmin?'flex':'none';
+  const rmSel=document.getElementById('scRMFilter');
+  if(isAdmin&&rmSel&&rmSel.options.length<=1){
+    const rms=[...new Set(PORTFOLIO.map(s=>s.subgroup||'DEFAULT'))].filter(Boolean).sort();
+    rms.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;rmSel.appendChild(o);});
+  }
+  if(!scope.length){
+    document.getElementById('tb-scripts').innerHTML=
+      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">No data — sync sheet first</td></tr>';
+    return;
+  }
+  const scriptMap=new Map();
+  scope.forEach(s=>{
+    if(!scriptMap.has(s.code))scriptMap.set(s.code,{code:s.code,name:s.name,sector:s.sector,
+      totalQty:0,totalInvest:0,clients:new Set(),rows:[]});
+    const m=scriptMap.get(s.code);
+    m.totalQty+=s.qty;m.totalInvest+=s.buy*s.qty;
+    m.clients.add(s.clientCode);m.rows.push(s);
+  });
+  const totalPortfolio=[...scriptMap.values()].reduce((a,m)=>a+m.totalInvest,0);
+  const now=livePriceTS&&Object.keys(livePriceTS).length
+    ?new Date(Math.max(...Object.values(livePriceTS))).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
+    :null;
+  const tsEl=document.getElementById('scTS');
+  if(tsEl)tsEl.textContent=now?(isMarketOpen()?'Live ':'Closed · ')+now:(isMarketOpen()?'Tap ↻ Live':'Market closed · Sheet prices');
+  let scripts=[...scriptMap.values()].map(m=>{
+    const cmp=livePrices[m.code]||0;
+    const pct=liveChangePct[m.code]??null;
+    const currVal=cmp>0?cmp*m.totalQty:m.totalInvest;
+    const wtPct=totalPortfolio>0?m.totalInvest/totalPortfolio*100:0;
+    const avgBuy=m.totalQty>0?m.totalInvest/m.totalQty:0;
+    return{...m,cmp,pct,currVal,wtPct,clientCount:m.clients.size,avgBuy};
+  });
+  const sortFns={
+    'script':(a,b)=>a.code.localeCompare(b.code),
+    'sector':(a,b)=>a.sector.localeCompare(b.sector),
+    'clients':(a,b)=>b.clientCount-a.clientCount,
+    'qty':(a,b)=>b.totalQty-a.totalQty,
+    'avgbuy':(a,b)=>b.avgBuy-a.avgBuy,
+    'cmp':(a,b)=>b.cmp-a.cmp,
+    'curr':(a,b)=>b.currVal-a.currVal,
+    'daypct':(a,b)=>(b.pct??-999)-(a.pct??-999),
+    'wt':(a,b)=>b.wtPct-a.wtPct,
+  };
+  scripts.sort(sortFns[scSortKey]||sortFns.wt);
+  if(scSortAsc)scripts.reverse();
+  _scUpdateArrows(scSortKey);
+  document.getElementById('scBadge').textContent=
+    scripts.length+' scripts · '+scope.length+' holdings'+(rmFilter?' · '+rmFilter:'');
+  document.getElementById('tb-scripts').innerHTML=scripts.map(sc=>{
+    const dayHtml=sc.pct!==null
+      ?`<span class="${sc.pct>=0?'pos':'neg'}">${sc.pct>=0?'▲ +':'▼ '}${Math.abs(sc.pct).toFixed(2)}%</span>`
+      :'<span class="neu">—</span>';
+    const safe=sc.code.replace(/'/g,"\'");
+    return`<tr onclick="showScDrill('${safe}')" data-q="${sc.code.toLowerCase()} ${sc.name.toLowerCase()} ${sc.sector.toLowerCase()}">
+      <td><span class="sn">${sc.code}</span><span class="ss" style="max-width:130px">${sc.name}</span></td>
+      <td class="neu" style="font-size:10px;text-align:left">${sc.sector}</td>
+      <td class="neu">${sc.clientCount}</td>
+      <td class="neu">${sc.totalQty.toLocaleString('en-IN')}</td>
+      <td class="neu">${sc.avgBuy.toFixed(2)}</td>
+      <td class="${sc.cmp>0&&sc.cmp>sc.avgBuy?'pos':'neg'}" style="font-weight:700">${sc.cmp>0?sc.cmp.toFixed(2):'—'}</td>
+      <td class="neu">₹${fmtC(sc.currVal)}</td>
+      <td>${dayHtml}</td>
+      <td><div class="bar-row"><span style="font-size:11px;font-weight:700;color:var(--text2)">${sc.wtPct.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(sc.wtPct*3,100)}%"></div></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterScriptRows(q){
+  const ql=q.toLowerCase();
+  document.querySelectorAll('#tb-scripts tr').forEach(r=>{
+    r.style.display=(r.getAttribute('data-q')||'').includes(ql)?'':'none';
+  });
+}
+
+function showScDrill(code){
+  const{scope,rmFilter}=_scScope();
+  const rows=scope.filter(s=>s.code===code);
+  if(!rows.length)return;
+  const cmp=livePrices[code]||rows[0].valRate||rows[0].buy;
+  const prevClose=livePrevClose[code]||cmp;
+  const pct=liveChangePct[code]??null;
+  const totalQty=rows.reduce((a,r)=>a+r.qty,0);
+  const totalInv=rows.reduce((a,r)=>a+r.buy*r.qty,0);
+  const totalCurr=cmp*totalQty;
+  const avgBuy=totalQty>0?totalInv/totalQty:0;
+  const dayStr=pct!==null?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—';
+  const titleSuffix=rmFilter?` — ${rmFilter}`:'';
+  document.getElementById('scDrillTitle').textContent=`${code} — ${rows[0].name}${titleSuffix}`;
+  document.getElementById('scDrillBar').style.display='flex';
+  document.getElementById('scriptTable').closest('.sec').style.display='none';
+  document.querySelector('.sc-toolbar').style.display='none';
+  const drill=document.getElementById('scDrill');
+  drill.style.display='';
+  const sorted=[...rows].sort((a,b)=>b.qty-a.qty);
+  drill.innerHTML=`
+    <div class="sc-drill-kpi-row">
+      <div class="sc-dkpi"><div class="sc-dkpi-l">LTP / CMP</div><div class="sc-dkpi-v">${cmp.toFixed(2)}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Prev Close</div><div class="sc-dkpi-v">${prevClose.toFixed(2)}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Day %</div>
+        <div class="sc-dkpi-v ${pct!==null?(pct>=0?'pos':'neg'):''}">${dayStr}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Total Qty</div><div class="sc-dkpi-v">${totalQty.toLocaleString('en-IN')}</div></div>
+    </div>
+    <div class="sc-drill-kpi-row" style="border-top:none;border-radius:0;margin-top:0">
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Avg Buy Rate</div><div class="sc-dkpi-v">${avgBuy.toFixed(2)}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Total Invested</div><div class="sc-dkpi-v">₹${fmtC(totalInv)}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Current Value</div><div class="sc-dkpi-v">₹${fmtC(totalCurr)}</div></div>
+      <div class="sc-dkpi"><div class="sc-dkpi-l">Sector</div><div class="sc-dkpi-v" style="font-size:11px">${rows[0].sector}</div></div>
+    </div>
+    <div class="sc-client-table">
+      <table>
+        <thead><tr>
+          <th style="text-align:left">Client Name</th><th>Code</th><th>Qty</th>
+          <th>Avg Buy ₹</th><th>Curr Val</th><th>P&L %</th><th>% of Script</th>
+        </tr></thead>
+        <tbody>${sorted.map(r=>{
+          const cv=cmp*r.qty,inv=r.buy*r.qty,pnl=cv-inv;
+          const pp=inv>0?(pnl/inv)*100:0;
+          const holdPct=totalQty>0?(r.qty/totalQty)*100:0;
+          const safe=r.clientCode.replace(/'/g,"\'");
+          return`<tr onclick="selectClientFromSelector('${safe}','${(r.subgroup||'DEFAULT').replace(/'/g,"\'")}')">
+            <td>${r.clientName||r.clientCode}</td><td>${r.clientCode}</td>
+            <td>${r.qty.toLocaleString('en-IN')}</td><td>${r.buy.toFixed(2)}</td>
+            <td>₹${fmtC(cv)}</td>
+            <td><span class="pill ${clsPill(pp)}">${fmtP(pp)}</span></td>
+            <td><div class="bar-row"><span style="font-size:10px;font-weight:700;color:var(--text2)">${holdPct.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(holdPct*2,100)}%"></div></div></div></td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+}
+
+function closeScDrill(){
+  document.getElementById('scDrillBar').style.display='none';
+  document.getElementById('scDrill').style.display='none';
+  const sec=document.getElementById('scriptTable')?.closest('.sec');
+  if(sec)sec.style.display='';
+  const tb=document.querySelector('.sc-toolbar');
+  if(tb)tb.style.display='flex';
 }
 
 // ══════════════════════════════════════════════════════
@@ -4303,207 +4662,6 @@ function filterClientCards(){
 //  Shows all unique scripts across RM's clients
 //  with % of total RM portfolio + client drilldown
 // ══════════════════════════════════════════════════════
-
-// ── Scripts tab sort state ──
-let scSortKey='wt', scSortAsc=false;
-function scSort(key){
-  if(scSortKey===key)scSortAsc=!scSortAsc;
-  else{scSortKey=key;scSortAsc=false;}
-  renderScripts();
-}
-function _scUpdateArrows(key){
-  ['script','sector','clients','qty','avgbuy','cmp','curr','daypct','wt'].forEach(k=>{
-    const el=document.getElementById('sc-arr-'+k);
-    if(el)el.textContent=k===key?(scSortAsc?'▲':'▼'):'';
-  });
-}
-
-// ── Single source of truth for Scripts scope — used by BOTH renderScripts AND showScDrill ──
-function _scScope(){
-  const isAdmin=currentUser?.role==='admin';
-  const rmFilter=isAdmin?(document.getElementById('scRMFilter')?.value||''):'';
-  let scope=currentUser?.role==='rm'
-    ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
-    :PORTFOLIO;
-  if(isAdmin&&rmFilter)
-    scope=scope.filter(s=>(s.subgroup||'DEFAULT')===rmFilter);
-  return{scope,isAdmin,rmFilter};
-}
-
-function renderScripts(){
-  const{scope,isAdmin,rmFilter}=_scScope();
-
-  const rmWrap=document.getElementById('scRMFilterWrap');
-  if(rmWrap)rmWrap.style.display=isAdmin?'flex':'none';
-
-  const rmSel=document.getElementById('scRMFilter');
-  if(isAdmin&&rmSel&&rmSel.options.length<=1){
-    const rms=[...new Set(PORTFOLIO.map(s=>s.subgroup||'DEFAULT'))].filter(Boolean).sort();
-    rms.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;rmSel.appendChild(o);});
-  }
-
-  if(!scope.length){
-    document.getElementById('tb-scripts').innerHTML=
-      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">No data — sync sheet first</td></tr>';
-    return;
-  }
-
-  const scriptMap=new Map();
-  scope.forEach(s=>{
-    if(!scriptMap.has(s.code)){
-      scriptMap.set(s.code,{code:s.code,name:s.name,sector:s.sector,
-        totalQty:0,totalInvest:0,clients:new Set(),rows:[]});
-    }
-    const m=scriptMap.get(s.code);
-    m.totalQty    +=s.qty;
-    m.totalInvest +=s.buy*s.qty;
-    m.clients.add(s.clientCode);
-    m.rows.push(s);
-  });
-
-  const totalPortfolio=[...scriptMap.values()].reduce((a,m)=>a+m.totalInvest,0);
-  const now=livePriceTS&&Object.keys(livePriceTS).length
-    ?new Date(Math.max(...Object.values(livePriceTS))).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
-    :null;
-  const tsEl=document.getElementById('scTS');
-  if(tsEl)tsEl.textContent=now
-    ?(isMarketOpen()?'Live ':'Closed · ')+now
-    :(isMarketOpen()?'Tap ↻ Live':'Market closed · Sheet prices');
-
-  let scripts=[...scriptMap.values()].map(m=>{
-    const cmp    =livePrices[m.code]||0;
-    const pct    =liveChangePct[m.code]??null;
-    const currVal=cmp>0?cmp*m.totalQty:m.totalInvest;
-    const wtPct  =totalPortfolio>0?m.totalInvest/totalPortfolio*100:0;
-    const avgBuy =m.totalQty>0?m.totalInvest/m.totalQty:0;
-    return{...m,cmp,pct,currVal,wtPct,clientCount:m.clients.size,avgBuy};
-  });
-
-  const sortFns={
-    'script': (a,b)=>a.code.localeCompare(b.code),
-    'sector': (a,b)=>a.sector.localeCompare(b.sector),
-    'clients':(a,b)=>b.clientCount-a.clientCount,
-    'qty':    (a,b)=>b.totalQty-a.totalQty,
-    'avgbuy': (a,b)=>b.avgBuy-a.avgBuy,
-    'cmp':    (a,b)=>b.cmp-a.cmp,
-    'curr':   (a,b)=>b.currVal-a.currVal,
-    'daypct': (a,b)=>(b.pct??-999)-(a.pct??-999),
-    'wt':     (a,b)=>b.wtPct-a.wtPct,
-  };
-  scripts.sort(sortFns[scSortKey]||sortFns.wt);
-  if(scSortAsc)scripts.reverse();
-  _scUpdateArrows(scSortKey);
-
-  document.getElementById('scBadge').textContent=
-    scripts.length+' scripts · '+scope.length+' holdings'+(rmFilter?' · '+rmFilter:'');
-
-  document.getElementById('tb-scripts').innerHTML=scripts.map(sc=>{
-    const dayHtml=sc.pct!==null
-      ?`<span class="${sc.pct>=0?'pos':'neg'}">${sc.pct>=0?'▲ +':'▼ '}${Math.abs(sc.pct).toFixed(2)}%</span>`
-      :'<span class="neu">—</span>';
-    const safe=sc.code.replace(/'/g,"\'");
-    return`<tr onclick="showScDrill('${safe}')" data-q="${sc.code.toLowerCase()} ${sc.name.toLowerCase()} ${sc.sector.toLowerCase()}">
-      <td><span class="sn">${sc.code}</span><span class="ss" style="max-width:130px">${sc.name}</span></td>
-      <td class="neu" style="font-size:10px;text-align:left">${sc.sector}</td>
-      <td class="neu">${sc.clientCount}</td>
-      <td class="neu">${sc.totalQty.toLocaleString('en-IN')}</td>
-      <td class="neu">${sc.avgBuy.toFixed(2)}</td>
-      <td class="${sc.cmp>0&&sc.cmp>sc.avgBuy?'pos':'neg'}" style="font-weight:700">${sc.cmp>0?sc.cmp.toFixed(2):'—'}</td>
-      <td class="neu">₹${fmtC(sc.currVal)}</td>
-      <td>${dayHtml}</td>
-      <td><div class="bar-row"><span style="font-size:11px;font-weight:700;color:var(--text2)">${sc.wtPct.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(sc.wtPct*3,100)}%"></div></div></div></td>
-    </tr>`;
-  }).join('');
-}
-
-function filterScriptRows(q){
-  const ql=q.toLowerCase();
-  document.querySelectorAll('#tb-scripts tr').forEach(r=>{
-    const dq=r.getAttribute('data-q')||'';
-    r.style.display=dq.includes(ql)?'':'none';
-  });
-}
-
-function showScDrill(code){
-  // ── Uses _scScope() — drilldown always matches the active RM filter ──
-  const{scope,rmFilter}=_scScope();
-  const rows=scope.filter(s=>s.code===code);
-  if(!rows.length)return;
-
-  const cmp      =livePrices[code]||rows[0].valRate||rows[0].buy;
-  const prevClose=livePrevClose[code]||cmp;
-  const pct      =liveChangePct[code]??null;
-  const totalQty =rows.reduce((a,r)=>a+r.qty,0);
-  const totalInv =rows.reduce((a,r)=>a+r.buy*r.qty,0);
-  const totalCurr=cmp*totalQty;
-  const avgBuy   =totalQty>0?totalInv/totalQty:0;
-  const dayStr   =pct!==null?(pct>=0?'▲ +':'▼ ')+Math.abs(pct).toFixed(2)+'%':'—';
-
-  const titleSuffix=rmFilter?` — ${rmFilter}`:'';
-  document.getElementById('scDrillTitle').textContent=`${code} — ${rows[0].name}${titleSuffix}`;
-  document.getElementById('scDrillBar').style.display='flex';
-  document.getElementById('scriptTable').closest('.sec').style.display='none';
-  document.querySelector('.sc-toolbar').style.display='none';
-
-  const drill=document.getElementById('scDrill');
-  drill.style.display='';
-
-  const sorted=[...rows].sort((a,b)=>b.qty-a.qty);
-
-  drill.innerHTML=`
-    <div class="sc-drill-kpi-row">
-      <div class="sc-dkpi"><div class="sc-dkpi-l">LTP / CMP</div><div class="sc-dkpi-v">${cmp.toFixed(2)}</div></div>
-      <div class="sc-dkpi"><div class="sc-dkpi-l">Prev Close</div><div class="sc-dkpi-v">${prevClose.toFixed(2)}</div></div>
-      <div class="sc-dkpi"><div class="sc-dkpi-l">Day %</div>
-        <div class="sc-dkpi-v ${pct!==null?(pct>=0?'pos':'neg'):''}">${dayStr}</div></div>
-      <div class="sc-dkpi"><div class="sc-dkpi-l">Total Qty</div><div class="sc-dkpi-v">${totalQty.toLocaleString('en-IN')}</div></div>
-    </div>
-    <div class="sc-drill-kpi-row" style="border-top:none;border-radius:0;margin-top:0">
-      <div class="sc-dkpi"><div class="sc-dkpi-l">Avg Buy Rate</div><div class="sc-dkpi-v">${avgBuy.toFixed(2)}</div></div>
-      <div class="sc-dkpi"><div class="sc-dkpi-l">Total Invested</div><div class="sc-dkpi-v">₹${fmtC(totalInv)}</div></div>
-      <div class="sc-dkpi"><div class="sc-dkpi-l">Current Value</div><div class="sc-dkpi-v">₹${fmtC(totalCurr)}</div></div>
-      <div class="sc-dkpi"><div class="sc-dkpi-l">Sector</div><div class="sc-dkpi-v" style="font-size:11px">${rows[0].sector}</div></div>
-    </div>
-    <div class="sc-client-table">
-      <table>
-        <thead><tr>
-          <th style="text-align:left">Client Name</th>
-          <th>Code</th>
-          <th>Qty</th>
-          <th>Avg Buy ₹</th>
-          <th>Curr Val</th>
-          <th>P&L %</th>
-          <th>% of Script</th>
-        </tr></thead>
-        <tbody>
-          ${sorted.map(r=>{
-            const cv=cmp*r.qty,inv=r.buy*r.qty,pnl=cv-inv;
-            const pp=inv>0?(pnl/inv)*100:0;
-            const holdPct=totalQty>0?(r.qty/totalQty)*100:0;
-            const safe=r.clientCode.replace(/'/g,"\'");
-            return`<tr onclick="selectClientFromSelector('${safe}','${(r.subgroup||'DEFAULT').replace(/'/g,"\'")}')">
-              <td>${r.clientName||r.clientCode}</td>
-              <td>${r.clientCode}</td>
-              <td>${r.qty.toLocaleString('en-IN')}</td>
-              <td>${r.buy.toFixed(2)}</td>
-              <td>₹${fmtC(cv)}</td>
-              <td><span class="pill ${clsPill(pp)}">${fmtP(pp)}</span></td>
-              <td><div class="bar-row"><span style="font-size:10px;font-weight:700;color:var(--text2)">${holdPct.toFixed(1)}%</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(holdPct*2,100)}%"></div></div></div></td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
-    </div>`;
-}
-
-function closeScDrill(){
-  document.getElementById('scDrillBar').style.display='none';
-  document.getElementById('scDrill').style.display='none';
-  const sec=document.getElementById('scriptTable')?.closest('.sec');
-  if(sec)sec.style.display='';
-  const tb=document.querySelector('.sc-toolbar');
-  if(tb)tb.style.display='flex';
-}
 
 // ══════════════════════════════════════════════════════
 //  MARKET STATE HELPERS (IST)
