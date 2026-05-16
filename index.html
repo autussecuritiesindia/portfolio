@@ -277,6 +277,36 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .ic-pct{padding:1px 5px;border-radius:4px;font-size:9.5px}
 /* ── OVERVIEW dual-panel layout ── */
 .ov-layout{display:flex;flex-direction:column;gap:12px}
+/* ── Screenshot button ── */
+.ss-btn{display:inline-flex;align-items:center;gap:5px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--r2);padding:5px 11px;font-size:10px;font-weight:700;font-family:var(--mono);color:var(--blue);cursor:pointer;transition:all .15s;white-space:nowrap;outline:none}
+.ss-btn:hover{background:var(--blue);color:#fff}
+.ss-btn:active{transform:scale(.96)}
+.ss-btn.loading{opacity:.6;pointer-events:none}
+/* ── Screenshot action row (Download + Copy) ── */
+.ss-action-row{display:inline-flex;gap:0;border-radius:var(--r2);overflow:hidden;border:1px solid var(--blue-border)}
+.ss-action-row .ss-btn{border-radius:0;border:none;border-right:1px solid var(--blue-border)}
+.ss-action-row .ss-btn:last-child{border-right:none}
+/* ── Overlay spinner ── */
+#ssOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:0}
+#ssOverlay.show{display:flex}
+.ss-spinner{background:var(--surface);border-radius:var(--r);padding:24px 36px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.35)}
+.ss-spinner-icon{font-size:30px;display:block;margin-bottom:10px;animation:spin 1s linear infinite}
+.ss-spinner-txt{font-size:12px;color:var(--text2);font-family:var(--mono);font-weight:700}
+/* ── Share action modal ── */
+#ssModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9998;align-items:center;justify-content:center}
+#ssModal.show{display:flex}
+.ss-modal-box{background:var(--surface);border-radius:var(--r);padding:20px 24px;max-width:340px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.ss-modal-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.ss-modal-sub{font-size:11px;color:var(--muted);margin-bottom:16px;font-family:var(--mono)}
+.ss-modal-preview{width:100%;border-radius:var(--r2);border:1px solid var(--border);margin-bottom:14px;max-height:180px;object-fit:cover;object-position:top}
+.ss-modal-actions{display:flex;gap:8px;flex-wrap:wrap}
+.ss-modal-btn{flex:1;padding:9px 0;border-radius:var(--r2);font-size:12px;font-weight:700;font-family:var(--mono);cursor:pointer;border:1px solid;text-align:center;transition:all .15s;min-width:100px}
+.ss-modal-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.ss-modal-btn.primary:hover{opacity:.88}
+.ss-modal-btn.secondary{background:var(--surface2);border-color:var(--border2);color:var(--text2)}
+.ss-modal-btn.secondary:hover{background:var(--surface3)}
+.ss-modal-btn.close-btn{background:transparent;border-color:var(--border);color:var(--muted);flex:0;min-width:60px}
+.ss-copy-note{font-size:10px;color:var(--muted);text-align:center;margin-top:8px;font-family:var(--mono)}
 @media(min-width:820px){
   .ov-layout{display:grid;grid-template-columns:55% 1fr;gap:12px;align-items:start}
   .ov-layout>.sec:first-child{grid-column:1}
@@ -889,6 +919,7 @@ html{-webkit-text-size-adjust:100%}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -1123,7 +1154,7 @@ html{-webkit-text-size-adjust:100%}
   <!-- ═══ OVERVIEW ═══ -->
   <div id="tabPanels">
   <div id="t-ov">
-    <div class="ov-layout">
+    <div id="ovCaptureZone" class="ov-layout">
 
       <!-- MARKET WATCH: live holdings table -->
       <div class="sec">
@@ -1131,6 +1162,7 @@ html{-webkit-text-size-adjust:100%}
           <span class="sec-title">📟 Market Watch — Holdings</span>
           <div class="sec-actions">
             <span class="sec-badge" id="mwBadge">—</span>
+            <button class="ss-btn" id="ssBtnOv" onclick="captureOverview()" title="Screenshot — save &amp; copy to clipboard">📸 Screenshot</button>
             <div class="search-wrap" style="margin:0;min-width:160px">
               <span class="s-icon" style="font-size:12px">🔍</span>
               <input class="search" id="mwSearch" placeholder="Search script…" oninput="filterMW()" style="padding:5px 10px 5px 28px;font-size:11px;height:30px">
@@ -1468,6 +1500,29 @@ html{-webkit-text-size-adjust:100%}
 </div>
 
 <div id="toast"></div>
+
+<!-- Screenshot spinner overlay -->
+<div id="ssOverlay">
+  <div class="ss-spinner">
+    <span class="ss-spinner-icon">📸</span>
+    <div class="ss-spinner-txt">Capturing overview…</div>
+  </div>
+</div>
+
+<!-- Screenshot share modal -->
+<div id="ssModal">
+  <div class="ss-modal-box">
+    <div class="ss-modal-title">📸 Screenshot Ready</div>
+    <div class="ss-modal-sub" id="ssModalSub">—</div>
+    <img id="ssModalPreview" class="ss-modal-preview" src="" alt="Preview">
+    <div class="ss-modal-actions">
+      <button class="ss-modal-btn primary" id="ssCopyBtn" onclick="ssClipboard()">📋 Copy to Clipboard</button>
+      <button class="ss-modal-btn secondary" id="ssDlBtn" onclick="ssDownload()">⬇ Download PNG</button>
+      <button class="ss-modal-btn close-btn" onclick="ssClose()">✕</button>
+    </div>
+    <div class="ss-copy-note" id="ssCopyNote"></div>
+  </div>
+</div>
 
 <!-- NEW: Loading spinner overlay -->
 <div id="loadingOverlay">
@@ -2890,6 +2945,170 @@ function handleCSV(input){
 function onDO(e){e.preventDefault();document.getElementById('uploadZone').classList.add('drag')}
 function onDL(){document.getElementById('uploadZone').classList.remove('drag')}
 function onDP(e){e.preventDefault();onDL();const f=e.dataTransfer.files[0];if(f)handleCSV({files:[f]})}
+
+// ══════════════════════════════════════════════════════
+//  SCREENSHOT — Overview capture + Copy to Clipboard
+// ══════════════════════════════════════════════════════
+let _ssCanvas=null; // holds last captured canvas for reuse
+
+async function captureOverview(){
+  if(typeof html2canvas==='undefined'){
+    toast('Screenshot library loading — try again in a moment','warn');
+    return;
+  }
+  const btn=document.getElementById('ssBtnOv');
+  const overlay=document.getElementById('ssOverlay');
+  if(overlay)overlay.classList.add('show');
+  if(btn)btn.classList.add('loading');
+
+  const ovEl=document.getElementById('ovCaptureZone');
+  const kpiEl=document.querySelector('.kpi-strip');
+  const isDark=document.body.classList.contains('dark')||
+    document.documentElement.getAttribute('data-theme')==='dark'||
+    document.documentElement.classList.contains('dark');
+  const bgColor=isDark?'#0f172a':'#f8fafc';
+  const textPrimary=isDark?'#e2e8f0':'#111e54';
+  const textMuted=isDark?'#94a3b8':'#64748b';
+  const borderCol=isDark?'#1e3a5f':'#cbd5e1';
+
+  const clientLabel=selectedClient||'Portfolio';
+  const dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}).replace(/ /g,'-');
+  const timeStr=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}).replace(/[: ]/g,(m)=>m===':'?'h':m==='am'||m==='pm'?m:'');
+
+  try{
+    // Build off-screen wrapper
+    const wrapper=document.createElement('div');
+    wrapper.style.cssText=[
+      `position:fixed`,`top:-99999px`,`left:-99999px`,
+      `width:${Math.max(ovEl.offsetWidth,800)}px`,
+      `background:${bgColor}`,
+      `padding:18px 20px 20px`,
+      `font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`,
+    ].join(';');
+
+    // Header row
+    const hdr=document.createElement('div');
+    hdr.style.cssText=`display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid ${borderCol}`;
+    hdr.innerHTML=`
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:22px;font-weight:800;color:${textPrimary};letter-spacing:1px">AUTUS</span>
+        <span style="font-size:11px;font-weight:600;background:${isDark?'#1e3a5f':'#e0edff'};color:${isDark?'#93c5fd':'#1d4ed8'};padding:3px 10px;border-radius:20px;font-family:monospace">Portfolio Snapshot</span>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:13px;font-weight:700;color:${textPrimary}">${clientLabel}</div>
+        <div style="font-size:10px;color:${textMuted};font-family:monospace">${dateStr} · ${timeStr}</div>
+      </div>`;
+    wrapper.appendChild(hdr);
+
+    // KPI strip clone
+    if(kpiEl){
+      const kc=kpiEl.cloneNode(true);
+      kc.style.marginBottom='14px';
+      wrapper.appendChild(kc);
+    }
+
+    // Overview clone (hide search + button)
+    const oc=ovEl.cloneNode(true);
+    oc.querySelectorAll('#mwSearch,#ssBtnOv,.search-wrap').forEach(el=>el.remove());
+    wrapper.appendChild(oc);
+
+    // Footer
+    const ftr=document.createElement('div');
+    ftr.style.cssText=`margin-top:14px;padding-top:10px;border-top:1px solid ${borderCol};display:flex;justify-content:space-between;align-items:center`;
+    ftr.innerHTML=`
+      <span style="font-size:9px;color:${textMuted};font-family:monospace">⚠ Confidential — Internal use only</span>
+      <span style="font-size:9px;color:${textMuted};font-family:monospace">Generated by AUTUS Dashboard · ${new Date().toLocaleString('en-IN')}</span>`;
+    wrapper.appendChild(ftr);
+
+    document.body.appendChild(wrapper);
+    await new Promise(r=>setTimeout(r,150));
+
+    _ssCanvas=await html2canvas(wrapper,{
+      scale:2,
+      useCORS:true,
+      allowTaint:true,
+      backgroundColor:bgColor,
+      logging:false,
+      windowWidth:wrapper.scrollWidth+40,
+    });
+
+    document.body.removeChild(wrapper);
+
+    // Store data for modal actions
+    _ssCanvas._filename=`AUTUS_${clientLabel}_${dateStr}_${timeStr}.png`;
+    _ssCanvas._dataURL=_ssCanvas.toDataURL('image/png',1.0);
+
+    // Show modal with preview
+    ssShowModal();
+
+  }catch(err){
+    console.error('[SCREENSHOT]',err);
+    toast('Screenshot failed — try again','warn');
+  }finally{
+    if(overlay)overlay.classList.remove('show');
+    if(btn)btn.classList.remove('loading');
+  }
+}
+
+function ssShowModal(){
+  if(!_ssCanvas)return;
+  const modal=document.getElementById('ssModal');
+  const preview=document.getElementById('ssModalPreview');
+  const sub=document.getElementById('ssModalSub');
+  const note=document.getElementById('ssCopyNote');
+  if(preview)preview.src=_ssCanvas._dataURL;
+  if(sub)sub.textContent=_ssCanvas._filename;
+  if(note)note.textContent='';
+  // Check clipboard support
+  const copyBtn=document.getElementById('ssCopyBtn');
+  const canCopy=!!(navigator.clipboard&&window.ClipboardItem);
+  if(copyBtn){
+    copyBtn.style.display=canCopy?'':'none';
+  }
+  if(modal)modal.classList.add('show');
+}
+
+async function ssClipboard(){
+  if(!_ssCanvas)return;
+  const note=document.getElementById('ssCopyNote');
+  const btn=document.getElementById('ssCopyBtn');
+  try{
+    _ssCanvas.toBlob(async(blob)=>{
+      if(!blob){if(note)note.textContent='⚠ Could not create image blob';return;}
+      await navigator.clipboard.write([
+        new ClipboardItem({'image/png':blob})
+      ]);
+      if(note){note.textContent='✅ Copied! Now paste directly into WhatsApp, Telegram, email or any chat.';note.style.color='var(--green)';}
+      if(btn){btn.textContent='✅ Copied!';setTimeout(()=>{if(btn)btn.textContent='📋 Copy to Clipboard';},2500);}
+      toast('📋 Screenshot copied to clipboard!','ok');
+    },'image/png',1.0);
+  }catch(err){
+    console.error('[CLIPBOARD]',err);
+    // Fallback — just download
+    if(note){note.textContent='Clipboard not supported on this browser — downloading instead.';note.style.color='var(--muted)';}
+    ssDownload();
+  }
+}
+
+function ssDownload(){
+  if(!_ssCanvas)return;
+  const link=document.createElement('a');
+  link.download=_ssCanvas._filename||'AUTUS_Overview.png';
+  link.href=_ssCanvas._dataURL;
+  link.click();
+  toast('⬇ Screenshot downloaded','ok');
+}
+
+function ssClose(){
+  const modal=document.getElementById('ssModal');
+  if(modal)modal.classList.remove('show');
+}
+
+// Close modal on backdrop click
+document.addEventListener('click',(e)=>{
+  const modal=document.getElementById('ssModal');
+  if(modal&&e.target===modal)ssClose();
+});
 
 // ══════════════════════════════════════════════════════
 //  EXPORT CSV
