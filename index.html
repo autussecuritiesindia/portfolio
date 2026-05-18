@@ -277,27 +277,84 @@ td:first-child{text-align:left;font-family:var(--sans)}
 .ic-pct{padding:1px 5px;border-radius:4px;font-size:9.5px}
 /* ── OVERVIEW dual-panel layout ── */
 .ov-layout{display:flex;flex-direction:column;gap:12px}
+/* ── Concentration risk alert banner ── */
+.conc-alert{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:var(--r2);margin-bottom:8px;border:1px solid;animation:fadeIn .3s ease}
+.conc-alert.warn{background:var(--gold-bg);border-color:var(--gold-border);color:var(--gold)}
+.conc-alert.danger{background:var(--red-bg);border-color:var(--red-border);color:var(--red)}
+.conc-alert-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.conc-alert-body{flex:1;font-size:11px;line-height:1.5}
+.conc-alert-title{font-weight:700;font-size:12px;margin-bottom:2px}
+/* ── Nifty benchmark strip ── */
+.benchmark-bar{display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px;flex-wrap:wrap}
+.bm-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:var(--mono)}
+.bm-item{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px}
+.bm-name{color:var(--text2);font-size:10px}
+.bm-val{font-weight:700}
+.bm-val.pos{color:var(--green)}
+.bm-val.neg{color:var(--red)}
+.bm-val.neu{color:var(--muted)}
+.bm-vs{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700;font-family:var(--mono)}
+.bm-vs.ahead{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.bm-vs.behind{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.bm-vs.even{background:var(--surface3);color:var(--muted);border:1px solid var(--border)}
+/* ── Price alert button + modal ── */
+.alert-btn{display:inline-flex;align-items:center;gap:4px;background:transparent;border:1px solid var(--border2);border-radius:var(--r2);padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--mono);color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+.alert-btn:hover{background:var(--gold-bg);border-color:var(--gold-border);color:var(--gold)}
+.alert-btn.active{background:var(--gold-bg);border-color:var(--gold-border);color:var(--gold)}
+#alertModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9990;align-items:center;justify-content:center}
+#alertModal.show{display:flex}
+.alert-modal-box{background:var(--surface);border-radius:var(--r);padding:20px 24px;max-width:380px;width:92%;box-shadow:0 8px 40px rgba(0,0,0,.4);max-height:85vh;overflow-y:auto}
+.alert-modal-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px}
+.alert-modal-sub{font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--mono)}
+.alert-form{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.alert-form-row{display:flex;gap:8px;align-items:center}
+.alert-form label{font-size:10px;font-weight:700;color:var(--text2);font-family:var(--mono);min-width:60px}
+.alert-form input,select.alert-sel{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r2);padding:7px 10px;font-size:12px;color:var(--text);font-family:var(--mono);width:100%;outline:none}
+.alert-form input:focus{border-color:var(--blue-border)}
+/* ── Alert script autocomplete ── */
+.alert-ac-wrap{position:relative;width:100%}
+.alert-ac-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r2);padding:7px 10px;font-size:12px;color:var(--text);font-family:var(--mono);outline:none}
+.alert-ac-input:focus{border-color:var(--blue-border)}
+.alert-ac-drop{display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--blue-border);border-radius:var(--r2);box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:10001;max-height:180px;overflow-y:auto;margin-top:2px}
+.alert-ac-drop.open{display:block}
+.alert-ac-item{padding:7px 10px;font-size:11px;font-family:var(--mono);cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--border);transition:background .1s}
+.alert-ac-item:last-child{border-bottom:none}
+.alert-ac-item:hover,.alert-ac-item.selected{background:var(--blue-bg)}
+.alert-ac-code{font-weight:700;color:var(--text)}
+.alert-ac-name{font-size:10px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.alert-ac-cmp{font-size:10px;font-weight:700;color:var(--blue)}
+.alert-add-btn{background:var(--blue);border:none;border-radius:var(--r2);padding:8px 0;font-size:12px;font-weight:700;font-family:var(--mono);color:#fff;cursor:pointer;width:100%}
+.alert-add-btn:hover{opacity:.88}
+.alert-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto}
+.alert-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:8px 10px;font-size:11px;font-family:var(--mono)}
+.alert-item-info{display:flex;flex-direction:column;gap:1px}
+.alert-item-code{font-weight:700;color:var(--text)}
+.alert-item-cond{font-size:10px;color:var(--muted)}
+.alert-del{background:transparent;border:none;color:var(--red);font-size:14px;cursor:pointer;padding:0 4px;opacity:.7}
+.alert-del:hover{opacity:1}
+.alert-empty{font-size:11px;color:var(--muted);text-align:center;padding:16px;font-family:var(--mono)}
+/* ── Fuzzy search highlight ── */
+.h-row mark,.mw-row mark{background:var(--gold-bg);color:var(--gold);border-radius:2px;padding:0 1px;font-weight:700}
+/* ── Search match count badge ── */
+.search-count{font-size:9px;font-family:var(--mono);color:var(--muted);margin-left:6px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 /* ── Screenshot button ── */
 .ss-btn{display:inline-flex;align-items:center;gap:5px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--r2);padding:5px 11px;font-size:10px;font-weight:700;font-family:var(--mono);color:var(--blue);cursor:pointer;transition:all .15s;white-space:nowrap;outline:none}
 .ss-btn:hover{background:var(--blue);color:#fff}
 .ss-btn:active{transform:scale(.96)}
 .ss-btn.loading{opacity:.6;pointer-events:none}
-/* ── Screenshot action row (Download + Copy) ── */
-.ss-action-row{display:inline-flex;gap:0;border-radius:var(--r2);overflow:hidden;border:1px solid var(--blue-border)}
-.ss-action-row .ss-btn{border-radius:0;border:none;border-right:1px solid var(--blue-border)}
-.ss-action-row .ss-btn:last-child{border-right:none}
-/* ── Overlay spinner ── */
-#ssOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:0}
+/* ── Screenshot spinner overlay ── */
+#ssOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center}
 #ssOverlay.show{display:flex}
 .ss-spinner{background:var(--surface);border-radius:var(--r);padding:24px 36px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.35)}
 .ss-spinner-icon{font-size:30px;display:block;margin-bottom:10px;animation:spin 1s linear infinite}
 .ss-spinner-txt{font-size:12px;color:var(--text2);font-family:var(--mono);font-weight:700}
-/* ── Share action modal ── */
+/* ── Screenshot share modal ── */
 #ssModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9998;align-items:center;justify-content:center}
 #ssModal.show{display:flex}
-.ss-modal-box{background:var(--surface);border-radius:var(--r);padding:20px 24px;max-width:340px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.ss-modal-box{background:var(--surface);border-radius:var(--r);padding:20px 24px;max-width:340px;width:92%;box-shadow:0 8px 40px rgba(0,0,0,.4)}
 .ss-modal-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
-.ss-modal-sub{font-size:11px;color:var(--muted);margin-bottom:16px;font-family:var(--mono)}
+.ss-modal-sub{font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--mono)}
 .ss-modal-preview{width:100%;border-radius:var(--r2);border:1px solid var(--border);margin-bottom:14px;max-height:180px;object-fit:cover;object-position:top}
 .ss-modal-actions{display:flex;gap:8px;flex-wrap:wrap}
 .ss-modal-btn{flex:1;padding:9px 0;border-radius:var(--r2);font-size:12px;font-weight:700;font-family:var(--mono);cursor:pointer;border:1px solid;text-align:center;transition:all .15s;min-width:100px}
@@ -1155,14 +1212,30 @@ html{-webkit-text-size-adjust:100%}
   <div id="tabPanels">
   <div id="t-ov">
     <div id="ovCaptureZone" class="ov-layout">
-
+      <!-- Nifty benchmark bar -->
+      <div class="benchmark-bar" id="benchmarkBar" style="display:none">
+        <span class="bm-label">vs Nifty</span>
+        <div class="bm-item">
+          <span class="bm-name">Portfolio</span>
+          <span class="bm-val" id="bm-port">—</span>
+        </div>
+        <div class="bm-item">
+          <span class="bm-name">Nifty 50</span>
+          <span class="bm-val" id="bm-nifty">—</span>
+        </div>
+        <span class="bm-vs" id="bm-vs-badge">—</span>
+        <span style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-left:auto">P&L % vs Index Day %</span>
+      </div>
+      <!-- Concentration risk alerts zone -->
+      <div id="concAlertZone"></div>
       <!-- MARKET WATCH: live holdings table -->
       <div class="sec">
         <div class="sec-hdr">
           <span class="sec-title">📟 Market Watch — Holdings</span>
           <div class="sec-actions">
             <span class="sec-badge" id="mwBadge">—</span>
-            <button class="ss-btn" id="ssBtnOv" onclick="captureOverview()" title="Screenshot — save &amp; copy to clipboard">📸 Screenshot</button>
+            <button class="ss-btn" id="ssBtnOv" onclick="captureOverview()" title="Screenshot overview">📸 Screenshot</button>
+            <button class="alert-btn" id="alertBtnOv" onclick="openAlertModal()" title="Set price alerts">🔔 Alerts</button>
             <div class="search-wrap" style="margin:0;min-width:160px">
               <span class="s-icon" style="font-size:12px">🔍</span>
               <input class="search" id="mwSearch" placeholder="Search script…" oninput="filterMW()" style="padding:5px 10px 5px 28px;font-size:11px;height:30px">
@@ -1517,10 +1590,49 @@ html{-webkit-text-size-adjust:100%}
     <img id="ssModalPreview" class="ss-modal-preview" src="" alt="Preview">
     <div class="ss-modal-actions">
       <button class="ss-modal-btn primary" id="ssCopyBtn" onclick="ssClipboard()">📋 Copy to Clipboard</button>
-      <button class="ss-modal-btn secondary" id="ssDlBtn" onclick="ssDownload()">⬇ Download PNG</button>
+      <button class="ss-modal-btn secondary" onclick="ssDownload()">⬇ Download PNG</button>
       <button class="ss-modal-btn close-btn" onclick="ssClose()">✕</button>
     </div>
     <div class="ss-copy-note" id="ssCopyNote"></div>
+  </div>
+</div>
+
+<!-- Price Alerts Modal -->
+<div id="alertModal">
+  <div class="alert-modal-box">
+    <div class="alert-modal-title">🔔 Price Alerts</div>
+    <div class="alert-modal-sub" id="alertModalSub">Get notified when a script crosses your target price</div>
+    <div class="alert-form">
+      <div class="alert-form-row">
+        <label>Script</label>
+        <div class="alert-ac-wrap">
+          <input id="alertCode" class="alert-ac-input" placeholder="Type to search scripts…"
+            autocomplete="off"
+            oninput="alertAcFilter(this.value)"
+            onkeydown="alertAcKey(event)"
+            onfocus="alertAcFilter(this.value)"
+            onblur="setTimeout(alertAcClose,180)">
+          <div class="alert-ac-drop" id="alertAcDrop"></div>
+        </div>
+      </div>
+      <div class="alert-form-row">
+        <label>When</label>
+        <select class="alert-sel" id="alertDir" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r2);padding:7px 10px;font-size:12px;color:var(--text);font-family:var(--mono);width:100%">
+          <option value="above">Crosses Above ▲</option>
+          <option value="below">Falls Below ▼</option>
+        </select>
+      </div>
+      <div class="alert-form-row">
+        <label>Price ₹</label>
+        <input id="alertPrice" type="number" placeholder="Target price" min="0" step="0.05">
+      </div>
+      <button class="alert-add-btn" onclick="addPriceAlert()">+ Add Alert</button>
+    </div>
+    <div style="font-size:10px;font-weight:700;font-family:var(--mono);color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">Active Alerts</div>
+    <div class="alert-list" id="alertList"></div>
+    <div style="margin-top:14px;text-align:right">
+      <button onclick="closeAlertModal()" style="background:transparent;border:1px solid var(--border);border-radius:var(--r2);padding:7px 16px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--mono)">Close</button>
+    </div>
   </div>
 </div>
 
@@ -1690,6 +1802,7 @@ function completeLogin(){
   document.getElementById('selWelcome').textContent=currentUser.role==='admin'?'Select RM':`Welcome, ${currentUser.display}`;
   // Proactively wake the Render.com server — fires in background, doesn't block UI
   warmupServer();
+  requestNotifPermission();
   initDashboard();
 }
 
@@ -2875,6 +2988,8 @@ async function refreshPrices(){
 
   showPriceFetchIndicator(false);
   renderAll();
+  checkPriceAlerts();
+  renderAlertList();
   // ── MarketView-style price tick animation — staggered per row ──
   const mwRows=[...document.querySelectorAll('.mw-row')];
   mwRows.forEach((row,idx)=>{
@@ -2949,7 +3064,7 @@ function onDP(e){e.preventDefault();onDL();const f=e.dataTransfer.files[0];if(f)
 // ══════════════════════════════════════════════════════
 //  SCREENSHOT — Overview capture + Copy to Clipboard
 // ══════════════════════════════════════════════════════
-let _ssCanvas=null; // holds last captured canvas for reuse
+let _ssCanvas=null;
 
 async function captureOverview(){
   if(typeof html2canvas==='undefined'){
@@ -2962,30 +3077,28 @@ async function captureOverview(){
   if(btn)btn.classList.add('loading');
 
   const ovEl=document.getElementById('ovCaptureZone');
-  const kpiEl=document.querySelector('.kpi-strip');
   const isDark=document.body.classList.contains('dark')||
     document.documentElement.getAttribute('data-theme')==='dark'||
     document.documentElement.classList.contains('dark');
   const bgColor=isDark?'#0f172a':'#f8fafc';
-
   const clientLabel=selectedClient||'Portfolio';
   const dateStr=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}).replace(/ /g,'-');
-  const timeStr=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}).replace(/[: ]/g,(m)=>m===':'?'h':m==='am'||m==='pm'?m:'');
+  const timeStr=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}).replace(':','h');
 
   try{
-    // Build off-screen wrapper — overview content only
     const wrapper=document.createElement('div');
     wrapper.style.cssText=[
-      `position:fixed`,`top:-99999px`,`left:-99999px`,
+      'position:fixed','top:-99999px','left:-99999px',
       `width:${Math.max(ovEl.offsetWidth,800)}px`,
       `background:${bgColor}`,
-      `padding:12px`,
-      `font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`,
+      'padding:12px',
+      'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
     ].join(';');
 
-    // Overview clone only — no header, no KPI strip, no search/button
+    // Clone overview only — no header, no KPI strip
     const oc=ovEl.cloneNode(true);
-    oc.querySelectorAll('#mwSearch,#ssBtnOv,.search-wrap').forEach(el=>el.remove());
+    // Remove UI-only elements from clone
+    oc.querySelectorAll('#mwSearch,#ssBtnOv,#alertBtnOv,.search-wrap,.ss-btn,.alert-btn').forEach(el=>el.remove());
     wrapper.appendChild(oc);
 
     document.body.appendChild(wrapper);
@@ -3002,11 +3115,9 @@ async function captureOverview(){
 
     document.body.removeChild(wrapper);
 
-    // Store data for modal actions
     _ssCanvas._filename=`AUTUS_${clientLabel}_${dateStr}_${timeStr}.png`;
     _ssCanvas._dataURL=_ssCanvas.toDataURL('image/png',1.0);
 
-    // Show modal with preview
     ssShowModal();
 
   }catch(err){
@@ -3024,15 +3135,11 @@ function ssShowModal(){
   const preview=document.getElementById('ssModalPreview');
   const sub=document.getElementById('ssModalSub');
   const note=document.getElementById('ssCopyNote');
+  const copyBtn=document.getElementById('ssCopyBtn');
   if(preview)preview.src=_ssCanvas._dataURL;
   if(sub)sub.textContent=_ssCanvas._filename;
   if(note)note.textContent='';
-  // Check clipboard support
-  const copyBtn=document.getElementById('ssCopyBtn');
-  const canCopy=!!(navigator.clipboard&&window.ClipboardItem);
-  if(copyBtn){
-    copyBtn.style.display=canCopy?'':'none';
-  }
+  if(copyBtn)copyBtn.style.display=!!(navigator.clipboard&&window.ClipboardItem)?'':'none';
   if(modal)modal.classList.add('show');
 }
 
@@ -3043,17 +3150,14 @@ async function ssClipboard(){
   try{
     _ssCanvas.toBlob(async(blob)=>{
       if(!blob){if(note)note.textContent='⚠ Could not create image blob';return;}
-      await navigator.clipboard.write([
-        new ClipboardItem({'image/png':blob})
-      ]);
-      if(note){note.textContent='✅ Copied! Now paste directly into WhatsApp, Telegram, email or any chat.';note.style.color='var(--green)';}
+      await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+      if(note){note.textContent='✅ Copied! Paste directly into WhatsApp, Telegram, email or any chat.';note.style.color='var(--green)';}
       if(btn){btn.textContent='✅ Copied!';setTimeout(()=>{if(btn)btn.textContent='📋 Copy to Clipboard';},2500);}
       toast('📋 Screenshot copied to clipboard!','ok');
     },'image/png',1.0);
   }catch(err){
     console.error('[CLIPBOARD]',err);
-    // Fallback — just download
-    if(note){note.textContent='Clipboard not supported on this browser — downloading instead.';note.style.color='var(--muted)';}
+    if(note){note.textContent='Clipboard not supported — downloading instead.';note.style.color='var(--muted)';}
     ssDownload();
   }
 }
@@ -3072,11 +3176,322 @@ function ssClose(){
   if(modal)modal.classList.remove('show');
 }
 
-// Close modal on backdrop click
-document.addEventListener('click',(e)=>{
-  const modal=document.getElementById('ssModal');
-  if(modal&&e.target===modal)ssClose();
+document.addEventListener('click',e=>{
+  const ssm=document.getElementById('ssModal');
+  if(ssm&&e.target===ssm)ssClose();
 });
+
+// ══════════════════════════════════════════════════════
+//  QUICK WIN 1 — Concentration Risk Alerts
+// ══════════════════════════════════════════════════════
+function renderConcentrationAlerts(data){
+  const zone=document.getElementById('concAlertZone');
+  if(!zone||!data||!data.length)return;
+  const totalCurr=data.reduce((a,s)=>a+s.curr,0);
+  if(!totalCurr){zone.innerHTML='';return;}
+
+  // Group by stock and sector
+  const stockMap=new Map(),sectorMap=new Map();
+  data.forEach(s=>{
+    const sw=stockMap.get(s.code)||{code:s.code,name:s.name,curr:0};
+    sw.curr+=s.curr;stockMap.set(s.code,sw);
+    const sec=s.sector||'Other';
+    const sv=sectorMap.get(sec)||{sector:sec,curr:0};
+    sv.curr+=s.curr;sectorMap.set(sec,sv);
+  });
+
+  const alerts=[];
+
+  // Stock concentration > 20% = warn, > 30% = danger
+  [...stockMap.values()].forEach(st=>{
+    const pct=(st.curr/totalCurr)*100;
+    if(pct>=30)alerts.push({level:'danger',icon:'🚨',title:`${st.code} is ${pct.toFixed(1)}% of portfolio`,detail:`Heavy concentration — consider rebalancing. Max recommended: 20%.`});
+    else if(pct>=20)alerts.push({level:'warn',icon:'⚠️',title:`${st.code} is ${pct.toFixed(1)}% of portfolio`,detail:`Approaching high concentration. Watch this position.`});
+  });
+
+  // Sector concentration > 40% = warn, > 55% = danger
+  [...sectorMap.values()].forEach(sv=>{
+    const pct=(sv.curr/totalCurr)*100;
+    if(pct>=55)alerts.push({level:'danger',icon:'🚨',title:`${sv.sector} sector is ${pct.toFixed(1)}% of portfolio`,detail:`Sector over-concentration. Diversification recommended.`});
+    else if(pct>=40)alerts.push({level:'warn',icon:'⚠️',title:`${sv.sector} sector is ${pct.toFixed(1)}% of portfolio`,detail:`High sector exposure. Monitor sector-specific risks.`});
+  });
+
+  if(!alerts.length){zone.innerHTML='';return;}
+  zone.innerHTML=alerts.slice(0,3).map(a=>`
+    <div class="conc-alert ${a.level}">
+      <span class="conc-alert-icon">${a.icon}</span>
+      <div class="conc-alert-body">
+        <div class="conc-alert-title">${a.title}</div>
+        <div>${a.detail}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+//  QUICK WIN 2 — Nifty 50 Benchmark Comparison
+// ══════════════════════════════════════════════════════
+function renderBenchmarkBar(data){
+  const bar=document.getElementById('benchmarkBar');
+  if(!bar||!data||!data.length){if(bar)bar.style.display='none';return;}
+
+  const portPct=data.length?
+    (()=>{const inv=data.reduce((a,s)=>a+s.invest,0),curr=data.reduce((a,s)=>a+s.curr,0);return inv>0?(curr-inv)/inv*100:null;})()
+    :null;
+
+  // Nifty day% from live indices
+  const niftyDayPct=liveIndices['^nsei']?.pct??null;
+  const niftyVal=liveIndices['^nsei']?.val??null;
+
+  const portEl=document.getElementById('bm-port');
+  const niftyEl=document.getElementById('bm-nifty');
+  const vsEl=document.getElementById('bm-vs-badge');
+
+  if(portPct===null&&niftyDayPct===null){bar.style.display='none';return;}
+  bar.style.display='flex';
+
+  if(portPct!==null){
+    portEl.textContent=(portPct>=0?'+':'')+portPct.toFixed(2)+'%';
+    portEl.className='bm-val '+(portPct>=0?'pos':'neg');
+  }else{portEl.textContent='—';portEl.className='bm-val neu';}
+
+  if(niftyDayPct!==null){
+    niftyEl.textContent=(niftyDayPct>=0?'+':'')+niftyDayPct.toFixed(2)+'%'+(niftyVal?' · '+fmtIdx(niftyVal):'');
+    niftyEl.className='bm-val '+(niftyDayPct>=0?'pos':'neg');
+  }else{niftyEl.textContent='—';niftyEl.className='bm-val neu';}
+
+  if(portPct!==null&&niftyDayPct!==null){
+    const diff=portPct-niftyDayPct;
+    if(Math.abs(diff)<0.1){vsEl.textContent='≈ In line with Nifty';vsEl.className='bm-vs even';}
+    else if(diff>0){vsEl.textContent=`▲ +${diff.toFixed(2)}% ahead of Nifty`;vsEl.className='bm-vs ahead';}
+    else{vsEl.textContent=`▼ ${diff.toFixed(2)}% behind Nifty`;vsEl.className='bm-vs behind';}
+  }else{vsEl.textContent='';vsEl.className='bm-vs even';}
+}
+
+// ══════════════════════════════════════════════════════
+//  QUICK WIN 3 — Fuzzy Search (Holdings + Market Watch)
+// ══════════════════════════════════════════════════════
+function fuzzyMatch(query,target){
+  if(!query)return true;
+  const q=query.toLowerCase(),t=target.toLowerCase();
+  if(t.includes(q))return true;
+  // Allow gaps — match all chars of query in order in target
+  let qi=0;
+  for(let i=0;i<t.length&&qi<q.length;i++){if(t[i]===q[qi])qi++;}
+  return qi===q.length;
+}
+
+// Override filterMW with fuzzy version + match count
+function filterMW(){
+  const q=(document.getElementById('mwSearch')?.value||'').toLowerCase().trim();
+  let shown=0,total=0;
+  document.querySelectorAll('.mw-row').forEach(r=>{
+    total++;
+    const match=!q||fuzzyMatch(q,r.dataset.mwq||'');
+    r.style.display=match?'':'none';
+    if(match)shown++;
+  });
+  const badge=document.getElementById('mwBadge');
+  if(badge){
+    if(q&&total>0)badge.textContent=`${shown} of ${total} scripts`;
+    else badge.textContent=`${total} scripts · ${document.querySelectorAll('.mw-row[data-live="1"]').length} live`;
+  }
+}
+
+// Override debouncedFilter / filterHoldings with fuzzy version
+function filterHoldings(){
+  const q=(document.getElementById('srch')?.value||'').toLowerCase().trim();
+  let shown=0,total=0;
+  document.querySelectorAll('.h-row').forEach(r=>{
+    total++;
+    const match=!q||fuzzyMatch(q,r.dataset.q||'');
+    r.style.display=match?'':'none';
+    if(match)shown++;
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  WOW FEATURE — Price Alerts (checked on every price tick)
+// ══════════════════════════════════════════════════════
+const LS_ALERTS='pf-price-alerts-v1';
+
+function loadAlerts(){
+  try{return JSON.parse(localStorage.getItem(LS_ALERTS)||'[]');}catch{return[];}
+}
+function saveAlerts(alerts){
+  try{localStorage.setItem(LS_ALERTS,JSON.stringify(alerts));}catch{}
+}
+
+function openAlertModal(){
+  document.getElementById('alertModal').classList.add('show');
+  renderAlertList();
+  // Reset form
+  const codeEl=document.getElementById('alertCode');
+  if(codeEl){codeEl.value='';codeEl.dataset.selectedCode='';}
+  alertAcClose();
+  const btn=document.getElementById('alertBtnOv');
+  if(btn)btn.classList.add('active');
+}
+function closeAlertModal(){
+  document.getElementById('alertModal').classList.remove('show');
+  alertAcClose();
+  const btn=document.getElementById('alertBtnOv');
+  if(btn)btn.classList.remove('active');
+}
+
+// ── Alert modal autocomplete ──
+let _acIdx=-1;
+
+function alertAcFilter(q){
+  const drop=document.getElementById('alertAcDrop');
+  const input=document.getElementById('alertCode');
+  if(!drop)return;
+  _acIdx=-1;
+
+  // Get unique scripts from current portfolio scope
+  const scope=currentUser?.role==='rm'
+    ?PORTFOLIO.filter(s=>(s.subgroup||'DEFAULT')===currentUser.subgroup)
+    :PORTFOLIO;
+  const scriptMap=new Map();
+  scope.forEach(s=>{
+    if(!scriptMap.has(s.code))
+      scriptMap.set(s.code,{code:s.code,name:s.name,cmp:livePrices[s.code]||0});
+  });
+
+  const all=[...scriptMap.values()];
+  const ql=q.toLowerCase().trim();
+  const filtered=!ql?all:all.filter(s=>
+    fuzzyMatch(ql,s.code)||fuzzyMatch(ql,s.name.toLowerCase())
+  );
+
+  if(!filtered.length){drop.innerHTML='<div class="alert-ac-item" style="color:var(--muted)">No matching scripts</div>';drop.classList.add('open');return;}
+
+  drop.innerHTML=filtered.slice(0,12).map((s,i)=>`
+    <div class="alert-ac-item" data-code="${s.code}" data-idx="${i}"
+      onmousedown="alertAcSelect('${s.code.replace(/'/g,"\\'")}','${s.name.replace(/'/g,"\\'")}')">
+      <span class="alert-ac-code">${s.code}</span>
+      <span class="alert-ac-name">${s.name}</span>
+      ${s.cmp>0?`<span class="alert-ac-cmp">₹${s.cmp.toFixed(2)}</span>`:''}
+    </div>`).join('');
+  drop.classList.add('open');
+}
+
+function alertAcSelect(code,name){
+  const input=document.getElementById('alertCode');
+  const drop=document.getElementById('alertAcDrop');
+  if(input){input.value=code;input.dataset.selectedCode=code;}
+  if(drop)drop.classList.remove('open');
+  // Auto-focus price field
+  setTimeout(()=>document.getElementById('alertPrice')?.focus(),50);
+}
+
+function alertAcClose(){
+  const drop=document.getElementById('alertAcDrop');
+  if(drop)drop.classList.remove('open');
+}
+
+function alertAcKey(e){
+  const drop=document.getElementById('alertAcDrop');
+  if(!drop||!drop.classList.contains('open'))return;
+  const items=[...drop.querySelectorAll('.alert-ac-item[data-code]')];
+  if(!items.length)return;
+  if(e.key==='ArrowDown'){e.preventDefault();_acIdx=Math.min(_acIdx+1,items.length-1);}
+  else if(e.key==='ArrowUp'){e.preventDefault();_acIdx=Math.max(_acIdx-1,0);}
+  else if(e.key==='Enter'&&_acIdx>=0){e.preventDefault();const it=items[_acIdx];if(it)alertAcSelect(it.dataset.code,it.querySelector('.alert-ac-name')?.textContent||'');return;}
+  else if(e.key==='Escape'){alertAcClose();return;}
+  items.forEach((it,i)=>it.classList.toggle('selected',i===_acIdx));
+  if(_acIdx>=0)items[_acIdx]?.scrollIntoView({block:'nearest'});
+}
+document.addEventListener('click',e=>{
+  const modal=document.getElementById('alertModal');
+  if(modal&&e.target===modal)closeAlertModal();
+});
+
+function renderAlertList(){
+  const alerts=loadAlerts();
+  const list=document.getElementById('alertList');
+  if(!list)return;
+  if(!alerts.length){
+    list.innerHTML=`<div class="alert-empty">No alerts set. Add one above.</div>`;
+    return;
+  }
+  list.innerHTML=alerts.map((a,i)=>{
+    const cmp=livePrices[a.code]||0;
+    const cmpStr=cmp>0?` · CMP: ₹${cmp.toFixed(2)}`:'';
+    return`<div class="alert-item">
+      <div class="alert-item-info">
+        <span class="alert-item-code">${a.code}</span>
+        <span class="alert-item-cond">${a.dir==='above'?'▲ Above':'▼ Below'} ₹${a.price}${cmpStr}</span>
+      </div>
+      <button class="alert-del" onclick="deleteAlert(${i})" title="Delete">✕</button>
+    </div>`;
+  }).join('');
+  // Update bell button badge
+  const btn=document.getElementById('alertBtnOv');
+  if(btn)btn.innerHTML=`🔔 Alerts${alerts.length?` <span style="background:var(--gold);color:#fff;font-size:8px;padding:0 5px;border-radius:20px;margin-left:2px">${alerts.length}</span>`:''}`;
+}
+
+function addPriceAlert(){
+  const codeEl=document.getElementById('alertCode');
+  const code=(codeEl?.dataset.selectedCode||codeEl?.value||'').toUpperCase().trim();
+  const dir=document.getElementById('alertDir')?.value||'above';
+  const price=parseFloat(document.getElementById('alertPrice')?.value||'0');
+  if(!code){toast('Search and select a script','warn');codeEl?.focus();return;}
+  if(!price||price<=0){toast('Enter a valid target price','warn');return;}
+  const alerts=loadAlerts();
+  if(alerts.find(a=>a.code===code&&a.dir===dir&&a.price===price)){
+    toast('Alert already exists','warn');return;
+  }
+  alerts.push({code,dir,price,created:Date.now()});
+  saveAlerts(alerts);
+  if(codeEl){codeEl.value='';codeEl.dataset.selectedCode='';}
+  document.getElementById('alertPrice').value='';
+  alertAcClose();
+  renderAlertList();
+  toast(`🔔 Alert set: ${code} ${dir==='above'?'▲ above':'▼ below'} ₹${price}`,'ok');
+}
+
+function deleteAlert(idx){
+  const alerts=loadAlerts();
+  alerts.splice(idx,1);
+  saveAlerts(alerts);
+  renderAlertList();
+  toast('Alert removed','ok');
+}
+
+// Called after every price refresh — checks all alerts
+function checkPriceAlerts(){
+  const alerts=loadAlerts();
+  if(!alerts.length)return;
+  const fired=[];
+  const remaining=alerts.filter(a=>{
+    const cmp=livePrices[a.code];
+    if(!cmp)return true;
+    const triggered=(a.dir==='above'&&cmp>=a.price)||(a.dir==='below'&&cmp<=a.price);
+    if(triggered)fired.push(a);
+    return!triggered;
+  });
+  if(fired.length){
+    saveAlerts(remaining);
+    fired.forEach(a=>{
+      const msg=`🔔 ${a.code} ${a.dir==='above'?'crossed above':'fell below'} ₹${a.price} · CMP: ₹${livePrices[a.code].toFixed(2)}`;
+      toast(msg,'ok');
+      // Browser notification if permitted
+      if(Notification?.permission==='granted'){
+        new Notification('AUTUS Price Alert',{body:msg,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><text y="28" font-size="28">📊</text></svg>'});
+      }
+    });
+    renderAlertList();
+  }
+}
+
+// Request notification permission once
+function requestNotifPermission(){
+  if(Notification&&Notification.permission==='default'){
+    Notification.requestPermission().then(p=>{
+      if(p==='granted')toast('🔔 Browser notifications enabled for price alerts','ok');
+    });
+  }
+}
 
 // ══════════════════════════════════════════════════════
 //  EXPORT CSV
@@ -3206,11 +3621,6 @@ function renderOverview(data){
       <td class="neu" style="font-size:11px">${s.hasLive?'₹'+fmtC(s.curr):'—'}</td>
     </tr>`;
   }).join('');
-}
-
-function filterMW(){
-  const q=(document.getElementById('mwSearch').value||'').toLowerCase();
-  document.querySelectorAll('.mw-row').forEach(r=>r.style.display=r.dataset.mwq.includes(q)?'':'none');
 }
 
 // UPDATED: Holdings render — client name header, no repetition per row
@@ -3570,6 +3980,8 @@ function renderIndices(){
     :(mktOpen?'Fetching live…':'Market closed · Last closing prices');
   const el=document.getElementById('marketTS');
   if(el)el.textContent=ts;
+  // Update benchmark bar with latest index data
+  if(_lastComputedData)renderBenchmarkBar(_lastComputedData);
 
   // ── Indian Indices — vertical list ──
   const indiaEl=document.getElementById('indiaList');
@@ -3651,6 +4063,8 @@ function renderAll(){
   const data=compute();
   _lastComputedData=data;
   renderKPI(data);renderOverview(data);renderHoldings(data);renderSectors(data);renderIndices();
+  renderConcentrationAlerts(data);
+  renderBenchmarkBar(data);
   const now=new Date();
   document.getElementById('tDate').textContent=now.toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'2-digit'});
   const srcLabel=lastCSVDate||'—';
@@ -3675,10 +4089,6 @@ function showTab(id,el){
 // UPDATED: debounced search
 let _srchT;
 function debouncedFilter(){clearTimeout(_srchT);_srchT=setTimeout(filterHoldings,180);}
-function filterHoldings(){
-  const q=document.getElementById('srch').value.toLowerCase();
-  document.querySelectorAll('.h-row').forEach(r=>r.style.display=r.dataset.q.includes(q)?'':'none');
-}
 
 let _tt;
 function toast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+type;clearTimeout(_tt);_tt=setTimeout(()=>el.className='',3500);}
